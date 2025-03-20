@@ -48,8 +48,8 @@ pub mod plugin;
 pub mod error;
 
 // === REGION: FEATURE-GATED DEPENDENCIES ===
-#[cfg(feature = "render")]
-extern crate rustica_render;
+// Render feature enabled, but we've removed direct dependency on rustica_render
+// to avoid circular references. Instead, we use dynamic registration.
 
 // === REGION: PUBLIC EXPORTS ===
 pub use app::App;

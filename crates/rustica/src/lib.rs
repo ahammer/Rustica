@@ -60,6 +60,10 @@ pub use cgmath as math;
 // Re-export scheduler functionality
 pub use rustica_scheduler as scheduler;
 
+// Re-export render functionality when the render feature is enabled
+#[cfg(feature = "render")]
+pub use rustica_render as render;
+
 // === REGION: PRELUDE ===
 
 /// Prelude module containing the most commonly used types.
@@ -86,6 +90,10 @@ pub mod prelude {
     // Re-export functions as equivalent operations
     pub use cgmath::vec2;
     pub use cgmath::vec3;
+    
+    // Re-export render types when the render feature is enabled
+    #[cfg(feature = "render")]
+    pub use crate::render::prelude::*;
     
     /// Creates an identity 4x4 matrix
     pub fn mat4_identity() -> Mat4<f32> {

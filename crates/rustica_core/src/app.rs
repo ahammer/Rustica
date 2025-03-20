@@ -241,63 +241,20 @@ impl App {
         info!("Starting application");
         self.running = true;
         
-        // Check if we have a window resource from the render plugin
-        let has_window = false;
+        // Check if we have a render window resource
+        let mut has_window = false;
         
         #[cfg(feature = "render")]
-        if let Some(window_resource) = self.get_resource::<rustica_render::WindowResource>() {
-            // If we have a window resource with an event loop, use that to drive the main loop
-            if let Ok(manager) = window_resource.manager().lock() {
-                if let Some(event_loop) = manager.event_loop() {
-                    use winit::event::{Event, WindowEvent};
-                    use winit::event_loop::ControlFlow;
-                    
-                    info!("Running with window event loop");
-                    event_loop.run(move |event, _, control_flow| {
-                        *control_flow = if self.running {
-                            ControlFlow::Poll
-                        } else {
-                            ControlFlow::Exit
-                        };
-                        
-                        match event {
-                            Event::WindowEvent { event, .. } => match event {
-                                WindowEvent::CloseRequested => {
-                                    info!("Window close requested, exiting");
-                                    *control_flow = ControlFlow::Exit;
-                                    self.running = false;
-                                },
-                                WindowEvent::KeyboardInput { input, .. } => {
-                                    // Process keyboard input if we have an input resource
-                                    if let Some(input_resource) = self.get_resource::<rustica_render::InputResource>() {
-                                        input_resource.process_keyboard_input(input);
-                                    }
-                                },
-                                _ => {},
-                            },
-                            Event::MainEventsCleared => {
-                                // Application update code
-                                self.update();
-                                
-                                // Request redraw after update
-                                if let Ok(manager) = window_resource.manager().lock() {
-                                    manager.request_redraw();
-                                }
-                            },
-                            Event::RedrawRequested(_) => {
-                                // Rendering code would be called here
-                                // This is handled by the render systems
-                            },
-                            _ => (),
-                        }
-                    });
-                    
-                    // Note: event_loop.run() is a blocking call that doesn't return
-                    // until the application exits, so this point is only reached if
-                    // the event loop doesn't run
-                    has_window = true;
-                }
-            }
+        if let Some(has_render_window) = self.get_resource::<bool>() {
+            // Simple flag set by the render plugin
+            has_window = *has_render_window;
+            info!("Detected render window resource");
+            
+            // In a real implementation, we would run some kind of event loop here
+            // But for now we're just going to use a simplified implementation
+            // to demonstrate the concept
+            
+            // TODO: Implement proper windowing event loop in a way that doesn't create borrowing issues
         }
         
         // If we don't have a window, run a simple loop

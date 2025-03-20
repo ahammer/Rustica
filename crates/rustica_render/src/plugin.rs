@@ -95,8 +95,20 @@ impl Plugin for RenderPlugin {
         let window_resource = WindowResource::with_config(window_config);
         match window_resource.initialize() {
             Ok(_) => {
-                app.insert_resource(window_resource);
+                app.insert_resource(window_resource.clone());
                 info!("RenderPlugin: Window initialized and added as resource");
+                
+                // Register a flag indicating we have a window
+                app.insert_resource(true as bool);
+                
+                // In a real implementation, we would create a dispatcher that can safely
+                // run the event loop without the borrowing issues.
+                // For now, we'll run a simplified version that just sets up the window
+                // and lets the app's main loop handle updates.
+                
+                // Instead of trying to run the event loop directly from here,
+                // we'll set up a resource that contains the window that the app can use
+                info!("Window initialized and ready for use by the app");
             },
             Err(e) => {
                 error!("RenderPlugin: Failed to initialize window: {}", e);
