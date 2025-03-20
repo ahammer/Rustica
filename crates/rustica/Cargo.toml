@@ -1,0 +1,24 @@
+[package]
+name = "rustica"
+version = "0.1.0"
+edition = "2021"
+authors = ["Rustica Contributors"]
+description = "A modular, testable game engine written in Rust"
+repository = "https://github.com/username/rustica"
+license = "MIT"
+
+[dependencies]
+rustica_core = { path = "../rustica_core" }
+rustica_ecs = { path = "../rustica_ecs" }
+rustica_event = { path = "../rustica_event", optional = true }
+rustica_render = { path = "../rustica_render", optional = true }
+rustica_scheduler = { path = "../rustica_scheduler", optional = true }
+rustica_math = { path = "../rustica_math", optional = true }
+
+[features]
+default = []
+full = ["events", "render", "scheduler", "math"]
+events = ["rustica_event"]
+render = ["rustica_render"]
+scheduler = ["rustica_scheduler"]
+math = ["rustica_math"]

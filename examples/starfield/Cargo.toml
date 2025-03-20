@@ -1,0 +1,11 @@
+[package]
+name = "starfield"
+version = "0.1.0"
+edition = "2021"
+authors = ["Rustica Contributors"]
+description = "A simple starfield example using the Rustica game engine"
+publish = false
+
+[dependencies]
+rustica = { path = "../../crates/rustica" }
+log = "0.4"

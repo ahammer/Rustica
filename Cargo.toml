@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "crates/rustica",
+    "crates/rustica_core",
+    "crates/rustica_ecs",
+    "crates/rustica_event",
+    "crates/rustica_render",
+    "crates/rustica_scheduler",
+    "crates/rustica_math",
+    "examples/starfield",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Rustica Contributors"]
+repository = "https://github.com/username/rustica"
+license = "MIT"

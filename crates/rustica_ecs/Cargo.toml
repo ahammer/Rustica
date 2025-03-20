@@ -1,0 +1,16 @@
+[package]
+name = "rustica_ecs"
+version = "0.1.0"
+edition = "2021"
+authors = ["Rustica Contributors"]
+description = "Entity-Component-System implementation for the Rustica game engine"
+repository = "https://github.com/username/rustica"
+license = "MIT"
+
+[dependencies]
+thiserror = "1.0"
+log = "0.4"
+# We're making a minimal stub implementation, so keeping dependencies minimal
+rustica_core = { path = "../rustica_core" }
+
+[dev-dependencies]

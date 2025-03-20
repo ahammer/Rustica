@@ -1,0 +1,14 @@
+[package]
+name = "rustica_core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Rustica Contributors"]
+description = "Core orchestration layer for the Rustica game engine"
+repository = "https://github.com/username/rustica"
+license = "MIT"
+
+[dependencies]
+thiserror = "1.0"
+log = "0.4"
+
+[dev-dependencies]
