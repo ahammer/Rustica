@@ -1,1 +1,0 @@
-C:\Users\Adam\git\Rustica\target\debug\librustica_core.rlib: C:\Users\Adam\git\Rustica\crates\rustica_core\src\app.rs C:\Users\Adam\git\Rustica\crates\rustica_core\src\error.rs C:\Users\Adam\git\Rustica\crates\rustica_core\src\lib.rs C:\Users\Adam\git\Rustica\crates\rustica_core\src\plugin.rs
