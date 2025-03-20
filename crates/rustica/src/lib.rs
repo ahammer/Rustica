@@ -54,18 +54,11 @@ pub use rustica_core as core;
 // Re-export ECS functionality
 pub use rustica_ecs as ecs;
 
-// Conditionally re-export other subsystems
-#[cfg(feature = "events")]
-pub use rustica_event as event;
-
-#[cfg(feature = "render")]
-pub use rustica_render as render;
-
-#[cfg(feature = "scheduler")]
-pub use rustica_scheduler as scheduler;
-
-#[cfg(feature = "math")]
+// Re-export math functionality
 pub use rustica_math as math;
+
+// Re-export scheduler functionality
+pub use rustica_scheduler as scheduler;
 
 // === REGION: PRELUDE ===
 
@@ -84,18 +77,11 @@ pub mod prelude {
     pub use rustica_ecs::Component;
     pub use rustica_ecs::EcsPlugin;
     
-    // Conditionally re-export from other subsystems
-    #[cfg(feature = "events")]
-    pub use rustica_event::EventPlugin;
+    // Re-export from scheduler
+    pub use rustica_scheduler::{Schedule, System, Stage, SchedulerPlugin};
     
-    #[cfg(feature = "render")]
-    pub use rustica_render::RenderPlugin;
-    
-    #[cfg(feature = "scheduler")]
-    pub use rustica_scheduler::SchedulerPlugin;
-    
-    #[cfg(feature = "math")]
-    pub use rustica_math::{Vec2, Vec3, Mat4, Quat};
+    // Re-export from math
+    pub use rustica_math::{Vec2, Vec3, Mat4, Quat, vec2, vec3, mat4_identity, quat_identity};
 }
 
 // === REGION: TESTS ===

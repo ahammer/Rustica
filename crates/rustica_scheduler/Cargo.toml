@@ -1,0 +1,13 @@
+[package]
+name = "rustica_scheduler"
+version = "0.1.0"
+edition = "2021"
+authors = ["Rustica Contributors"]
+description = "Scheduler module for the Rustica game engine"
+repository = "https://github.com/username/rustica"
+license = "MIT"
+
+[dependencies]
+thiserror = "1.0"
+rustica_core = { path = "../rustica_core" }
+rustica_ecs = { path = "../rustica_ecs" }

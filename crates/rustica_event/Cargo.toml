@@ -1,0 +1,12 @@
+[package]
+name = "rustica_event"
+version = "0.1.0"
+edition = "2021"
+description = "Event handling system for the Rustica game engine"
+authors = ["Rustica Team"]
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+thiserror = "1.0"
+rustica_core = { path = "../rustica_core" }
+rustica_ecs = { path = "../rustica_ecs" }

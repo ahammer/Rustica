@@ -1,0 +1,12 @@
+C:\Users\Adam\git\Rustica\target\debug\deps\libhalf-100713a76414d82c.rmeta: C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\lib.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\bfloat.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\bfloat\convert.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16\arch.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16\arch\x86.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\leading_zeros.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\slice.rs
+
+C:\Users\Adam\git\Rustica\target\debug\deps\half-100713a76414d82c.d: C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\lib.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\bfloat.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\bfloat\convert.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16\arch.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16\arch\x86.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\leading_zeros.rs C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\slice.rs
+
+C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\lib.rs:
+C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\bfloat.rs:
+C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\bfloat\convert.rs:
+C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16.rs:
+C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16\arch.rs:
+C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\binary16\arch\x86.rs:
+C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\leading_zeros.rs:
+C:\Users\Adam\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\half-2.5.0\src\slice.rs:
