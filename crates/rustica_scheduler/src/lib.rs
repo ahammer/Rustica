@@ -37,6 +37,15 @@ mod schedule;
 mod stage;
 mod plugin;
 
+#[cfg(test)]
+mod system_tests;
+#[cfg(test)]
+mod schedule_tests;
+#[cfg(test)]
+mod stage_tests;
+#[cfg(test)]
+mod plugin_tests;
+
 pub use error::SchedulerError;
 pub use system::System;
 pub use schedule::Schedule;

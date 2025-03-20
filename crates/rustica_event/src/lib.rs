@@ -7,6 +7,11 @@ mod error;
 mod plugin;
 mod event;
 
+#[cfg(test)]
+mod event_tests;
+#[cfg(test)]
+mod plugin_tests;
+
 pub use error::{Error, Result};
 pub use plugin::EventPlugin;
 pub use event::{Event, EventReader, EventWriter, Events};

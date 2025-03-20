@@ -16,8 +16,8 @@ pub struct Events<T: Event + Clone> {
     current_events: Vec<T>,
     /// Events that were added in the previous frame and can be read this frame
     available_events: VecDeque<T>,
-    /// Whether events have been updated this frame
-    updated: bool,
+    /// Incremented each time update() is called to track event generations
+    update_counter: usize,
 }
 
 impl<T: Event + Clone> Events<T> {
@@ -26,7 +26,7 @@ impl<T: Event + Clone> Events<T> {
         Self {
             current_events: Vec::new(),
             available_events: VecDeque::new(),
-            updated: false,
+            update_counter: 0,
         }
     }
 
@@ -39,9 +39,14 @@ impl<T: Event + Clone> Events<T> {
     /// and clearing old events. This should be called once per frame.
     pub fn update(&mut self) {
         self.available_events.clear();
-        std::mem::swap(&mut self.current_events, &mut self.available_events.make_contiguous().to_vec());
-        self.current_events.clear();
-        self.updated = true;
+        
+        // Move current events to available_events
+        for event in self.current_events.drain(..) {
+            self.available_events.push_back(event);
+        }
+        
+        // Increment the update counter to mark a new generation of events
+        self.update_counter += 1;
     }
 
     /// Return an iterator over the events
@@ -58,8 +63,10 @@ impl<T: Event + Clone> Events<T> {
 
 /// Reader for events of type T
 pub struct EventReader<T: Event> {
-    /// Current read index
-    read_index: usize,
+    /// Last update counter we've seen from the events container
+    last_update_counter: usize,
+    /// Last known event count we've processed
+    last_event_count: usize,
     /// Marker for type T
     _marker: PhantomData<T>,
 }
@@ -67,7 +74,8 @@ pub struct EventReader<T: Event> {
 impl<T: Event> Default for EventReader<T> {
     fn default() -> Self {
         Self {
-            read_index: 0,
+            last_update_counter: 0,
+            last_event_count: 0,
             _marker: PhantomData,
         }
     }
@@ -80,12 +88,20 @@ impl<T: Event + Clone> EventReader<T> {
     }
 
     /// Read events from the Events resource
-    pub fn read<'a>(&mut self, events: &'a Events<T>) -> impl Iterator<Item = &'a T> {
-        let slice = &events.available_events;
-        let old_index = self.read_index;
-        self.read_index = slice.len();
+    pub fn read<'a>(&mut self, events: &'a Events<T>) -> impl Iterator<Item = &'a T> + 'a {
+        // Check if events container has been updated since our last read
+        if self.last_update_counter != events.update_counter {
+            // New update detected, reset our event count
+            self.last_update_counter = events.update_counter;
+            self.last_event_count = 0;
+        }
         
-        slice.iter().skip(old_index)
+        // Remember how many events we've seen
+        let old_count = self.last_event_count;
+        self.last_event_count = events.available_events.len();
+        
+        // Return only newly added events
+        events.available_events.iter().skip(old_count)
     }
 }
 
