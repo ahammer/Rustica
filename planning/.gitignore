@@ -1,0 +1,21 @@
+# Planning folder gitignore
+
+# Ignore temporary and backup files
+*~
+*.bak
+*.tmp
+*.temp
+
+# IDE specific files
+.vscode/
+.idea/
+*.sublime-*
+
+# Planning specific files
+drafts/
+temp/
+*.draft.md
+
+# OS specific files
+.DS_Store
+Thumbs.db
