@@ -107,7 +107,7 @@ impl<Q: Query> Iterator for QueryResult<Q> {
     type Item = Q::Item;
     
     fn next(&mut self) -> Option<Self::Item> {
-        // In a real implementation, this would iterate over the entities
+        // todo: fix this - implement entity iteration
         // For now, just a stub that always returns None
         None
     }

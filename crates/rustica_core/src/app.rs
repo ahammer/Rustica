@@ -115,15 +115,14 @@ impl App {
         // Check for duplicate plugins
         if self.plugins.contains_key(&name) {
             error!("Duplicate plugin: {}", name);
-            // For now, just log and continue - in a real implementation we might want to
-            // return a Result instead
+        // todo: fix this - return a Result instead of just logging and continuing
         }
         
         // Check plugin dependencies
         for dep in plugin.dependencies() {
             if !self.plugins.contains_key(dep) {
                 error!("Missing plugin dependency: {} requires {}", name, dep);
-                // Again, we might want to return a Result in a real implementation
+                // todo: fix this - return a Result
             }
         }
         
@@ -266,7 +265,7 @@ impl App {
     /// app.update(); // Run a single frame
     /// ```
     pub fn update(&mut self) {
-        // In a real implementation, this would:
+        // todo: fix this - implement proper update cycle with:
         // 1. Run input systems
         // 2. Run update systems
         // 3. Run render systems

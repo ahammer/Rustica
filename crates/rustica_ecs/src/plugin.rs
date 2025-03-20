@@ -50,7 +50,7 @@ impl Plugin for EcsPlugin {
         // Add the World resource
         app.insert_resource(World::new());
         
-        // In a real implementation, we would register ECS systems here
+        // todo: fix this - implement ECS systems registration
         // For now, this is just a stub
     }
     

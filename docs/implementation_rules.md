@@ -584,6 +584,25 @@ pub fn update(&mut self, dt: f32) {
 }
 ```
 
+## Code Documentation
+
+### Rule 27: Todo Comments
+
+Use standardized todo comments for incomplete implementations:
+
+```rust
+// GOOD: Clear, actionable todo
+// todo: fix this - return a Result instead of logging and continuing
+
+// BAD: Apologetic, non-committal phrasing
+// In a real implementation we might want to return a Result instead
+```
+
+Todo comments should:
+1. Start with "todo: fix this"
+2. Include a specific, actionable description of what needs to be implemented
+3. Avoid apologetic phrasing like "in a real implementation" or "would be"
+
 ## Conclusion
 
 Follow these implementation rules to ensure that Rustica remains high-quality, performant, and maintainable. Remember:

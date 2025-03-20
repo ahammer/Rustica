@@ -63,7 +63,7 @@ impl<T: 'static + Send + Sync> Component for T {}
 /// This is an internal type used by the world to store components.
 /// It is not part of the public API.
 pub(crate) struct ComponentStorage {
-    // In a real implementation, this would store the components
+    // todo: fix this - implement component storage
     // For now, it's just a stub
 }
 
@@ -75,27 +75,27 @@ impl ComponentStorage {
     
     /// Gets a reference to a component for an entity, if it exists.
     pub(crate) fn get<T: Component>(&self, _entity_id: u64) -> Option<&T> {
-        // In a real implementation, this would retrieve the component
+        // todo: fix this - implement component retrieval
         // For now, just a stub that always returns None
         None
     }
     
     /// Gets a mutable reference to a component for an entity, if it exists.
     pub(crate) fn get_mut<T: Component>(&mut self, _entity_id: u64) -> Option<&mut T> {
-        // In a real implementation, this would retrieve the component
+        // todo: fix this - implement component mutable retrieval
         // For now, just a stub that always returns None
         None
     }
     
     /// Inserts a component for an entity.
     pub(crate) fn insert<T: Component>(&mut self, _entity_id: u64, _component: T) {
-        // In a real implementation, this would store the component
+        // todo: fix this - implement component storage
         // For now, just a stub
     }
     
     /// Removes a component for an entity.
     pub(crate) fn remove<T: Component>(&mut self, _entity_id: u64) {
-        // In a real implementation, this would remove the component
+        // todo: fix this - implement component removal
         // For now, just a stub
     }
 }

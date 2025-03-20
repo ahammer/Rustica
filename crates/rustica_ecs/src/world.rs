@@ -102,7 +102,7 @@ impl World {
     /// world.despawn(entity);
     /// ```
     pub fn despawn(&mut self, _entity: Entity) {
-        // In a real implementation, this would remove all components
+        // todo: fix this - implement removal of all components 
         // For now, just a stub
     }
     
@@ -123,7 +123,7 @@ impl World {
     /// }
     /// ```
     pub fn get<T: Component>(&self, entity: Entity) -> Option<&T> {
-        // In a real implementation, this would retrieve the component
+        // todo: fix this - implement component retrieval
         // For now, just a stub that always returns None
         None
     }
@@ -149,7 +149,7 @@ impl World {
     /// }
     /// ```
     pub fn get_mut<T: Component>(&mut self, entity: Entity) -> Option<&mut T> {
-        // In a real implementation, this would retrieve the component
+        // todo: fix this - implement mutable component retrieval
         // For now, just a stub that always returns None
         None
     }
@@ -174,7 +174,7 @@ impl World {
     /// }
     /// ```
     pub fn query<Q: Query>(&self) -> QueryResult<Q> {
-        // In a real implementation, this would create a query
+        // todo: fix this - implement query creation
         // For now, just a stub
         QueryResult::new()
     }
@@ -195,7 +195,7 @@ impl World {
     /// assert_eq!(*world.get::<u32>(entity).unwrap(), 42);
     /// ```
     pub fn insert<T: Component>(&mut self, _entity: Entity, _component: T) {
-        // In a real implementation, this would add the component
+        // todo: fix this - implement component addition
         // For now, just a stub
     }
 }
