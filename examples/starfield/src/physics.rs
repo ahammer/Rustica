@@ -4,10 +4,8 @@
 //! including position and velocity components, and systems for updating entities based on
 //! these components.
 
-use cgmath::{Vector3 as Vec3};
-use rustica_ecs::component::Component;
-use rustica_ecs::World;
-use rustica_scheduler::system::{System, SystemFn};
+use rustica::prelude::*;
+use rustica::scheduler::system::SystemFn;
 use std::time::Duration;
 
 /// Position component for entities in 3D space
@@ -77,7 +75,7 @@ impl Default for PhysicsConfig {
 }
 
 /// System for updating positions based on velocities
-pub fn position_update_system(world: &mut World) {
+pub fn position_update_system(_world: &mut World) {
     // In a real implementation, we would query for all entities with Position and Velocity components,
     // and update their positions based on velocity and delta time.
     
@@ -91,7 +89,7 @@ pub fn position_update_system(world: &mut World) {
 }
 
 /// System for updating velocities based on accelerations
-pub fn velocity_update_system(world: &mut World) {
+pub fn velocity_update_system(_world: &mut World) {
     // Similar to position_update_system, this is a stub for now
     
     // A proper implementation would look like:
@@ -103,7 +101,7 @@ pub fn velocity_update_system(world: &mut World) {
 }
 
 /// System for wrapping entities around world boundaries
-pub fn boundary_wrap_system(world: &mut World) {
+pub fn boundary_wrap_system(_world: &mut World) {
     // A stub system that would wrap entities around world boundaries
     
     // A proper implementation would look like:

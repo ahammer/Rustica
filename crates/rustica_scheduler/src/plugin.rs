@@ -11,7 +11,7 @@ use rustica_core::{App, Plugin};
 pub struct SchedulerPlugin;
 
 impl Plugin for SchedulerPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, _app: &mut App) {
         // Add the schedule resource to the app        
         // TODO: Something?
     }

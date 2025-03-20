@@ -6,6 +6,8 @@
 use rustica_core::plugin::Plugin;
 use rustica_core::App;
 use crate::renderer::{Camera, Renderer, Viewport};
+use crate::window::{WindowConfig, WindowResource};
+use crate::input::InputResource;
 use crate::Result;
 use log::{info, error};
 
@@ -82,6 +84,32 @@ impl Default for RenderPlugin {
 
 impl Plugin for RenderPlugin {
     fn build(&self, app: &mut App) {
+        // Create and initialize window
+        let window_config = WindowConfig {
+            width: self.config.viewport.width,
+            height: self.config.viewport.height,
+            title: "Rustica Engine".to_string(),
+            ..Default::default()
+        };
+        
+        let window_resource = WindowResource::with_config(window_config);
+        match window_resource.initialize() {
+            Ok(_) => {
+                app.insert_resource(window_resource);
+                info!("RenderPlugin: Window initialized and added as resource");
+            },
+            Err(e) => {
+                error!("RenderPlugin: Failed to initialize window: {}", e);
+                // In a real implementation, we might handle this error more gracefully
+                // For now, continue with renderer setup even if window fails
+            }
+        }
+        
+        // Create and add the input resource
+        let input_resource = InputResource::new();
+        app.insert_resource(input_resource);
+        info!("RenderPlugin: Input resource added");
+        
         // Initialize and add the renderer as a resource
         match self.init_renderer() {
             Ok(renderer) => {

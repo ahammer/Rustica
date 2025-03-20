@@ -47,6 +47,10 @@ pub mod app;
 pub mod plugin;
 pub mod error;
 
+// === REGION: FEATURE-GATED DEPENDENCIES ===
+#[cfg(feature = "render")]
+extern crate rustica_render;
+
 // === REGION: PUBLIC EXPORTS ===
 pub use app::App;
 pub use plugin::Plugin;

@@ -79,6 +79,7 @@ pub mod prelude {
     
     // Re-export from scheduler
     pub use rustica_scheduler::{Schedule, System, Stage, SchedulerPlugin};
+    pub use rustica_scheduler::system::SystemFn;
     
     // Re-export from cgmath
     pub use cgmath::{Vector2 as Vec2, Vector3 as Vec3, Matrix4 as Mat4, Quaternion as Quat};

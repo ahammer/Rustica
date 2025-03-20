@@ -10,5 +10,10 @@ license = "MIT"
 [dependencies]
 thiserror = "1.0"
 log = "0.4"
+winit = { version = "0.28.6", optional = true }
+
+[features]
+default = []
+render = ["winit"]
 
 [dev-dependencies]

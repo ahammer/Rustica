@@ -11,8 +11,7 @@
 mod physics;
 
 use rustica::prelude::*;
-use cgmath::Vector3 as Vec3;
-use physics::{Position, Velocity, Time, PhysicsConfig, create_position_update_system, create_velocity_update_system, create_boundary_wrap_system};
+use physics::{Position, Velocity, Time, PhysicsConfig};
 
 // === REGION: COMPONENT DEFINITIONS ===
 
@@ -79,7 +78,7 @@ impl StarfieldPlugin {
             };
             
             let velocity = Velocity {
-                value: Vec3::new(0.0, 0.0, -i as f32 - 1.0),
+                value: Vec3::new(0.0, 0.0, -(i as f32) - 1.0),
                 damping: 1.0,
             };
             
@@ -133,8 +132,8 @@ fn main() {
     // Add the ECS plugin for entity management
     app.add_plugin(EcsPlugin::default());
     
-    // Add the RenderPlugin (commented out as not yet working)
-    // app.add_plugin(RenderPlugin::default());
+    // Add the RenderPlugin
+    app.add_plugin(RenderPlugin::default());
     
     // Configure physics
     let physics_config = PhysicsConfig {
@@ -145,13 +144,10 @@ fn main() {
     // Add the starfield plugin with 1000 stars
     app.add_plugin(StarfieldPlugin::new(1000, physics_config));
     
-    // Run the application
+    // Print debug information
     println!("Starting Starfield example - Hello Rustica World!");
     
-    // In a real application, we would call app.run() here
-    // For now, just print what's in the world
-    
-    if let Some(world) = app.get_resource::<World>() {
+    if let Some(_world) = app.get_resource::<World>() {
         println!("Starfield initialized with Position/Velocity system");
         println!("Physics configuration:");
         if let Some(config) = app.get_resource::<PhysicsConfig>() {
@@ -161,6 +157,9 @@ fn main() {
                 config.world_bounds.z);
             println!("  Wrap around bounds: {}", config.wrap_around_bounds);
         }
-        println!("In a full implementation, this would render and update stars");
+        println!("Running application with window...");
     }
+    
+    // Run the application with the event loop (this is a blocking call)
+    app.run();
 }

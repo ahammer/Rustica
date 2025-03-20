@@ -12,9 +12,11 @@ rustica_core = { path = "../rustica_core" }
 rustica_ecs = { path = "../rustica_ecs" }
 cgmath = "0.18.0"
 rustica_scheduler = { path = "../rustica_scheduler" }
+rustica_render = { path = "../rustica_render", optional = true }
 
 [features]
 default = ["math", "scheduler"]
-full = ["math", "scheduler"]
+full = ["math", "scheduler", "render"]
 math = []
 scheduler = []
+render = ["rustica_core/render", "rustica_render"]

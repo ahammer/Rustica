@@ -24,6 +24,10 @@ pub enum Error {
     #[error("Rendering error: {0}")]
     RenderError(String),
     
+    /// Window-related error
+    #[error("Window error: {0}")]
+    WindowError(String),
+    
     /// Generic error with message
     #[error("{0}")]
     Generic(String),

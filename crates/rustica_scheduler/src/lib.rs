@@ -32,7 +32,7 @@
 //! ```
 
 pub mod error;
-mod system;
+pub mod system;
 mod schedule;
 mod stage;
 mod plugin;

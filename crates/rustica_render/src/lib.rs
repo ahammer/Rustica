@@ -7,6 +7,8 @@
 mod error;
 mod plugin;
 mod renderer;
+mod window;
+mod input;
 
 pub use error::{Error, Result};
 pub use plugin::RenderPlugin;
@@ -18,6 +20,16 @@ pub use renderer::{
     StarComponent,
     StarPoint,
     Viewport,
+};
+pub use window::{
+    WindowManager,
+    WindowConfig,
+    WindowResource,
+};
+pub use input::{
+    InputState,
+    InputResource,
+    camera_input_system,
 };
 
 /// Re-exports of commonly used types
@@ -33,5 +45,8 @@ pub mod prelude {
         StarComponent,
         StarPoint,
         Viewport,
+        WindowManager,
+        WindowConfig,
+        WindowResource,
     };
 }
