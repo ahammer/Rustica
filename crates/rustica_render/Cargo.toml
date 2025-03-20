@@ -11,3 +11,4 @@ thiserror = "1.0"
 rustica_core = { path = "../rustica_core" }
 rustica_ecs = { path = "../rustica_ecs" }
 cgmath = "0.18.0"
+log = "0.4"

@@ -116,8 +116,7 @@ impl<'a> EntityBuilder<'a> {
     ///     .id();
     /// ```
     pub fn insert<T: Component>(&mut self, component: T) -> &mut Self {
-        // todo: fix this - implement component addition to the world
-        // For now, just a stub
+        self.world.insert(self.entity, component);
         self
     }
     

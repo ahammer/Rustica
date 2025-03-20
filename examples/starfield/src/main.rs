@@ -8,57 +8,110 @@
 //! This serves as a minimal "hello world" demonstrating the engine's
 //! architecture and API.
 
+mod physics;
+
 use rustica::prelude::*;
+use cgmath::Vector3 as Vec3;
+use physics::{Position, Velocity, Time, PhysicsConfig, create_position_update_system, create_velocity_update_system, create_boundary_wrap_system};
 
 // === REGION: COMPONENT DEFINITIONS ===
 
-/// A position component for entities in 3D space.
-#[derive(Debug)]
-struct Position {
-    x: f32,
-    y: f32,
-    z: f32,
-}
-
-/// A velocity component for moving entities.
-#[derive(Debug)]
-struct Velocity {
-    x: f32,
-    y: f32,
-    z: f32,
-}
-
 /// A star component that represents a star in the starfield.
-#[derive(Debug)]
-struct Star {
-    brightness: f32,
-    size: f32,
+#[derive(Debug, Clone)]
+pub struct Star {
+    /// Brightness of the star (0.0 to 1.0)
+    pub brightness: f32,
+    /// Size of the star
+    pub size: f32,
+    /// Color of the star (optional)
+    pub color: Option<[f32; 3]>,
+}
+
+impl Default for Star {
+    fn default() -> Self {
+        Self {
+            brightness: 0.8,
+            size: 1.0,
+            color: None,
+        }
+    }
 }
 
 // === REGION: PLUGIN DEFINITION ===
 
 /// The main plugin for the Starfield example.
-struct StarfieldPlugin;
+struct StarfieldPlugin {
+    /// Number of stars to create
+    star_count: usize,
+    /// Physics configuration
+    physics_config: PhysicsConfig,
+}
+
+impl Default for StarfieldPlugin {
+    fn default() -> Self {
+        Self {
+            star_count: 1000,
+            physics_config: PhysicsConfig::default(),
+        }
+    }
+}
+
+impl StarfieldPlugin {
+    /// Create a new StarfieldPlugin with custom settings
+    pub fn new(star_count: usize, physics_config: PhysicsConfig) -> Self {
+        Self {
+            star_count,
+            physics_config,
+        }
+    }
+    
+    /// Spawn stars with random positions and velocities
+    fn spawn_stars(&self, world: &mut World) {
+        // In a real implementation, we would use random number generation
+        // For now, just create stars with deterministic values
+        for i in 0..self.star_count.min(5) { // Limit to 5 for now since we're just displaying info
+            let position = Position {
+                value: Vec3::new(
+                    (i as f32 - 2.5) * 100.0,
+                    (i as f32 - 2.5) * 80.0,
+                    100.0 + i as f32 * 50.0
+                ),
+            };
+            
+            let velocity = Velocity {
+                value: Vec3::new(0.0, 0.0, -i as f32 - 1.0),
+                damping: 1.0,
+            };
+            
+            let star = Star {
+                brightness: 0.5 + i as f32 * 0.1,
+                size: 1.0 + i as f32 * 0.5,
+                color: None,
+            };
+            
+            world.spawn()
+                .insert(position)
+                .insert(velocity)
+                .insert(star);
+        }
+    }
+}
 
 impl Plugin for StarfieldPlugin {
     fn build(&self, app: &mut App) {
+        // Add resources
+        app.insert_resource(self.physics_config);
+        app.insert_resource(Time::default());
+        
         // Register systems
-        // In a real implementation, we would add systems here
-        // For now, just a stub
+        // In a real implementation with a working scheduler, we would do:
+        // app.add_system(create_position_update_system());
+        // app.add_system(create_velocity_update_system());
+        // app.add_system(create_boundary_wrap_system());
         
-        // In a real implementation, this would spawn multiple stars
-        // For now, just spawn a few stars as a demonstration
-        let world = app.get_resource_mut::<World>().unwrap();
-        
-        // Spawn 5 stars with random positions and velocities
-        for i in 0..5 {
-            let x = (i as f32 - 2.5) * 100.0;
-            let y = (i as f32 - 2.5) * 80.0;
-            
-            world.spawn()
-                .insert(Position { x, y, z: 100.0 + i as f32 * 50.0 })
-                .insert(Velocity { x: 0.0, y: 0.0, z: -i as f32 - 1.0 })
-                .insert(Star { brightness: 0.5 + i as f32 * 0.1, size: 1.0 + i as f32 * 0.5 });
+        // For now, just spawn stars
+        if let Some(world) = app.get_resource_mut::<World>() {
+            self.spawn_stars(world);
         }
     }
     
@@ -69,23 +122,7 @@ impl Plugin for StarfieldPlugin {
 
 // === REGION: SYSTEMS ===
 
-// In a real implementation, we would define systems here
-// For example:
-
-/*
-fn update_positions(world: &mut World) {
-    for (position, velocity) in world.query::<(&mut Position, &Velocity)>() {
-        position.x += velocity.x;
-        position.y += velocity.y;
-        position.z += velocity.z;
-        
-        // Wrap stars that go off screen
-        if position.z < 0.0 {
-            position.z = 1000.0;
-        }
-    }
-}
-*/
+// Our systems are now defined in the physics.rs module
 
 // === REGION: MAIN FUNCTION ===
 
@@ -96,8 +133,17 @@ fn main() {
     // Add the ECS plugin for entity management
     app.add_plugin(EcsPlugin::default());
     
-    // Add the starfield plugin
-    app.add_plugin(StarfieldPlugin);
+    // Add the RenderPlugin (commented out as not yet working)
+    // app.add_plugin(RenderPlugin::default());
+    
+    // Configure physics
+    let physics_config = PhysicsConfig {
+        world_bounds: Vec3::new(1000.0, 800.0, 1000.0),
+        wrap_around_bounds: true,
+    };
+    
+    // Add the starfield plugin with 1000 stars
+    app.add_plugin(StarfieldPlugin::new(1000, physics_config));
     
     // Run the application
     println!("Starting Starfield example - Hello Rustica World!");
@@ -106,9 +152,15 @@ fn main() {
     // For now, just print what's in the world
     
     if let Some(world) = app.get_resource::<World>() {
-        // In a real implementation, this would query and print star info
-        println!("Starfield initialized with 5 stars");
-        println!("This is a minimal example showing the engine structure");
-        println!("In a full implementation, this would display moving stars");
+        println!("Starfield initialized with Position/Velocity system");
+        println!("Physics configuration:");
+        if let Some(config) = app.get_resource::<PhysicsConfig>() {
+            println!("  World bounds: {:.1} x {:.1} x {:.1}", 
+                config.world_bounds.x, 
+                config.world_bounds.y, 
+                config.world_bounds.z);
+            println!("  Wrap around bounds: {}", config.wrap_around_bounds);
+        }
+        println!("In a full implementation, this would render and update stars");
     }
 }

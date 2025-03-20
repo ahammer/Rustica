@@ -71,7 +71,8 @@ impl Default for StarComponent {
     }
 }
 
-impl Component for StarComponent {}
+// Note: No explicit Component implementation needed.
+// rustica_ecs provides a blanket implementation for all 'static + Send + Sync types
 
 /// A render resource (textures, meshes, etc.)
 #[derive(Debug)]

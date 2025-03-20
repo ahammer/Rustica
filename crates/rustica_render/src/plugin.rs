@@ -57,7 +57,7 @@ impl RenderPlugin {
         
         // Apply configuration
         renderer.set_viewport(self.config.viewport);
-        renderer.set_camera(self.config.camera);
+        renderer.set_camera(self.config.camera.clone());
         renderer.set_depth_testing(self.config.depth_testing);
         
         // Initialize the renderer

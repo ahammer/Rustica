@@ -101,6 +101,7 @@ name = "rustica_render"
 version = "0.1.0"
 dependencies = [
  "cgmath",
+ "log",
  "rustica_core",
  "rustica_ecs",
  "thiserror",

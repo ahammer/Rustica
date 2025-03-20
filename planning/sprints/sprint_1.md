@@ -11,14 +11,14 @@
 | BUG-002 | ~~Update workspace resolver~~ | ~~Configure workspace to use resolver "2" to match edition 2021~~ | Low | Completed |  | Resolved: resolver = "2" already set in Cargo.toml |
 | BUG-003 | ~~Clean up unused imports~~ | ~~Remove unused imports in rustica_core~~ | Low | Completed |  | Removed unused CoreError import in app.rs and prefixed unused app variable in lib.rs |
 | MVP-001 | ~~Basic Renderer interface~~ | ~~Create a minimal rendering interface for displaying points/stars~~ | Medium | Completed |  | Implemented StarPoint and StarComponent types, enhanced Renderer with starfield rendering capabilities |
-| MVP-004 | Position/Velocity system | Implement system for updating positions based on velocities | Medium | Not Started |  |  |
-| ECS-001 | Complete component storage | Finalize component storage implementation | Medium | Not Started |  | Needed for proper entity querying in the starfield |
+| MVP-004 | ~~Position/Velocity system~~ | ~~Implement system for updating positions based on velocities~~ | Medium | Completed |  | Created Position/Velocity components, update systems, and added boundary wrapping functionality |
+| ECS-001 | ~~Complete component storage~~ | ~~Finalize component storage implementation~~ | Medium | Completed |  | Implemented type-erased component storage, added resource management, and proper entity lifecycle handling |
 
 ## Sprint Metrics
 
 - **Total Story Points**: 6
 - **Velocity Target**: 6 points
-- **Completed Points**: 4 (BUG-001, BUG-002, BUG-003, MVP-001)
+- **Completed Points**: 6 (BUG-001, BUG-002, BUG-003, MVP-001, MVP-004, ECS-001)
 
 ## Daily Standup Notes
 
@@ -35,6 +35,17 @@
   - Created StarPoint and StarComponent types
   - Enhanced Renderer with starfield rendering methods
   - Updated RenderPlugin with configuration support
+- Implemented Position/Velocity system:
+  - Created components for Position, Velocity and Acceleration
+  - Implemented systems for position/velocity updates and boundary wrapping
+  - Added Time resource and PhysicsConfig for simulation settings
+  - Integrated physics system with the starfield example
+- Completed component storage implementation:
+  - Implemented efficient type-erased component storage with sparse sets
+  - Enhanced World with entity lifecycle management
+  - Added resource management to World
+  - Implemented proper entity-component association
+  - Added comprehensive tests for component storage and world functionality
 
 ## Blockers & Risks
 

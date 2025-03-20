@@ -16,8 +16,8 @@
 //! 3. Entity lifecycles must be properly managed
 
 // === REGION: IMPORTS ===
-use std::any::TypeId;
-use std::collections::HashMap;
+use std::any::{Any, TypeId};
+use std::collections::{HashMap, HashSet};
 
 use crate::entity::{Entity, EntityBuilder};
 use crate::component::{Component, ComponentStorage};
@@ -49,11 +49,17 @@ use crate::query::{Query, QueryResult};
 /// assert_eq!(*world.get::<String>(entity).unwrap(), "Hello");
 /// ```
 pub struct World {
-    // The next available entity ID
+    /// The next available entity ID
     next_entity_id: u64,
     
-    // Component storages by type ID
+    /// Component storages by type ID
     storages: HashMap<TypeId, ComponentStorage>,
+    
+    /// Set of active entity IDs
+    entities: HashSet<u64>,
+    
+    /// Resources that can be accessed globally
+    resources: HashMap<TypeId, Box<dyn Any + Send + Sync>>,
 }
 
 impl World {
@@ -70,6 +76,8 @@ impl World {
         World {
             next_entity_id: 0,
             storages: HashMap::new(),
+            entities: HashSet::new(),
+            resources: HashMap::new(),
         }
     }
     
@@ -87,6 +95,8 @@ impl World {
         let entity = Entity::new(self.next_entity_id);
         self.next_entity_id += 1;
         
+        self.entities.insert(entity.id());
+        
         EntityBuilder::new(self, entity)
     }
     
@@ -101,9 +111,16 @@ impl World {
     /// let entity = world.spawn().id();
     /// world.despawn(entity);
     /// ```
-    pub fn despawn(&mut self, _entity: Entity) {
-        // todo: fix this - implement removal of all components 
-        // For now, just a stub
+    pub fn despawn(&mut self, entity: Entity) {
+        let entity_id = entity.id();
+        
+        // Remove the entity from the active set
+        self.entities.remove(&entity_id);
+        
+        // Remove all components for this entity
+        for storage in self.storages.values_mut() {
+            storage.remove::<()>(entity_id);
+        }
     }
     
     /// Gets a reference to a component for an entity, if it exists.
@@ -122,10 +139,10 @@ impl World {
     ///     assert_eq!(*value, 42);
     /// }
     /// ```
-    pub fn get<T: Component>(&self, _entity: Entity) -> Option<&T> {
-        // todo: fix this - implement component retrieval
-        // For now, just a stub that always returns None
-        None
+    pub fn get<T: Component>(&self, entity: Entity) -> Option<&T> {
+        let type_id = TypeId::of::<T>();
+        self.storages.get(&type_id)
+            .and_then(|storage| storage.get::<T>(entity.id()))
     }
     
     /// Gets a mutable reference to a component for an entity, if it exists.
@@ -148,10 +165,10 @@ impl World {
     ///     assert_eq!(*value, 84);
     /// }
     /// ```
-    pub fn get_mut<T: Component>(&mut self, _entity: Entity) -> Option<&mut T> {
-        // todo: fix this - implement mutable component retrieval
-        // For now, just a stub that always returns None
-        None
+    pub fn get_mut<T: Component>(&mut self, entity: Entity) -> Option<&mut T> {
+        let type_id = TypeId::of::<T>();
+        self.storages.get_mut(&type_id)
+            .and_then(|storage| storage.get_mut::<T>(entity.id()))
     }
     
     /// Creates a query for accessing components.
@@ -174,8 +191,9 @@ impl World {
     /// }
     /// ```
     pub fn query<Q: Query>(&self) -> QueryResult<Q> {
-        // todo: fix this - implement query creation
-        // For now, just a stub
+        // For now, this is still a stub, as proper query implementation
+        // requires more complex type handling. A future task would enhance
+        // the query system with actual iteration over entities.
         QueryResult::new()
     }
     
@@ -194,9 +212,121 @@ impl World {
     ///
     /// assert_eq!(*world.get::<u32>(entity).unwrap(), 42);
     /// ```
-    pub fn insert<T: Component>(&mut self, _entity: Entity, _component: T) {
-        // todo: fix this - implement component addition
-        // For now, just a stub
+    pub fn insert<T: Component>(&mut self, entity: Entity, component: T) {
+        let type_id = TypeId::of::<T>();
+        
+        // Get or create the storage for this component type
+        let storage = self.storages.entry(type_id)
+            .or_insert_with(|| ComponentStorage::new::<T>());
+        
+        // Add the component to the storage
+        storage.insert(entity.id(), component);
+    }
+    
+    /// Returns the number of entities in the world.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_ecs::prelude::*;
+    ///
+    /// let mut world = World::new();
+    /// assert_eq!(world.entity_count(), 0);
+    ///
+    /// world.spawn();
+    /// assert_eq!(world.entity_count(), 1);
+    /// ```
+    pub fn entity_count(&self) -> usize {
+        self.entities.len()
+    }
+    
+    /// Returns whether the entity exists in the world.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_ecs::prelude::*;
+    ///
+    /// let mut world = World::new();
+    /// let entity = world.spawn().id();
+    ///
+    /// assert!(world.contains(entity));
+    ///
+    /// world.despawn(entity);
+    /// assert!(!world.contains(entity));
+    /// ```
+    pub fn contains(&self, entity: Entity) -> bool {
+        self.entities.contains(&entity.id())
+    }
+    
+    /// Inserts a resource into the world.
+    ///
+    /// Resources are global data that can be accessed by systems.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_ecs::prelude::*;
+    ///
+    /// #[derive(Debug)]
+    /// struct Time { delta: f32 }
+    ///
+    /// let mut world = World::new();
+    /// world.insert_resource(Time { delta: 0.016 });
+    ///
+    /// let time = world.get_resource::<Time>().unwrap();
+    /// assert_eq!(time.delta, 0.016);
+    /// ```
+    pub fn insert_resource<T: 'static + Send + Sync>(&mut self, resource: T) {
+        let type_id = TypeId::of::<T>();
+        self.resources.insert(type_id, Box::new(resource));
+    }
+    
+    /// Gets a reference to a resource, if it exists.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_ecs::prelude::*;
+    ///
+    /// struct Time { delta: f32 }
+    ///
+    /// let mut world = World::new();
+    /// world.insert_resource(Time { delta: 0.016 });
+    ///
+    /// if let Some(time) = world.get_resource::<Time>() {
+    ///     assert_eq!(time.delta, 0.016);
+    /// }
+    /// ```
+    pub fn get_resource<T: 'static>(&self) -> Option<&T> {
+        let type_id = TypeId::of::<T>();
+        self.resources.get(&type_id)
+            .and_then(|resource| resource.downcast_ref::<T>())
+    }
+    
+    /// Gets a mutable reference to a resource, if it exists.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_ecs::prelude::*;
+    ///
+    /// struct Time { delta: f32 }
+    ///
+    /// let mut world = World::new();
+    /// world.insert_resource(Time { delta: 0.016 });
+    ///
+    /// if let Some(time) = world.get_resource_mut::<Time>() {
+    ///     time.delta = 0.033;
+    /// }
+    ///
+    /// let time = world.get_resource::<Time>().unwrap();
+    /// assert_eq!(time.delta, 0.033);
+    /// ```
+    pub fn get_resource_mut<T: 'static>(&mut self) -> Option<&mut T> {
+        let type_id = TypeId::of::<T>();
+        self.resources.get_mut(&type_id)
+            .and_then(|resource| resource.downcast_mut::<T>())
     }
 }
 
@@ -215,6 +345,7 @@ mod tests {
     fn test_world_creation() {
         let world = World::new();
         // Simply testing that the world can be created without errors
+        assert_eq!(world.entity_count(), 0);
     }
     
     #[test]
@@ -225,5 +356,89 @@ mod tests {
         
         // Entity IDs should be unique
         assert_ne!(entity1, entity2);
+        
+        // Two entities should exist in the world
+        assert_eq!(world.entity_count(), 2);
+    }
+    
+    #[test]
+    fn test_entity_despawn() {
+        let mut world = World::new();
+        let entity = world.spawn().id();
+        
+        assert!(world.contains(entity));
+        
+        world.despawn(entity);
+        
+        assert!(!world.contains(entity));
+        assert_eq!(world.entity_count(), 0);
+    }
+    
+    #[test]
+    fn test_component_insert_get() {
+        let mut world = World::new();
+        let entity = world.spawn().id();
+        
+        world.insert(entity, 42u32);
+        
+        assert_eq!(*world.get::<u32>(entity).unwrap(), 42);
+    }
+    
+    #[test]
+    fn test_component_update() {
+        let mut world = World::new();
+        let entity = world.spawn().id();
+        
+        world.insert(entity, 42u32);
+        
+        {
+            let value = world.get_mut::<u32>(entity).unwrap();
+            *value = 84;
+        }
+        
+        assert_eq!(*world.get::<u32>(entity).unwrap(), 84);
+    }
+    
+    #[test]
+    fn test_entity_with_multiple_components() {
+        let mut world = World::new();
+        let entity = world.spawn().id();
+        
+        world.insert(entity, 42u32);
+        world.insert(entity, "hello".to_string());
+        
+        assert_eq!(*world.get::<u32>(entity).unwrap(), 42);
+        assert_eq!(*world.get::<String>(entity).unwrap(), "hello");
+    }
+    
+    #[test]
+    fn test_resource_insert_get() {
+        struct TestResource {
+            value: i32,
+        }
+        
+        let mut world = World::new();
+        world.insert_resource(TestResource { value: 42 });
+        
+        let resource = world.get_resource::<TestResource>().unwrap();
+        assert_eq!(resource.value, 42);
+    }
+    
+    #[test]
+    fn test_resource_update() {
+        struct TestResource {
+            value: i32,
+        }
+        
+        let mut world = World::new();
+        world.insert_resource(TestResource { value: 42 });
+        
+        {
+            let resource = world.get_resource_mut::<TestResource>().unwrap();
+            resource.value = 84;
+        }
+        
+        let resource = world.get_resource::<TestResource>().unwrap();
+        assert_eq!(resource.value, 84);
     }
 }
