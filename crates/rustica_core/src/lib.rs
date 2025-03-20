@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_app_creation() {
-        let app = App::new();
+        let _app = App::new();
         // Simply testing that the app can be created without errors
     }
 

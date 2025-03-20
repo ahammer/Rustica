@@ -21,7 +21,6 @@ use std::any::{Any, TypeId};
 use log::{debug, error, info};
 
 use crate::Plugin;
-use crate::CoreError;
 
 // === REGION: TYPE DEFINITIONS ===
 

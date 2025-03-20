@@ -4,22 +4,11 @@ This document tracks known bugs, issues, and compiler warnings in the Rustica ga
 
 ## Critical Issues
 
-### 1. Unresolved import in rustica_math/src/plugin.rs
+### 1. ~~Unresolved import in rustica_math/src/plugin.rs~~ (RESOLVED)
 
-```rust
-error[E0432]: unresolved import `rustica_core`
---> crates\rustica_math\src\plugin.rs:3:5
-   |
-3  | use rustica_core::{App Plugin};
-   |     ^^^^^^^^^^^^ use of undeclared crate or module `rustica_core`
-```
+**Description**: ~~The rustica_math crate is trying to import from rustica_core, but there appears to be a dependency or path issue.~~
 
-**Description**: The rustica_math crate is trying to import from rustica_core, but there appears to be a dependency or path issue.
-
-**Remediation**: 
-- Add rustica_core as a dependency in rustica_math's Cargo.toml
-- Fix the import syntax (missing comma between App and Plugin)
-- Ensure proper re-exports are configured
+**Resolution**: The rustica_math module has been removed and its functionality has been migrated to the external cgmath crate, which is now properly re-exported through rustica/src/lib.rs.
 
 ## Warnings
 
@@ -39,33 +28,17 @@ note: to use the edition 2021 resolver specify `workspace.resolver = "2"` in the
 resolver = "2"
 ```
 
-### 2. Unused Imports in rustica_math/src/lib.rs
+### 2. ~~Unused Imports in rustica_math/src/lib.rs~~ (RESOLVED)
 
-```rust
-warning: unused imports: `AddAssign` `Add` `DivAssign` `Div` `MulAssign` `Mul` `Neg` `SubAssign` and `Sub`
-  --> crates\rustica_math\src\lib.rs:27:16
-   |
-27 | use std::ops::{Add Sub Mul Div AddAssign SubAssign MulAssign DivAssign Neg};
-   |                ^^^ ^^^ ^^^ ^^^ ^^^^^^^^^ ^^^^^^^^^ ^^^^^^^^^ ^^^^^^^^^ ^^^
-```
+**Description**: ~~Multiple unused imports in the rustica_math library.~~
 
-**Description**: Multiple unused imports in the rustica_math library.
+**Resolution**: The rustica_math module has been migrated to the cgmath crate.
 
-**Remediation**: Remove unused imports or use them in the implementation. Also fix the syntax (missing commas between imports).
+### 3. ~~Unused Import in rustica_math/src/lib.rs~~ (RESOLVED)
 
-### 3. Unused Import in rustica_math/src/lib.rs
+**Description**: ~~The std::fmt module is imported but never used.~~
 
-```rust
-warning: unused import: `std::fmt`
-  --> crates\rustica_math\src\lib.rs:28:5
-   |
-28 | use std::fmt;
-   |     ^^^^^^^^
-```
-
-**Description**: The std::fmt module is imported but never used.
-
-**Remediation**: Remove the unused import or use it in the implementation.
+**Resolution**: The rustica_math module has been migrated to the cgmath crate.
 
 ### 4. Unused Import in rustica_core/src/app.rs
 
@@ -97,8 +70,8 @@ warning: unused variable: `app`
 
 ## Build Status Summary
 
-- Unable to compile `rustica_math` due to unresolved import
+- ~~Unable to compile `rustica_math` due to unresolved import~~ (RESOLVED: rustica_math removed and migrated to cgmath)
 - Multiple warnings across different crates
-- Need to address the workspace resolver configuration
+- ~~Need to address the workspace resolver configuration~~ (RESOLVED: resolver = "2" set in root Cargo.toml)
 
-Last updated: 3/19/2025
+Last updated: 3/20/2025

@@ -15,15 +15,15 @@ This document contains the prioritized backlog for the Rustica game engine proje
 
 | ID | Title | Description | Complexity | Dependencies |
 |----|-------|-------------|------------|--------------|
-| BUG-001 | Fix rustica_math module imports | Fix unresolved import `rustica_core` in rustica_math/src/plugin.rs | Low | None |
-| BUG-002 | Update workspace resolver | Configure workspace to use resolver "2" to match edition 2021 | Low | None |
-| BUG-003 | Clean up unused imports | Remove unused imports in rustica_math and rustica_core | Low | None |
+| BUG-001 | ~~Fix rustica_math module imports~~ | ~~Fix unresolved import `rustica_core` in rustica_math/src/plugin.rs~~ | Low | None |
+| BUG-002 | ~~Update workspace resolver~~ | ~~Configure workspace to use resolver "2" to match edition 2021~~ | Low | None |
+| BUG-003 | Clean up unused imports | Remove unused imports in rustica_core | Low | None |
 
 ### MVP Starfield Implementation (P1)
 
 | ID | Title | Description | Complexity | Dependencies |
 |----|-------|-------------|------------|--------------|
-| MVP-001 | Basic Renderer interface | Create a minimal rendering interface for displaying points/stars | Medium | BUG-001, BUG-002 |
+| MVP-001 | Basic Renderer interface | Create a minimal rendering interface for displaying points/stars | Medium | BUG-002 |
 | MVP-002 | Window creation | Implement basic window creation and management | Medium | MVP-001 |
 | MVP-003 | Star rendering | Implement basic star rendering with points of varying sizes | Medium | MVP-001, MVP-002 |
 | MVP-004 | Position/Velocity system | Implement system for updating positions based on velocities | Medium | None |
