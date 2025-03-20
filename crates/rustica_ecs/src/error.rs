@@ -20,7 +20,7 @@ use thiserror::Error;
 // === REGION: ERROR TYPES ===
 
 /// Errors that can occur in the ECS system.
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Clone)]
 pub enum EcsError {
     /// Error when an entity doesn't exist.
     #[error("Entity does not exist: {0}")]

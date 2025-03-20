@@ -138,13 +138,15 @@ impl Schedule {
         
         // Run all stages in order
         for stage in Stage::all() {
-            if let Some(systems) = self.systems_by_stage.get(&stage) {
-                for system_name in systems {
-                    self.run_system(system_name, world);
+            if let Some(systems) = self.systems_by_stage.get(&stage) {                
+                let systems_to_run: Vec<_> = systems.clone();
+                for system_name in systems_to_run {
+                    self.run_system(&system_name, world);
                 }
             }
         }
     }
+    
     
     /// Run a specific system, ensuring its dependencies are run first.
     fn run_system(&mut self, system_name: &str, world: &mut World) {

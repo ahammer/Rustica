@@ -122,7 +122,7 @@ impl World {
     ///     assert_eq!(*value, 42);
     /// }
     /// ```
-    pub fn get<T: Component>(&self, entity: Entity) -> Option<&T> {
+    pub fn get<T: Component>(&self, _entity: Entity) -> Option<&T> {
         // todo: fix this - implement component retrieval
         // For now, just a stub that always returns None
         None
@@ -148,7 +148,7 @@ impl World {
     ///     assert_eq!(*value, 84);
     /// }
     /// ```
-    pub fn get_mut<T: Component>(&mut self, entity: Entity) -> Option<&mut T> {
+    pub fn get_mut<T: Component>(&mut self, _entity: Entity) -> Option<&mut T> {
         // todo: fix this - implement mutable component retrieval
         // For now, just a stub that always returns None
         None

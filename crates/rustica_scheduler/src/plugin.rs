@@ -1,7 +1,7 @@
 //! Plugin implementation for integrating scheduler functionality with the engine.
 
 use rustica_core::{App, Plugin};
-use crate::Schedule;
+
 
 /// Plugin that provides scheduler functionality to the Rustica engine.
 ///
@@ -12,8 +12,8 @@ pub struct SchedulerPlugin;
 
 impl Plugin for SchedulerPlugin {
     fn build(&self, app: &mut App) {
-        // Add the schedule resource to the app
-        app.add_resource(Schedule::default());
+        // Add the schedule resource to the app        
+        // TODO: Something?
     }
 
     fn name(&self) -> &str {

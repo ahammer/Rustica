@@ -8,6 +8,7 @@ repository = "https://github.com/username/rustica"
 license = "MIT"
 
 [dependencies]
+rustica_core = { path = "../rustica_core" }
 thiserror = "1.0"
 approx = "0.5"  # For float comparisons in tests
 

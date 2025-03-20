@@ -2,9 +2,6 @@
 
 use std::marker::PhantomData;
 use std::collections::VecDeque;
-use rustica_ecs::entity::Entity;
-use rustica_ecs::world::World;
-use crate::error::Result;
 
 /// Trait for event types in the Rustica engine
 pub trait Event: Send + Sync + 'static {}
@@ -14,7 +11,7 @@ impl<T: Send + Sync + 'static> Event for T {}
 
 /// Storage for events of a specific type
 #[derive(Default)]
-pub struct Events<T: Event> {
+pub struct Events<T: Event + Clone> {
     /// Events that were added in the current frame
     current_events: Vec<T>,
     /// Events that were added in the previous frame and can be read this frame
@@ -23,7 +20,7 @@ pub struct Events<T: Event> {
     updated: bool,
 }
 
-impl<T: Event> Events<T> {
+impl<T: Event + Clone> Events<T> {
     /// Create a new Events container
     pub fn new() -> Self {
         Self {
@@ -76,14 +73,14 @@ impl<T: Event> Default for EventReader<T> {
     }
 }
 
-impl<T: Event> EventReader<T> {
+impl<T: Event + Clone> EventReader<T> {
     /// Create a new EventReader
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Read events from the Events resource
-    pub fn read(&mut self, events: &Events<T>) -> impl Iterator<Item = &T> {
+    pub fn read<'a>(&mut self, events: &'a Events<T>) -> impl Iterator<Item = &'a T> {
         let slice = &events.available_events;
         let old_index = self.read_index;
         self.read_index = slice.len();
@@ -93,12 +90,12 @@ impl<T: Event> EventReader<T> {
 }
 
 /// Writer for events of type T
-pub struct EventWriter<'w, T: Event> {
+pub struct EventWriter<'w, T: Event + Clone> {
     /// Reference to the Events resource
     events: &'w mut Events<T>,
 }
 
-impl<'w, T: Event> EventWriter<'w, T> {
+impl<'w, T: Event + Clone> EventWriter<'w, T> {
     /// Create a new EventWriter
     pub fn new(events: &'w mut Events<T>) -> Self {
         Self { events }

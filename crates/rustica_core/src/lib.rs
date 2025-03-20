@@ -43,9 +43,9 @@
 //! ```
 
 // === REGION: MODULE DEFINITIONS ===
-mod app;
-mod plugin;
-mod error;
+pub mod app;
+pub mod plugin;
+pub mod error;
 
 // === REGION: PUBLIC EXPORTS ===
 pub use app::App;

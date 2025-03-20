@@ -29,7 +29,7 @@ use std::fmt;
 
 mod error;
 mod vec2;
-mod vec3;
+pub mod vec3;
 mod mat4;
 mod quat;
 mod plugin;

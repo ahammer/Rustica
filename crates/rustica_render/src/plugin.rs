@@ -22,9 +22,7 @@ impl Default for RenderPlugin {
 
 impl Plugin for RenderPlugin {
     fn build(&self, app: &mut App) {
-        // Register core renderer types and systems
-        // This is a placeholder implementation
-        app.register_resource(Renderer::default());
+        // TODO Register itself with the app
     }
     
     fn name(&self) -> &str {

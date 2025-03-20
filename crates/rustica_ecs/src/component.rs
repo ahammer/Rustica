@@ -15,7 +15,7 @@
 //! 3. Component storage should be optimized for cache locality
 
 // === REGION: IMPORTS ===
-use std::any::{Any, TypeId};
+use std::any::TypeId;
 
 // === REGION: COMPONENT TRAIT ===
 

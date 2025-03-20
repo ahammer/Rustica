@@ -52,17 +52,13 @@
 //! assert_eq!(position.x, 0.0);
 //! ```
 
-// === REGION: IMPORTS ===
-use std::any::TypeId;
-use std::collections::HashMap;
-
 // === REGION: MODULE DEFINITIONS ===
-mod entity;
-mod component;
-mod world;
-mod query;
-mod error;
-mod plugin;
+pub mod entity;
+pub mod component;
+pub mod world;
+pub mod query;
+pub mod error;
+pub mod plugin;
 
 // === REGION: PUBLIC EXPORTS ===
 pub use entity::{Entity, EntityBuilder};

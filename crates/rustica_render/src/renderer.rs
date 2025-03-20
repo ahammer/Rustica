@@ -15,8 +15,6 @@ pub struct RenderComponent {
     pub visible: bool,
 }
 
-impl Component for RenderComponent {}
-
 impl Default for RenderComponent {
     fn default() -> Self {
         Self {

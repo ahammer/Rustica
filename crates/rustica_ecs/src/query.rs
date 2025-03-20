@@ -50,13 +50,13 @@ pub trait Query {
 }
 
 // Implementation for references to components
-impl<T: Component> Query for &T {
-    type Item = &T;
+impl<'a, T: Component> Query for &'a T {
+    type Item = &'a T;
 }
 
 // Implementation for mutable references to components
-impl<T: Component> Query for &mut T {
-    type Item = &mut T;
+impl<'a, T: Component> Query for &'a mut T {
+    type Item = &'a mut T;
 }
 
 // Implementation for tuples of queries

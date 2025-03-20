@@ -1,8 +1,7 @@
 //! Plugin for integrating the event system with the Rustica engine
 
-use rustica_core::plugin::{Plugin, PluginBuilder};
-use rustica_core::app::App;
-use crate::error::Result;
+use rustica_core::Plugin;
+use rustica_core::App;
 use crate::event::Events;
 
 /// Plugin that integrates the event system with the Rustica engine
@@ -22,15 +21,19 @@ impl Default for EventPlugin {
 }
 
 impl Plugin for EventPlugin {
-    fn build(&self) -> PluginBuilder {
-        PluginBuilder::new("EventPlugin")
-    }
-
-    fn init(&self, app: &mut App) -> Result<()> {
+    fn build(&self, _app: &mut App) {
         // Register core event types and systems
         // This is a placeholder implementation
-        app.register_resource(Events::<()>::default());
+        // app.add_resource(Events::<()>::default());
         
-        Ok(())
+        // For now we're just stubbing this since we don't have access to app.add_resource yet
+    }
+
+    fn name(&self) -> &str {
+        "EventPlugin"
+    }
+
+    fn dependencies(&self) -> Vec<&'static str> {
+        Vec::new()
     }
 }
