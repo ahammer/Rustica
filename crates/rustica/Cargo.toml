@@ -10,7 +10,7 @@ license = "MIT"
 [dependencies]
 rustica_core = { path = "../rustica_core" }
 rustica_ecs = { path = "../rustica_ecs" }
-rustica_math = { path = "../rustica_math" }
+cgmath = "0.18.0"
 rustica_scheduler = { path = "../rustica_scheduler" }
 
 [features]

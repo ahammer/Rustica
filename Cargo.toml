@@ -7,7 +7,6 @@ members = [
     "crates/rustica_event",
     "crates/rustica_render",
     "crates/rustica_scheduler",
-    "crates/rustica_math",
     "examples/starfield",
 ]
 

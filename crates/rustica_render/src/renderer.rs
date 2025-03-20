@@ -1,6 +1,6 @@
 //! Core rendering functionality
 
-use rustica_math::vec3::Vec3;
+use cgmath::Vector3 as Vec3;
 use rustica_ecs::component::Component;
 use std::collections::HashMap;
 
@@ -40,7 +40,7 @@ pub enum RenderResource {
     /// A mesh resource
     Mesh {
         /// Vertices of the mesh (placeholder)
-        vertices: Vec<Vec3>,
+        vertices: Vec<Vec3<f32>>,
         /// Indices of the mesh (placeholder)
         indices: Vec<u32>,
     },

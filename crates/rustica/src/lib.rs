@@ -54,8 +54,8 @@ pub use rustica_core as core;
 // Re-export ECS functionality
 pub use rustica_ecs as ecs;
 
-// Re-export math functionality
-pub use rustica_math as math;
+// Re-export math functionality from cgmath
+pub use cgmath as math;
 
 // Re-export scheduler functionality
 pub use rustica_scheduler as scheduler;
@@ -80,8 +80,27 @@ pub mod prelude {
     // Re-export from scheduler
     pub use rustica_scheduler::{Schedule, System, Stage, SchedulerPlugin};
     
-    // Re-export from math
-    pub use rustica_math::{Vec2, Vec3, Mat4, Quat, vec2, vec3, mat4_identity, quat_identity};
+    // Re-export from cgmath
+    pub use cgmath::{Vector2 as Vec2, Vector3 as Vec3, Matrix4 as Mat4, Quaternion as Quat};
+    // Re-export functions as equivalent operations
+    pub use cgmath::vec2;
+    pub use cgmath::vec3;
+    
+    /// Creates an identity 4x4 matrix
+    pub fn mat4_identity() -> Mat4<f32> {
+        // Create a matrix with diagonals set to 1.0
+        Mat4::new(
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        )
+    }
+    
+    /// Creates an identity quaternion
+    pub fn quat_identity() -> Quat<f32> {
+        Quat::new(1.0, 0.0, 0.0, 0.0)
+    }
 }
 
 // === REGION: TESTS ===
