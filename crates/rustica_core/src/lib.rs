@@ -42,10 +42,6 @@
 //! }
 //! ```
 
-// === REGION: IMPORTS ===
-use std::collections::HashMap;
-use std::any::{Any, TypeId};
-
 // === REGION: MODULE DEFINITIONS ===
 mod app;
 mod plugin;
