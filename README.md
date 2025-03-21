@@ -100,4 +100,4 @@ Future work will implement the subsystem functionality and add additional featur
 
 ## License
 
-MIT License
+N/A Yet, Expect GPL
