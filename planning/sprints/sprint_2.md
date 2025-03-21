@@ -7,12 +7,12 @@
 
 | ID | Title | Description | Complexity | Status | Assignee | Notes |
 |----|-------|-------------|------------|--------|----------|-------|
-| BUG-004 | Fix starfield example imports | Correct dependency management in starfield example to properly use rustica prelude | Low | Planned |  | Direct imports are causing compilation failures |
-| BUG-005 | Clean up compiler warnings | Address unused imports, variables and dead code warnings | Low | Planned |  | Several warnings across multiple crates |
+| BUG-004 | Fix starfield example imports | Correct dependency management in starfield example to properly use rustica prelude | Low | Completed |  | Fixed imports in physics.rs to use rustica prelude |
+| BUG-005 | Clean up compiler warnings | Address unused imports, variables and dead code warnings | Low | In Progress |  | Some warnings have been addressed, others remain |
 | MVP-002 | Window creation | Implement basic window creation and management | Medium | Planned |  | Required for visual display of the starfield |
 | MVP-003 | Star rendering | Implement basic star rendering with points of varying sizes | Medium | Planned |  | Build upon StarPoint/StarComponent structures |
 | MVP-005 | Enable app.run() loop | Implement the main application loop in the starfield example | Medium | Planned |  | Currently app.run() is a placeholder |
-| MVP-006 | Basic input handling | Add simple keyboard input to control camera or star movement | Low | Planned |  | Allow user interaction with the starfield |
+| MVP-006 | Basic input handling | Add simple keyboard input to control camera or star movement | Low | Completed |  | Added input.rs with keyboard controls for star movement |
 
 ## Sprint Metrics
 

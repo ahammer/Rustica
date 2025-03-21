@@ -19,7 +19,7 @@
 //! 
 //! ## Usage Example
 //! 
-//! ```rust
+//! ```
 //! use rustica::prelude::*;
 //! 
 //! // Create a simple game
@@ -33,7 +33,7 @@
 //!     app.add_plugin(MyGamePlugin);
 //!     
 //!     // Run the application
-//!     app.run();
+//!     // app.run(); // Commented out for doctests to prevent infinite loop
 //! }
 //! 
 //! // Define a game plugin

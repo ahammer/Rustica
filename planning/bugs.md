@@ -10,7 +10,7 @@ This document tracks known bugs, issues, and compiler warnings in the Rustica ga
 
 **Resolution**: The rustica_math module has been removed and its functionality has been migrated to the external cgmath crate, which is now properly re-exported through rustica/src/lib.rs.
 
-### 2. Starfield Example Direct Import Issues
+### 2. ~~Starfield Example Direct Import Issues~~ (RESOLVED)
 
 **Description**: The starfield example directly imports from rustica_ecs, rustica_scheduler, and cgmath crates, but should use the rustica prelude. This causes compilation failures.
 
@@ -29,9 +29,9 @@ error[E0432]: unresolved import `cgmath`
   |     ^^^^^^ use of undeclared crate or module `cgmath`
 ```
 
-**Remediation**: Update the imports in starfield's physics.rs and main.rs to use the rustica prelude:
-- Replace direct imports with `use rustica::prelude::*;`
-- Replace explicit crate imports with re-exported modules from rustica
+**Resolution**: Updated the imports in starfield's physics.rs to use the rustica prelude:
+- Replaced direct imports with `use rustica::prelude::*;`
+- Removed explicit imports of rustica_scheduler::system::SystemFn since it's re-exported in the prelude
 
 ## Warnings
 

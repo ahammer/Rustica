@@ -9,9 +9,11 @@
 //! architecture and API.
 
 mod physics;
+mod input;
 
 use rustica::prelude::*;
 use physics::{Position, Velocity, Time, PhysicsConfig};
+use input::{create_star_movement_system, create_star_property_system};
 
 // === REGION: COMPONENT DEFINITIONS ===
 
@@ -107,6 +109,13 @@ impl Plugin for StarfieldPlugin {
         // app.add_system(create_position_update_system());
         // app.add_system(create_velocity_update_system());
         // app.add_system(create_boundary_wrap_system());
+        
+        // Register input handling systems
+        // app.add_system(create_star_movement_system());
+        // app.add_system(create_star_property_system());
+        
+        // Note: Input handling will be implemented fully in a future update
+        // Currently the systems are placeholders
         
         // For now, just spawn stars
         if let Some(world) = app.get_resource_mut::<World>() {

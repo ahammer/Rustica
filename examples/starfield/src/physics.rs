@@ -5,7 +5,6 @@
 //! these components.
 
 use rustica::prelude::*;
-use rustica::scheduler::system::SystemFn;
 use std::time::Duration;
 
 /// Position component for entities in 3D space
