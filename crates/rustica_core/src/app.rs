@@ -248,26 +248,11 @@ impl App {
         if let Some(has_render_window) = self.get_resource::<bool>() {
             // Simple flag set by the render plugin
             has_window = *has_render_window;
-            info!("Detected render window resource");
-            
-            // In a real implementation, we would run some kind of event loop here
-            // But for now we're just going to use a simplified implementation
-            // to demonstrate the concept
-            
+            info!("Detected render window resource");                        
             // TODO: Implement proper windowing event loop in a way that doesn't create borrowing issues
         }
         
-        // If we don't have a window, run a simple loop
-        if !has_window {
-            info!("Running with simple loop");
-            // Main loop
-            while self.running {
-                self.update();
-                
-                // Add a small sleep to avoid spinning the CPU
-                std::thread::sleep(std::time::Duration::from_millis(16)); // ~60 FPS
-            }
-        }
+        // If we don't have a render window, we nope out
         
         info!("Application stopped");
     }

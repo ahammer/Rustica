@@ -11,25 +11,7 @@
 //! - Execution stages for organizing system execution
 //! - Integration with the ECS and core engine
 //!
-//! ## Example
-//!
-//! ```rust
-//! use rustica_scheduler::{Schedule, System, Stage};
-//! use rustica_ecs::World;
-//!
-//! // A simple system that updates positions based on velocities
-//! fn update_positions(world: &mut World) {
-//!     // System implementation
-//! }
-//!
-//! // Creating a schedule and adding systems
-//! let mut schedule = Schedule::default();
-//! schedule.add_system(update_positions, "update_positions", Stage::Update);
-//! 
-//! // Running the schedule with a world
-//! let mut world = World::new();
-//! schedule.run(&mut world);
-//! ```
+
 
 pub mod error;
 pub mod system;
