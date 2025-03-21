@@ -18,13 +18,22 @@
 // === REGION: IMPORTS ===
 use std::collections::HashMap;
 use std::any::{Any, TypeId};
+use std::time::Instant;
 use log::{debug, error, info};
 
 use rustica_ecs::World;
 use rustica_ecs::Time;
+use rustica_ecs::Component;
 use rustica_scheduler::Schedule;
 use rustica_scheduler::System;
 use rustica_scheduler::Stage;
+use rustica_event::EventSystem;
+use rustica_event::Event;
+
+#[cfg(feature = "render")]
+use rustica_render::Renderer;
+#[cfg(feature = "render")]
+use rustica_render::WindowConfig;
 
 use crate::Plugin;
 
@@ -42,9 +51,9 @@ type BoxedResource = Box<dyn Any>;
 ///
 /// The App is responsible for:
 /// - Managing the engine lifecycle
+/// - Orchestrating core systems (World, Schedule, EventSystem)
 /// - Registering and running plugins
 /// - Storing shared resources
-/// - Orchestrating systems execution
 ///
 /// # Examples
 ///
@@ -64,6 +73,19 @@ type BoxedResource = Box<dyn Any>;
 /// // app.run(); // Would start the main loop
 /// ```
 pub struct App {
+    /// Core ECS world
+    world: World,
+    
+    /// Core scheduling system
+    schedule: Schedule,
+    
+    /// Core event system
+    event_system: EventSystem,
+    
+    /// Optional renderer (feature gated)
+    #[cfg(feature = "render")]
+    renderer: Option<Renderer>,
+    
     /// Registered plugins by name
     plugins: HashMap<String, BoxedPlugin>,
     
@@ -72,10 +94,13 @@ pub struct App {
     
     /// Flag indicating if the app is running
     running: bool,
+    
+    /// Last update time for delta time calculation
+    last_update: Instant,
 }
 
 impl App {
-    /// Creates a new, empty App instance.
+    /// Creates a new App instance with core systems initialized.
     ///
     /// # Examples
     ///
@@ -86,9 +111,19 @@ impl App {
     /// ```
     pub fn new() -> Self {
         App {
+            // Initialize core components directly
+            world: World::new(),
+            schedule: Schedule::new(),
+            event_system: EventSystem::new(),
+            
+            #[cfg(feature = "render")]
+            renderer: None,
+            
             plugins: HashMap::new(),
             resources: HashMap::new(),
+            
             running: false,
+            last_update: Instant::now(),
         }
     }
     
@@ -231,6 +266,122 @@ impl App {
             .and_then(|resource| resource.downcast_mut::<R>())
     }
     
+    //=== Direct access to core systems ===
+    
+    /// Gets a reference to the ECS world.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    ///
+    /// let app = App::new();
+    /// let world = app.world();
+    /// ```
+    pub fn world(&self) -> &World {
+        &self.world
+    }
+    
+    /// Gets a mutable reference to the ECS world.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    ///
+    /// let mut app = App::new();
+    /// let world = app.world_mut();
+    /// // Modify the world...
+    /// ```
+    pub fn world_mut(&mut self) -> &mut World {
+        &mut self.world
+    }
+    
+    /// Gets a reference to the scheduler.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    ///
+    /// let app = App::new();
+    /// let schedule = app.schedule();
+    /// ```
+    pub fn schedule(&self) -> &Schedule {
+        &self.schedule
+    }
+    
+    /// Gets a mutable reference to the scheduler.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    ///
+    /// let mut app = App::new();
+    /// let schedule = app.schedule_mut();
+    /// // Modify the schedule...
+    /// ```
+    pub fn schedule_mut(&mut self) -> &mut Schedule {
+        &mut self.schedule
+    }
+    
+    /// Gets a reference to the event system.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    ///
+    /// let app = App::new();
+    /// let event_system = app.event_system();
+    /// ```
+    pub fn event_system(&self) -> &EventSystem {
+        &self.event_system
+    }
+    
+    /// Gets a mutable reference to the event system.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    ///
+    /// let mut app = App::new();
+    /// let event_system = app.event_system_mut();
+    /// // Interact with the event system...
+    /// ```
+    pub fn event_system_mut(&mut self) -> &mut EventSystem {
+        &mut self.event_system
+    }
+    
+    #[cfg(feature = "render")]
+    /// Gets a reference to the renderer, if one exists.
+    pub fn renderer(&self) -> Option<&Renderer> {
+        self.renderer.as_ref()
+    }
+    
+    #[cfg(feature = "render")]
+    /// Gets a mutable reference to the renderer, if one exists.
+    pub fn renderer_mut(&mut self) -> Option<&mut Renderer> {
+        self.renderer.as_mut()
+    }
+    
+    //=== Builder pattern methods for configuration ===
+    
+    #[cfg(feature = "render")]
+    /// Configures the app with a window and renderer.
+    pub fn with_window(mut self, window_config: WindowConfig) -> Self {
+        self.renderer = Some(Renderer::new(window_config));
+        self
+    }
+    
+    /// Configures the world with a specific entity capacity.
+    pub fn with_max_entities(mut self, max_entities: usize) -> Self {
+        self.world = World::with_capacity(max_entities);
+        self
+    }
+    
     /// Takes a resource out of the app, returning it if it exists.
     /// 
     /// This is useful when you need to work with multiple resources at once.
@@ -258,28 +409,20 @@ impl App {
     pub fn run(&mut self) {
         info!("Starting application");
         self.running = true;
+        self.last_update = Instant::now();
         
-        let mut last_update_time = std::time::Instant::now();
+        // Check if we have a window
+        #[cfg(feature = "render")]
+        let has_window = self.renderer.is_some();
         
-        // Check if we have a render window resource
-        let has_window = self.get_resource::<bool>().copied().unwrap_or(false);
+        #[cfg(not(feature = "render"))]
+        let has_window = false;
         
         if has_window {
             info!("Running with window");
             
             // Main loop for windowed applications
             while self.running {
-                // Calculate delta time
-                let current_time = std::time::Instant::now();
-                let delta_time = current_time.duration_since(last_update_time);
-                last_update_time = current_time;
-                
-                // Update time resource if present
-                if let Some(mut time) = self.take_resource::<Time>() {
-                    time.update(delta_time);
-                    self.insert_resource(time);
-                }
-                
                 // Process one frame
                 self.update();
                 
@@ -312,26 +455,95 @@ impl App {
     pub fn update(&mut self) {
         debug!("App update");
         
-        // Check if we have the schedule and world resources
-        let has_schedule = self.get_resource::<Schedule>().is_some();
-        let has_world = self.get_resource::<World>().is_some();
-        
-        // Run all systems through the schedule
-        if has_schedule && has_world {
-            // Take the resources we need
-            if let (Some(mut world), Some(mut schedule)) = (self.take_resource::<World>(), self.take_resource::<Schedule>()) {
-                debug!("Running schedule on world");
-                schedule.run(&mut world);
-                
-                // Put the resources back
-                self.insert_resource(world);
-                self.insert_resource(schedule);
-            }
-        } else if !has_schedule {
-            debug!("No schedule resource found");
-        } else {
-            debug!("No world resource found, skipping schedule execution");
+        // Update time resource if present
+        if let Some(mut time) = self.take_resource::<Time>() {
+            time.update(self.last_update.elapsed());
+            self.last_update = Instant::now();
+            self.insert_resource(time);
         }
+        
+        // Process events
+        self.event_system.process_events(&mut self.world);
+        
+        // Run systems through the schedule
+        self.schedule.run(&mut self.world);
+        
+        // Render if enabled
+        #[cfg(feature = "render")]
+        if let Some(renderer) = &mut self.renderer {
+            renderer.render(&self.world);
+        }
+    }
+    
+    /// Registers a component type with the ECS world.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    /// use rustica_ecs::Component;
+    ///
+    /// #[derive(Debug)]
+    /// struct Position {
+    ///     x: f32,
+    ///     y: f32,
+    /// }
+    ///
+    /// impl Component for Position {}
+    ///
+    /// let mut app = App::new();
+    /// app.register_component::<Position>();
+    /// ```
+    pub fn register_component<T: Component>(&mut self) -> &mut Self {
+        self.world.register_component::<T>();
+        self
+    }
+    
+    /// Registers an event type with the event system.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    /// use rustica_event::Event;
+    ///
+    /// struct CollisionEvent {
+    ///     entity_a: u32,
+    ///     entity_b: u32,
+    /// }
+    ///
+    /// impl Event for CollisionEvent {}
+    ///
+    /// let mut app = App::new();
+    /// app.register_event::<CollisionEvent>();
+    /// ```
+    pub fn register_event<E: Event>(&mut self) -> &mut Self {
+        self.event_system.register_event::<E>();
+        self
+    }
+    
+    /// Sends an event to the event system.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    /// use rustica_event::Event;
+    ///
+    /// struct CollisionEvent {
+    ///     entity_a: u32,
+    ///     entity_b: u32,
+    /// }
+    ///
+    /// impl Event for CollisionEvent {}
+    ///
+    /// let mut app = App::new();
+    /// app.register_event::<CollisionEvent>();
+    /// app.send_event(CollisionEvent { entity_a: 1, entity_b: 2 });
+    /// ```
+    pub fn send_event<E: Event>(&mut self, event: E) -> &mut Self {
+        self.event_system.send_event(event);
+        self
     }
     
     /// Signals the application to exit.
@@ -356,7 +568,7 @@ impl App {
     /// Adds a system to the application's schedule.
     ///
     /// This will register the system with the schedule, allowing it to be executed
-    /// during the appropriate stage. If no schedule is present, it will create one.
+    /// during the appropriate stage.
     ///
     /// # Examples
     ///
@@ -372,37 +584,15 @@ impl App {
     /// let mut app = App::new();
     /// app.add_system(my_system, "my_system", Stage::Update);
     /// ```
-    ///
-    /// # Returns
-    ///
-    /// Returns a result with the app instance if successful, or an error if the system
-    /// could not be added.
     pub fn add_system<S>(&mut self, system: S, name: &str, stage: Stage) -> &mut Self
     where
         S: System,
     {
         debug!("Adding system: {} in stage: {:?}", name, stage);
         
-        // Check if we have a schedule resource
-        let has_schedule = self.get_resource::<Schedule>().is_some();
-        
-        // If no schedule, create one
-        if !has_schedule {
-            debug!("No schedule found, creating a new one");
-            self.insert_resource(Schedule::new());
-        }
-        
-        // Now take the schedule and add the system
-        if let Some(mut schedule) = self.take_resource::<Schedule>() {
-            // Add the system to the schedule
-            if let Err(e) = schedule.add_system(system, name, stage) {
-                error!("Failed to add system '{}': {:?}", name, e);
-            }
-            
-            // Put the schedule back
-            self.insert_resource(schedule);
-        } else {
-            error!("Failed to get schedule resource even after creating it");
+        // Add the system directly to the schedule field
+        if let Err(e) = self.schedule.add_system(system, name, stage) {
+            error!("Failed to add system '{}': {:?}", name, e);
         }
         
         self
@@ -497,5 +687,62 @@ mod tests {
         app.running = true;
         app.exit();
         assert!(!app.running);
+    }
+    
+    #[test]
+    fn test_direct_access_methods() {
+        let mut app = App::new();
+        
+        // Test world access
+        assert!(app.world().entities().is_empty());
+        
+        // Test schedule access
+        let schedule = app.schedule();
+        assert_eq!(schedule.system_count(), 0);
+        
+        // Test event system access
+        let event_system = app.event_system();
+        // Assert properties of event system
+        
+        // Test builder pattern methods
+        let app = App::new().with_max_entities(1000);
+        assert_eq!(app.world().capacity(), 1000);
+        
+        #[cfg(feature = "render")]
+        {
+            let app = App::new().with_window(WindowConfig {
+                title: "Test Window".to_string(),
+                width: 800,
+                height: 600,
+            });
+            assert!(app.renderer().is_some());
+        }
+    }
+    
+    #[test]
+    fn test_register_component() {
+        #[derive(Debug)]
+        struct TestComponent;
+        
+        impl Component for TestComponent {}
+        
+        let mut app = App::new();
+        app.register_component::<TestComponent>();
+        
+        // Verify component was registered
+        assert!(app.world().is_component_registered::<TestComponent>());
+    }
+    
+    #[test]
+    fn test_add_system() {
+        fn test_system(_world: &mut World) {
+            // Test system logic
+        }
+        
+        let mut app = App::new();
+        app.add_system(test_system, "test_system", Stage::Update);
+        
+        // Verify system was added
+        assert_eq!(app.schedule().system_count(), 1);
     }
 }

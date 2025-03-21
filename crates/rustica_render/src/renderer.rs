@@ -194,6 +194,26 @@ impl Renderer {
     pub fn new() -> Self {
         Self::default()
     }
+    
+    /// Create a new renderer with window configuration
+    pub fn new_with_window_config(window_config: crate::window::WindowConfig) -> Self {
+        // Create a new renderer with the given window configuration
+        let mut renderer = Self::default();
+        renderer.viewport = Viewport {
+            width: window_config.width,
+            height: window_config.height,
+            ..Default::default()
+        };
+        
+        // Initialize the renderer
+        if let Err(e) = renderer.initialize() {
+            // Log the error but continue with an uninitialized renderer
+            // The user can call initialize() again later
+            log::error!("Failed to initialize renderer: {}", e);
+        }
+        
+        renderer
+    }
 
     /// Initialize the renderer
     pub fn initialize(&mut self) -> Result<()> {

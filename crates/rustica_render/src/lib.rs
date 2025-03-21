@@ -5,13 +5,11 @@
 //! starfield and other rendering tasks.
 
 mod error;
-mod plugin;
 mod renderer;
 mod window;
 mod input;
 
 pub use error::{Error, Result};
-pub use plugin::RenderPlugin;
 pub use renderer::{
     Camera,
     Renderer, 
@@ -39,7 +37,6 @@ pub mod prelude {
         Error, 
         Renderer, 
         RenderComponent, 
-        RenderPlugin, 
         RenderResource,
         Result, 
         StarComponent,
