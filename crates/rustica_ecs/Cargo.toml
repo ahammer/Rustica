@@ -11,6 +11,6 @@ license = "MIT"
 thiserror = "1.0"
 log = "0.4"
 # We're making a minimal stub implementation, so keeping dependencies minimal
-rustica_core = { path = "../rustica_core" }
+rustica_common = { path = "../rustica_common" }
 
 [dev-dependencies]

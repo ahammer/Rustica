@@ -11,6 +11,9 @@ license = "MIT"
 thiserror = "1.0"
 log = "0.4"
 winit = { version = "0.28.6", optional = true }
+rustica_common = { path = "../rustica_common" }
+rustica_ecs = { path = "../rustica_ecs" }
+rustica_scheduler = { path = "../rustica_scheduler" }
 
 [features]
 default = []

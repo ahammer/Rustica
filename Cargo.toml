@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "crates/rustica",
+    "crates/rustica_common",
     "crates/rustica_core",
     "crates/rustica_debug_render",
     "crates/rustica_ecs",

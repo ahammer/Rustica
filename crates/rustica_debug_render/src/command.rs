@@ -6,6 +6,8 @@
 
 use cgmath::{Vector2 as Vec2, Vector3 as Vec3, Vector4 as Vec4};
 
+use crate::star_renderer::Star;
+
 /// A list of rendering commands to be processed by the renderer.
 #[derive(Default)]
 pub struct RenderCommandList {
@@ -15,6 +17,8 @@ pub struct RenderCommandList {
     pub line_commands: Vec<DrawLineCommand>,
     /// Commands to draw rectangles
     pub rect_commands: Vec<DrawRectCommand>,
+    /// Stars to render
+    pub stars: Vec<Star>,
 }
 
 /// Command to draw a point in 3D space.
@@ -67,6 +71,22 @@ impl RenderCommandList {
         self.point_commands.clear();
         self.line_commands.clear();
         self.rect_commands.clear();
+        self.stars.clear();
+    }
+    
+    /// Clear only the star commands, leaving other commands intact.
+    pub fn clear_stars(&mut self) {
+        self.stars.clear();
+    }
+    
+    /// Add a star to the render list.
+    pub fn add_star(&mut self, star: Star) {
+        self.stars.push(star);
+    }
+    
+    /// Get the number of stars in the command list.
+    pub fn star_count(&self) -> usize {
+        self.stars.len()
     }
 
     /// Add a command to draw a point.

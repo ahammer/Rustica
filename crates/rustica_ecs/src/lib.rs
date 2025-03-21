@@ -59,6 +59,7 @@ pub mod world;
 pub mod query;
 pub mod error;
 pub mod plugin;
+pub mod time;
 
 // === REGION: PUBLIC EXPORTS ===
 pub use entity::{Entity, EntityBuilder};
@@ -67,6 +68,10 @@ pub use world::World;
 pub use query::{Query, QueryResult};
 pub use error::EcsError;
 pub use plugin::EcsPlugin;
+pub use time::Time;
+
+// Re-export rustica_common components
+pub use rustica_common;
 
 /// Prelude module containing the most commonly used types.
 pub mod prelude {
@@ -78,6 +83,8 @@ pub mod prelude {
     pub use crate::QueryResult;
     pub use crate::EcsError;
     pub use crate::EcsPlugin;
+    pub use crate::Time;
+    pub use rustica_common::prelude::*;
 }
 
 // === REGION: TESTS ===

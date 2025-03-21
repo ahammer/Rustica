@@ -56,11 +56,15 @@ pub use app::App;
 pub use plugin::Plugin;
 pub use error::CoreError;
 
+// Re-export rustica_common components
+pub use rustica_common;
+
 /// Prelude module containing the most commonly used types.
 pub mod prelude {
     pub use crate::App;
     pub use crate::Plugin;
     pub use crate::CoreError;
+    pub use rustica_common::prelude::*;
 }
 
 // === REGION: TESTS ===

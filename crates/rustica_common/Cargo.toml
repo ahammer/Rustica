@@ -1,14 +1,14 @@
 [package]
-name = "rustica_scheduler"
+name = "rustica_common"
 version = "0.1.0"
 edition = "2021"
 authors = ["Rustica Contributors"]
-description = "Scheduler module for the Rustica game engine"
+description = "Common interfaces and types for the Rustica game engine"
 repository = "https://github.com/username/rustica"
 license = "MIT"
 
 [dependencies]
 thiserror = "1.0"
 log = "0.4"
-rustica_common = { path = "../rustica_common" }
-rustica_ecs = { path = "../rustica_ecs" }
+
+[dev-dependencies]

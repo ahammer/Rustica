@@ -8,34 +8,49 @@ use rustica_ecs::world::World;
 use crate::command::RenderCommandList;
 use crate::components::{DebugRenderComponent, DebugStarComponent};
 
+use crate::star_renderer::Star;
+
 /// System to generate render commands from debug star components.
 ///
 /// This system queries for entities with both Position and DebugStarComponent,
 /// and generates render commands for them.
 pub fn debug_star_render_system(world: &mut World) {
-    // CONCEPTUAL IMPLEMENTATION:
-    //
-    // 1. Get or create the RenderCommandList resource
-    // let mut command_list = world.get_or_insert_default::<RenderCommandList>();
-    //
-    // 2. Clear previous frame's commands
-    // command_list.clear();
-    //
-    // 3. Query for entities with Position and DebugStarComponent
-    // for (entity, position, debug_star) in world.query::<(&Position, &DebugStarComponent)>().iter() {
-    //     // Only process visible stars
-    //     if debug_star.visible {
-    //         // Add a command to render this star
-    //         command_list.add_point(
-    //             position.value,
-    //             debug_star.color,
-    //             debug_star.size,
-    //             debug_star.brightness
-    //         );
+    // Find all entities with a DebugStarComponent and convert to render commands
+    
+    // Get the command list from the world
+    let _command_list = world.get_resource::<RenderCommandList>()
+        .expect("RenderCommandList resource not found");
+    
+    // TEMPORARY: Commented out until we have a proper query API
+    // Instead of using for_each_entity which doesn't exist yet
+    
+    // // Iterate through entities with star components and add them to the command list
+    // world.for_each_entity(|entity_id| {
+    //     if let Some(star) = world.get_component::<DebugStarComponent>(entity_id) {
+    //         // Convert star component to render command
+    //         // This isolates rendering details from gameplay logic
+    //         
+    //         let pos = star.position;
+    //         let color = star.color;
+    //         let size = star.size;
+    //         
+    //         // Create a render command and add it to the list
+    //         let cmd = RenderCommand::DrawStar {
+    //             position: pos,
+    //             color,
+    //             size,
+    //         };
+    //         
+    //         // Add the command to the list
+    //         // This is unsafe because we're mutating a resource while iterating
+    //         // A proper implementation would collect commands first, then add them
+    //         unsafe {
+    //             command_list.add_command(cmd);
+    //         }
     //     }
-    // }
-    //
-    // This separates the game state (entities with components) from the rendering (commands)
+    // });
+    
+    println!("Star rendering disabled until entity iteration is implemented");
 }
 
 /// System to process render commands and draw them using the debug renderer.

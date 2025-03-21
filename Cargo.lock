@@ -1191,10 +1191,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustica_common"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "thiserror",
+]
+
+[[package]]
 name = "rustica_core"
 version = "0.1.0"
 dependencies = [
  "log",
+ "rustica_common",
+ "rustica_ecs",
+ "rustica_scheduler",
  "thiserror",
  "winit",
 ]
@@ -1208,6 +1219,7 @@ dependencies = [
  "env_logger",
  "log",
  "rand",
+ "rustica_common",
  "rustica_core",
  "rustica_ecs",
  "rustica_event",
@@ -1223,7 +1235,7 @@ name = "rustica_ecs"
 version = "0.1.0"
 dependencies = [
  "log",
- "rustica_core",
+ "rustica_common",
  "thiserror",
 ]
 
@@ -1231,6 +1243,7 @@ dependencies = [
 name = "rustica_event"
 version = "0.1.0"
 dependencies = [
+ "rustica_common",
  "rustica_core",
  "rustica_ecs",
  "thiserror",
@@ -1242,6 +1255,7 @@ version = "0.1.0"
 dependencies = [
  "cgmath",
  "log",
+ "rustica_common",
  "rustica_core",
  "rustica_ecs",
  "thiserror",
@@ -1252,7 +1266,8 @@ dependencies = [
 name = "rustica_scheduler"
 version = "0.1.0"
 dependencies = [
- "rustica_core",
+ "log",
+ "rustica_common",
  "rustica_ecs",
  "thiserror",
 ]

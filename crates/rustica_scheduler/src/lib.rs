@@ -15,9 +15,9 @@
 
 pub mod error;
 pub mod system;
-mod schedule;
-mod stage;
-mod plugin;
+pub mod schedule;
+pub mod stage;
+pub mod plugin;
 
 #[cfg(test)]
 mod system_tests;
@@ -32,4 +32,4 @@ pub use error::SchedulerError;
 pub use system::System;
 pub use schedule::Schedule;
 pub use stage::Stage;
-pub use plugin::SchedulerPlugin;
+pub use plugin::{SchedulerPlugin, InsertResource};

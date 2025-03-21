@@ -3,8 +3,9 @@
 //! This plugin initializes the renderer and registers it with the application,
 //! allowing other systems to perform rendering operations.
 
-use rustica_core::plugin::Plugin;
+use rustica_core::Plugin;
 use rustica_core::App;
+use rustica_common::PluginMetadata;
 use crate::renderer::{Camera, Renderer, Viewport};
 use crate::window::{WindowConfig, WindowResource};
 use crate::input::InputResource;
@@ -82,6 +83,17 @@ impl Default for RenderPlugin {
     }
 }
 
+// Implement PluginMetadata trait to satisfy the Plugin bound
+impl PluginMetadata for RenderPlugin {
+    fn name(&self) -> &str {
+        "RenderPlugin"
+    }
+
+    fn dependencies(&self) -> Vec<&str> {
+        vec!["CorePlugin"]
+    }
+}
+
 impl Plugin for RenderPlugin {
     fn build(&self, app: &mut App) {
         // Create and initialize window
@@ -138,14 +150,6 @@ impl Plugin for RenderPlugin {
                 // In a real implementation, we might want to handle this error more gracefully
             }
         }
-    }
-    
-    fn name(&self) -> &str {
-        "RenderPlugin"
-    }
-    
-    fn dependencies(&self) -> Vec<&'static str> {
-        vec!["CorePlugin"]
     }
 }
 

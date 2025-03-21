@@ -144,10 +144,53 @@ impl StarfieldPlugin {
     
     /// Create a system to update the debug star components based on their position
     fn create_debug_star_update_system() -> impl FnMut(&mut World) {
+        use rustica_debug_render::components::DebugStarComponent;
+        use rustica_debug_render::command::RenderCommandList;
+        use rustica_debug_render::star_renderer::Star;
+
         move |world| {
-            // In a complete implementation, we would query for all entities with Position and DebugStarComponent
-            // and update the debug star position based on the entity position
-            // For now, this is a placeholder
+            // Create a command list if it doesn't exist
+            if world.get_resource::<RenderCommandList>().is_none() {
+                world.insert_resource(RenderCommandList::new());
+            }
+            
+            // Query for all entities with Position and DebugStarComponent
+            // This is a simplified query since World implementation might not support full query API yet
+            let mut entities_to_process = Vec::new();
+            
+            // Manual "query" - in a complete implementation, we would use World::query
+            world.for_each_entity(|entity_id| {
+                if let (Some(position), Some(debug_star)) = (
+                    world.get::<Position>(entity_id),
+                    world.get::<DebugStarComponent>(entity_id)
+                ) {
+                    if debug_star.visible {
+                        entities_to_process.push((entity_id, position.clone(), debug_star.clone()));
+                    }
+                }
+            });
+            
+            // Process entities and update render commands
+            if let Some(command_list) = world.get_resource_mut::<RenderCommandList>() {
+                // Clear previous frame's stars
+                command_list.clear_stars();
+                
+                // Add visible stars to the command list
+                for (_entity_id, position, debug_star) in entities_to_process {
+                    // Convert the position and debug star components to a render star
+                    let star = Star::new(
+                        position.value,
+                        debug_star.color,
+                        debug_star.size,
+                        debug_star.brightness
+                    );
+                    
+                    // Add the star to the render commands
+                    command_list.add_star(star);
+                }
+                
+                println!("Debug star update: {} stars processed", command_list.star_count());
+            }
         }
     }
 }
@@ -158,19 +201,15 @@ impl Plugin for StarfieldPlugin {
         app.insert_resource(self.physics_config);
         app.insert_resource(Time::default());
         
-        // Register systems
-        // In a real implementation with a working scheduler, we would do:
-        // app.add_system(create_position_update_system());
-        // app.add_system(create_velocity_update_system());
-        // app.add_system(create_boundary_wrap_system());
-        // app.add_system(Self::create_debug_star_update_system());
+        // Register physics systems
+        app.add_system(create_position_update_system(), "position_update", Stage::Update);
+        app.add_system(create_velocity_update_system(), "velocity_update", Stage::Update);
+        app.add_system(create_boundary_wrap_system(), "boundary_wrap", Stage::LateUpdate);
+        app.add_system(Self::create_debug_star_update_system(), "debug_star_update", Stage::LateUpdate);
         
         // Register input handling systems
-        // app.add_system(create_star_movement_system());
-        // app.add_system(create_star_property_system());
-        
-        // Note: Input handling will be implemented fully in a future update
-        // Currently the systems are placeholders
+        app.add_system(create_star_movement_system(), "star_movement", Stage::EarlyUpdate);
+        app.add_system(create_star_property_system(), "star_property", Stage::EarlyUpdate);
         
         // For now, just spawn stars
         if let Some(world) = app.get_resource_mut::<World>() {

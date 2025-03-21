@@ -10,6 +10,7 @@ license = "MIT OR Apache-2.0"
 thiserror = "1.0"
 rustica_core = { path = "../rustica_core" }
 rustica_ecs = { path = "../rustica_ecs" }
+rustica_common = { path = "../rustica_common" }
 cgmath = "0.18.0"
 log = "0.4"
 winit = "0.28.6"

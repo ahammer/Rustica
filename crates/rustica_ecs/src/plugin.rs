@@ -16,8 +16,9 @@
 //! 3. Plugin API should be stable
 
 // === REGION: IMPORTS ===
-use rustica_core::prelude::*;
+use rustica_common::PluginMetadata;
 use crate::World;
+use crate::Time;
 
 // === REGION: PLUGIN IMPLEMENTATION ===
 
@@ -29,11 +30,11 @@ use crate::World;
 /// # Examples
 ///
 /// ```
-/// use rustica_core::prelude::*;
 /// use rustica_ecs::prelude::*;
 ///
-/// let mut app = App::new();
-/// app.add_plugin(EcsPlugin::default());
+/// // In a typical application context:
+/// // let mut app = App::new();
+/// // app.build_ecs_plugin(&EcsPlugin::default());
 /// ```
 pub struct EcsPlugin {
     // Configuration options could go here
@@ -45,26 +46,73 @@ impl Default for EcsPlugin {
     }
 }
 
-impl Plugin for EcsPlugin {
-    fn build(&self, app: &mut App) {
-        // Add the World resource
-        app.insert_resource(World::new());
-        
-        // todo: fix this - implement ECS systems registration
-        // For now, this is just a stub
-    }
-    
+impl PluginMetadata for EcsPlugin {
     fn name(&self) -> &str {
         "EcsPlugin"
     }
     
-    // No dependencies by default, but could be overridden if needed
+    // No dependencies by default
+}
+
+// Extension trait for building the ECS plugin
+pub trait EcsPluginExt {
+    fn build_ecs_plugin(&mut self, plugin: &EcsPlugin);
+}
+
+impl<T> EcsPluginExt for T 
+where 
+    T: InsertResource,
+{
+    fn build_ecs_plugin(&mut self, _plugin: &EcsPlugin) {
+        // Add the World resource
+        self.insert_resource(World::new());
+        
+        // Add the Time resource
+        self.insert_resource(Time::default());
+        
+        // todo: implement ECS systems registration
+        // For now, this is just a stub
+    }
+}
+
+/// Resource insertion trait
+pub trait InsertResource {
+    fn insert_resource<R: 'static>(&mut self, resource: R);
 }
 
 // === REGION: TESTS ===
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::HashMap;
+    use std::any::{Any, TypeId};
+    
+    // A simple App implementation for testing
+    struct TestApp {
+        resources: HashMap<TypeId, Box<dyn Any>>,
+    }
+    
+    impl TestApp {
+        fn new() -> Self {
+            TestApp {
+                resources: HashMap::new(),
+            }
+        }
+    }
+    
+    impl InsertResource for TestApp {
+        fn insert_resource<R: 'static>(&mut self, resource: R) {
+            self.resources.insert(TypeId::of::<R>(), Box::new(resource));
+        }
+    }
+    
+    // Helper method for testing
+    impl TestApp {
+        fn get_resource<R: 'static>(&self) -> Option<&R> {
+            self.resources.get(&TypeId::of::<R>())
+                .and_then(|resource| resource.downcast_ref::<R>())
+        }
+    }
     
     #[test]
     fn test_plugin_creation() {
@@ -74,11 +122,13 @@ mod tests {
     
     #[test]
     fn test_plugin_build() {
-        let mut app = App::new();
-        let plugin = EcsPlugin::default();
-        plugin.build(&mut app);
+        let mut app = TestApp::new();
+        app.build_ecs_plugin(&EcsPlugin::default());
         
         // Verify the World resource was added
         assert!(app.get_resource::<World>().is_some());
+        
+        // Verify the Time resource was added
+        assert!(app.get_resource::<Time>().is_some());
     }
 }

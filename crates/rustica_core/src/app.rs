@@ -20,6 +20,12 @@ use std::collections::HashMap;
 use std::any::{Any, TypeId};
 use log::{debug, error, info};
 
+use rustica_ecs::World;
+use rustica_ecs::Time;
+use rustica_scheduler::Schedule;
+use rustica_scheduler::System;
+use rustica_scheduler::Stage;
+
 use crate::Plugin;
 
 // === REGION: TYPE DEFINITIONS ===
@@ -97,6 +103,8 @@ impl App {
     /// use rustica_core::prelude::*;
     ///
     /// struct MyPlugin;
+    ///
+    /// impl PluginMetadata for MyPlugin {}
     ///
     /// impl Plugin for MyPlugin {
     ///     fn build(&self, app: &mut App) {
@@ -223,6 +231,16 @@ impl App {
             .and_then(|resource| resource.downcast_mut::<R>())
     }
     
+    /// Takes a resource out of the app, returning it if it exists.
+    /// 
+    /// This is useful when you need to work with multiple resources at once.
+    fn take_resource<R: 'static>(&mut self) -> Option<R> {
+        let type_id = TypeId::of::<R>();
+        self.resources.remove(&type_id)
+            .and_then(|resource| resource.downcast::<R>().ok())
+            .map(|boxed| *boxed)
+    }
+    
     /// Runs the application until stopped.
     ///
     /// This starts the main loop of the application, which will
@@ -241,18 +259,38 @@ impl App {
         info!("Starting application");
         self.running = true;
         
+        let mut last_update_time = std::time::Instant::now();
+        
         // Check if we have a render window resource
-        let mut has_window = false;
+        let has_window = self.get_resource::<bool>().copied().unwrap_or(false);
         
-        #[cfg(feature = "render")]
-        if let Some(has_render_window) = self.get_resource::<bool>() {
-            // Simple flag set by the render plugin
-            has_window = *has_render_window;
-            info!("Detected render window resource");                        
-            // TODO: Implement proper windowing event loop in a way that doesn't create borrowing issues
+        if has_window {
+            info!("Running with window");
+            
+            // Main loop for windowed applications
+            while self.running {
+                // Calculate delta time
+                let current_time = std::time::Instant::now();
+                let delta_time = current_time.duration_since(last_update_time);
+                last_update_time = current_time;
+                
+                // Update time resource if present
+                if let Some(mut time) = self.take_resource::<Time>() {
+                    time.update(delta_time);
+                    self.insert_resource(time);
+                }
+                
+                // Process one frame
+                self.update();
+                
+                // Simple sleep to avoid hogging CPU
+                std::thread::sleep(std::time::Duration::from_millis(16)); // ~60 FPS cap
+            }
+        } else {
+            info!("Running without window (headless mode)");
+            // Do a single update for headless mode
+            self.update();
         }
-        
-        // If we don't have a render window, we nope out
         
         info!("Application stopped");
     }
@@ -272,16 +310,28 @@ impl App {
     /// app.update(); // Run a single frame
     /// ```
     pub fn update(&mut self) {
-        // todo: fix this - implement proper update cycle with:
-        // 1. Run input systems
-        // 2. Run update systems
-        // 3. Run render systems
-        // etc.
-        
-        // For now, this is a stub implementation
         debug!("App update");
         
-        // If this were real, we'd delegate to scheduler for running systems
+        // Check if we have the schedule and world resources
+        let has_schedule = self.get_resource::<Schedule>().is_some();
+        let has_world = self.get_resource::<World>().is_some();
+        
+        // Run all systems through the schedule
+        if has_schedule && has_world {
+            // Take the resources we need
+            if let (Some(mut world), Some(mut schedule)) = (self.take_resource::<World>(), self.take_resource::<Schedule>()) {
+                debug!("Running schedule on world");
+                schedule.run(&mut world);
+                
+                // Put the resources back
+                self.insert_resource(world);
+                self.insert_resource(schedule);
+            }
+        } else if !has_schedule {
+            debug!("No schedule resource found");
+        } else {
+            debug!("No world resource found, skipping schedule execution");
+        }
     }
     
     /// Signals the application to exit.
@@ -302,11 +352,82 @@ impl App {
         info!("Exiting application");
         self.running = false;
     }
+    
+    /// Adds a system to the application's schedule.
+    ///
+    /// This will register the system with the schedule, allowing it to be executed
+    /// during the appropriate stage. If no schedule is present, it will create one.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rustica_core::App;
+    /// use rustica_ecs::World;
+    /// use rustica_scheduler::stage::Stage;
+    ///
+    /// fn my_system(world: &mut World) {
+    ///     // System logic...
+    /// }
+    ///
+    /// let mut app = App::new();
+    /// app.add_system(my_system, "my_system", Stage::Update);
+    /// ```
+    ///
+    /// # Returns
+    ///
+    /// Returns a result with the app instance if successful, or an error if the system
+    /// could not be added.
+    pub fn add_system<S>(&mut self, system: S, name: &str, stage: Stage) -> &mut Self
+    where
+        S: System,
+    {
+        debug!("Adding system: {} in stage: {:?}", name, stage);
+        
+        // Check if we have a schedule resource
+        let has_schedule = self.get_resource::<Schedule>().is_some();
+        
+        // If no schedule, create one
+        if !has_schedule {
+            debug!("No schedule found, creating a new one");
+            self.insert_resource(Schedule::new());
+        }
+        
+        // Now take the schedule and add the system
+        if let Some(mut schedule) = self.take_resource::<Schedule>() {
+            // Add the system to the schedule
+            if let Err(e) = schedule.add_system(system, name, stage) {
+                error!("Failed to add system '{}': {:?}", name, e);
+            }
+            
+            // Put the schedule back
+            self.insert_resource(schedule);
+        } else {
+            error!("Failed to get schedule resource even after creating it");
+        }
+        
+        self
+    }
 }
 
 impl Default for App {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+// Implement InsertResource from rustica_ecs
+impl rustica_ecs::plugin::InsertResource for App {
+    fn insert_resource<R: 'static>(&mut self, resource: R) {
+        let type_id = TypeId::of::<R>();
+        self.resources.insert(type_id, Box::new(resource));
+    }
+}
+
+// Implement InsertResource from rustica_scheduler
+impl rustica_scheduler::InsertResource for App {
+    fn insert_resource<R: 'static>(&mut self, resource: R) {
+        let type_id = TypeId::of::<R>();
+        self.resources.insert(type_id, Box::new(resource));
     }
 }
 
@@ -326,6 +447,9 @@ mod tests {
     #[test]
     fn test_app_add_plugin() {
         struct TestPlugin;
+        
+        impl rustica_common::PluginMetadata for TestPlugin {}
+        
         impl Plugin for TestPlugin {
             fn build(&self, app: &mut App) {
                 app.insert_resource(42u32);

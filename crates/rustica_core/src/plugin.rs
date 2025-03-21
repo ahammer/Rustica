@@ -16,57 +16,22 @@
 //! 3. Plugin initialization must be idempotent when possible
 
 // === REGION: IMPORTS ===
-use std::any::type_name;
 use crate::App;
+use rustica_common::PluginMetadata;
 
 // === REGION: PLUGIN TRAIT ===
 
-/// The primary extension point for the Rustica engine.
+/// The Plugin trait defines the interface for extending the Rustica engine.
 ///
-/// Plugins are used to add functionality to the engine in a modular way.
-/// Each plugin can register components, systems, resources, or other 
-/// engine features during the build phase.
-///
-/// # Examples
-///
-/// ```
-/// use rustica_core::prelude::*;
-///
-/// struct MyPlugin;
-///
-/// impl Plugin for MyPlugin {
-///     fn build(&self, app: &mut App) {
-///         // Add functionality to the app
-///     }
-///
-///     fn dependencies(&self) -> Vec<&'static str> {
-///         // Declare dependencies on other plugins
-///         vec!["CorePlugin"]
-///     }
-/// }
-/// ```
-pub trait Plugin: 'static {
-    /// Called when the plugin is added to the application.
+/// Plugins are used to modularize functionality and extend the engine
+/// in a maintainable way. Each plugin can register resources,
+/// systems, and other components with the application.
+pub trait Plugin: PluginMetadata {
+    /// Configures the application with this plugin's functionality.
     ///
-    /// This is where the plugin should register its components,
-    /// systems, resources, etc.
+    /// This is called when the plugin is added to the application,
+    /// allowing it to register resources, systems, and other components.
     fn build(&self, app: &mut App);
-    
-    /// Returns the name of this plugin.
-    ///
-    /// By default, returns the type name, but can be overridden
-    /// to provide a custom name.
-    fn name(&self) -> &str {
-        type_name::<Self>()
-    }
-    
-    /// Returns a list of plugins that this plugin depends on.
-    ///
-    /// The application will ensure these plugins are registered
-    /// before this plugin is built.
-    fn dependencies(&self) -> Vec<&'static str> {
-        Vec::new()
-    }
 }
 
 // === REGION: TESTS ===
@@ -78,6 +43,9 @@ mod tests {
     #[test]
     fn test_plugin_name() {
         struct TestPlugin;
+        
+        impl PluginMetadata for TestPlugin {}
+        
         impl Plugin for TestPlugin {
             fn build(&self, _app: &mut App) {}
         }
@@ -89,12 +57,15 @@ mod tests {
     #[test]
     fn test_plugin_dependencies() {
         struct TestPlugin;
-        impl Plugin for TestPlugin {
-            fn build(&self, _app: &mut App) {}
-            
-            fn dependencies(&self) -> Vec<&'static str> {
+        
+        impl PluginMetadata for TestPlugin {
+            fn dependencies(&self) -> Vec<&str> {
                 vec!["CorePlugin", "RenderPlugin"]
             }
+        }
+        
+        impl Plugin for TestPlugin {
+            fn build(&self, _app: &mut App) {}
         }
         
         let plugin = TestPlugin;
