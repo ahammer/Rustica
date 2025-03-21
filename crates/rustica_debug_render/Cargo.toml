@@ -1,0 +1,28 @@
+[package]
+name = "rustica_debug_render"
+version = "0.1.0"
+edition = "2021"
+description = "Debug rendering functionality for the Rustica game engine"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+# Core dependencies
+rustica_core = { path = "../rustica_core" }
+rustica_render = { path = "../rustica_render" }
+rustica_ecs = { path = "../rustica_ecs" }
+rustica_scheduler = { path = "../rustica_scheduler" }
+rustica_event = { path = "../rustica_event" }
+
+# Graphics and window dependencies
+wgpu = "0.15"
+bytemuck = { version = "1.13", features = ["derive"] }
+cgmath = "0.18"
+winit = "0.28"
+
+# Utility dependencies
+log = "0.4"
+thiserror = "1.0"
+rand = "0.8"
+
+[dev-dependencies]
+env_logger = "0.10"

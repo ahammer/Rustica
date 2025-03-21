@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/rustica",
     "crates/rustica_core",
+    "crates/rustica_debug_render",
     "crates/rustica_ecs",
     "crates/rustica_event",
     "crates/rustica_render",

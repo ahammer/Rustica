@@ -14,6 +14,9 @@ mod input;
 use rustica::prelude::*;
 use physics::{Position, Velocity, Time, PhysicsConfig};
 use input::{create_star_movement_system, create_star_property_system};
+use rand::{Rng, SeedableRng};
+use rand::rngs::StdRng;
+use cgmath::{Vector3 as Vec3, Vector4 as Vec4};
 
 // === REGION: COMPONENT DEFINITIONS ===
 
@@ -68,32 +71,83 @@ impl StarfieldPlugin {
     
     /// Spawn stars with random positions and velocities
     fn spawn_stars(&self, world: &mut World) {
-        // In a real implementation, we would use random number generation
-        // For now, just create stars with deterministic values
-        for i in 0..self.star_count.min(5) { // Limit to 5 for now since we're just displaying info
-            let position = Position {
-                value: Vec3::new(
-                    (i as f32 - 2.5) * 100.0,
-                    (i as f32 - 2.5) * 80.0,
-                    100.0 + i as f32 * 50.0
-                ),
-            };
+        let mut rng = StdRng::seed_from_u64(42); // Fixed seed for reproducibility
+        
+        // Generate random stars
+        for _ in 0..self.star_count {
+            let x = rng.gen_range(0.0..self.physics_config.world_bounds.x);
+            let y = rng.gen_range(0.0..self.physics_config.world_bounds.y);
+            let z = rng.gen_range(0.0..self.physics_config.world_bounds.z);
             
             let velocity = Velocity {
-                value: Vec3::new(0.0, 0.0, -(i as f32) - 1.0),
+                value: Vec3::new(
+                    rng.gen_range(-0.5..0.5),
+                    rng.gen_range(-0.5..0.5),
+                    rng.gen_range(-2.0..-0.5),
+                ),
                 damping: 1.0,
             };
             
-            let star = Star {
-                brightness: 0.5 + i as f32 * 0.1,
-                size: 1.0 + i as f32 * 0.5,
-                color: None,
+            // Vary star properties
+            let brightness = rng.gen_range(0.5..1.0);
+            let size = rng.gen_range(1.0..5.0);
+            
+            // Create color variations (white with slight tints)
+            let color = if rng.gen_bool(0.7) {
+                None // 70% white stars
+            } else {
+                let r = rng.gen_range(0.7..1.0);
+                let g = rng.gen_range(0.7..1.0);
+                let b = rng.gen_range(0.7..1.0);
+                Some([r, g, b])
             };
+            
+            let position = Position {
+                value: Vec3::new(x, y, z),
+            };
+            
+            let star = Star {
+                brightness,
+                size,
+                color,
+            };
+            
+            // Create a debug star component for rendering
+            // This component acts as the descriptor that the render system will use
+            // to generate render commands - it doesn't know about rendering details
+            let debug_star = DebugStarComponent {
+                color: Vec4::new(
+                    color.map_or(1.0, |c| c[0]),
+                    color.map_or(1.0, |c| c[1]),
+                    color.map_or(1.0, |c| c[2]),
+                    1.0
+                ),
+                size,
+                brightness,
+                visible: true,
+            };
+            
+            // The rendering pipeline will:
+            // 1. Find entities with Position and DebugStarComponent
+            // 2. Convert them to render commands
+            // 3. Process those commands into GPU draw calls
             
             world.spawn()
                 .insert(position)
                 .insert(velocity)
-                .insert(star);
+                .insert(star)
+                .insert(debug_star);
+        }
+        
+        println!("Created {} stars", self.star_count);
+    }
+    
+    /// Create a system to update the debug star components based on their position
+    fn create_debug_star_update_system() -> impl FnMut(&mut World) {
+        move |world| {
+            // In a complete implementation, we would query for all entities with Position and DebugStarComponent
+            // and update the debug star position based on the entity position
+            // For now, this is a placeholder
         }
     }
 }
@@ -109,6 +163,7 @@ impl Plugin for StarfieldPlugin {
         // app.add_system(create_position_update_system());
         // app.add_system(create_velocity_update_system());
         // app.add_system(create_boundary_wrap_system());
+        // app.add_system(Self::create_debug_star_update_system());
         
         // Register input handling systems
         // app.add_system(create_star_movement_system());
@@ -141,8 +196,11 @@ fn main() {
     // Add the ECS plugin for entity management
     app.add_plugin(EcsPlugin::default());
     
-    // Add the RenderPlugin
+    // Add the render plugin for window
     app.add_plugin(RenderPlugin::default());
+    
+    // Add the debug render plugin
+    app.add_plugin(DebugRenderPlugin::new());
     
     // Configure physics
     let physics_config = PhysicsConfig {
@@ -150,8 +208,8 @@ fn main() {
         wrap_around_bounds: true,
     };
     
-    // Add the starfield plugin with 1000 stars
-    app.add_plugin(StarfieldPlugin::new(1000, physics_config));
+    // Add the starfield plugin with 100 stars (reduced for better performance during debug)
+    app.add_plugin(StarfieldPlugin::new(100, physics_config));
     
     // Print debug information
     println!("Starting Starfield example - Hello Rustica World!");
@@ -166,7 +224,7 @@ fn main() {
                 config.world_bounds.z);
             println!("  Wrap around bounds: {}", config.wrap_around_bounds);
         }
-        println!("Running application with window...");
+        println!("Running application with window and debug renderer...");
     }
     
     // Run the application with the event loop (this is a blocking call)

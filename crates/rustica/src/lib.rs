@@ -64,6 +64,10 @@ pub use rustica_scheduler as scheduler;
 #[cfg(feature = "render")]
 pub use rustica_render as render;
 
+// Re-export debug render functionality when the debug_render feature is enabled
+#[cfg(feature = "debug_render")]
+pub use rustica_debug_render as debug_render;
+
 // === REGION: PRELUDE ===
 
 /// Prelude module containing the most commonly used types.
@@ -94,6 +98,14 @@ pub mod prelude {
     // Re-export render types when the render feature is enabled
     #[cfg(feature = "render")]
     pub use crate::render::prelude::*;
+    
+    // Re-export debug render types when the debug_render feature is enabled
+    #[cfg(feature = "debug_render")]
+    pub use crate::debug_render::{
+        DebugRenderer, 
+        components::{DebugRenderComponent, DebugStarComponent},
+        plugin::DebugRenderPlugin,
+    };
     
     /// Creates an identity 4x4 matrix
     pub fn mat4_identity() -> Mat4<f32> {

@@ -7,5 +7,9 @@ description = "A simple starfield example using the Rustica game engine"
 publish = false
 
 [dependencies]
-rustica = { path = "../../crates/rustica", features = ["render"] }
+rustica = { path = "../../crates/rustica", features = ["render", "debug_render"] }
 log = "0.4"
+rand = "0.8"
+cgmath = "0.18"
+winit = "0.28"
+wgpu = "0.15"
