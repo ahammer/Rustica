@@ -209,21 +209,6 @@ impl ComponentStorage {
             }
         }
     }
-    
-    /// Returns the number of components in this storage.
-    pub(crate) fn len(&self) -> usize {
-        self.components.len()
-    }
-    
-    /// Returns true if this storage has no components.
-    pub(crate) fn is_empty(&self) -> bool {
-        self.components.len() == 0
-    }
-    
-    /// Returns an iterator over all entity IDs that have this component.
-    pub(crate) fn entity_ids(&self) -> impl Iterator<Item = u64> + '_ {
-        self.index_to_entity.iter().copied()
-    }
 }
 
 // === REGION: TESTS ===
