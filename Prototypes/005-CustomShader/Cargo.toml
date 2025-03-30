@@ -1,0 +1,13 @@
+[package]
+name = "custom-shader"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rustica_window = { path = "../../crates/window" }
+rustica_render = { path = "../../crates/render", features = ["derive"] }
+rustica_foundation = { path = "../../Foundation" }
+rustica_graphics = { path = "../../crates/graphics" }
+cgmath = "0.18.0"
+wgpu = "24.0.3"
+bytemuck = { version = "1.14.0", features = ["derive"] }

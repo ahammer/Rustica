@@ -1,0 +1,17 @@
+[package]
+name = "rustica_graphics"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rustica_window = { path = "../window" }
+rustica_render = { path = "../render" }
+rustica_foundation = { path = "../../Foundation" }
+cgmath = "0.18.0"
+wgpu = "24.0.3"
+bytemuck = { version = "1.14.0", features = ["derive"] }
+pollster = "0.3.0"
+
+[features]
+default = []
+derive = ["rustica_render/derive"]

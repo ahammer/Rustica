@@ -1,0 +1,11 @@
+[package]
+name = "animated_triangle"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rustica_render = { path = "../../crates/render" }
+wgpu = "24.0.3"
+bytemuck = { version = "1.14", features = ["derive"] }
+cgmath = "0.18"
+winit = "0.30.9"

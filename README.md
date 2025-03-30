@@ -1,103 +1,106 @@
-# Rustica Game Engine
+# Rustica Engine
 
-Rustica is a modular, testable game engine written in Rust. It provides a clean, flexible architecture for building games with a strong focus on testability and abstraction.
+A modular 3D graphics and game engine written in Rust.
 
-## Project Structure
+## Overview
 
-```
-rustica/ (workspace)
-├── Cargo.toml                   // Workspace manifest
-├── README.md                    // This file
-├── AGENT_GUIDE.md               // Guide for AI agents working with the codebase
-├── crates/
-│   ├── rustica/                 // Main library crate (re-exports)
-│   ├── rustica_core/            // Minimal orchestration layer
-│   ├── rustica_ecs/             // ECS implementation
-│   │   └── ...                  // (Future: event, render, scheduler, math, etc.)
-├── examples/
-│   └── starfield/               // Hello World starfield example
-└── docs/
-    ├── architecture.md          // Architecture overview
-    ├── api_conventions.md       // API design rules
-    ├── testing_standards.md     // Testing requirements
-    └── implementation_rules.md  // Implementation guidelines
-```
+Rustica is a modern, modular 3D graphics and game engine designed with a focus on simplicity, performance, and extensibility. Built entirely in Rust, it leverages the language's safety guarantees and performance characteristics to provide a robust foundation for graphics applications and games.
 
-## Design Philosophy
+## Architecture
 
-Rustica is built on these core principles:
+Rustica is organized into several modular crates, each with a specific responsibility:
 
-1. **Minimal Core**: The core module provides only orchestration and plugin management
-2. **Modularity**: All functionality is implemented in independent subsystems
-3. **Plugin-Based**: New functionality is added through the plugin system
-4. **Data-Oriented**: Focus on data layouts and transformations over object hierarchies
-5. **Testability**: All components are designed for testing without dependencies
+- **Foundation**: Core geometric primitives and data structures
+- **Render**: High-level rendering API built on wgpu
+- **Graphics**: Higher-level graphics primitives and utilities
+- **Window**: Window management and event handling
+- **Core**: Central engine component (in development)
+- **Extensions**: Optional engine extensions (in development)
+- **Render-Derive**: Procedural macros for the render crate
+
+## Features
+
+- **Modern Graphics API**: Built on wgpu for cross-platform Vulkan, Metal, DX12, and WebGPU support
+- **Modular Design**: Use only the components you need
+- **Custom Shaders**: Support for custom WGSL shaders
+- **Mesh System**: Flexible mesh representation and rendering
+- **Camera System**: Perspective and orthographic cameras
+- **Primitive Generation**: Built-in primitives like UV spheres
 
 ## Getting Started
 
-### Using the Engine
+### Prerequisites
+
+- Rust 1.70 or later
+- A GPU that supports Vulkan, Metal, or DX12
+
+### Installation
+
+Add Rustica to your project by including the crates you need in your `Cargo.toml`:
+
+```toml
+[dependencies]
+rustica_foundation = { path = "path/to/rustica/Foundation" }
+rustica_render = { path = "path/to/rustica/crates/render" }
+rustica_graphics = { path = "path/to/rustica/crates/graphics" }
+rustica_window = { path = "path/to/rustica/crates/window" }
+```
+
+### Basic Example
 
 ```rust
-use rustica::prelude::*;
+use rustica_render::RenderWindow;
+use rustica_graphics::primitives::sphere::create_default_sphere;
 
-// Create a simple game
-fn main() {
-    // Create the application
-    let mut app = App::new();
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create a render window
+    let mut render_window = RenderWindow::new("Rustica Example", 800, 600)?;
     
-    // Add core plugins
-    app.add_plugin(EcsPlugin::default());
+    // Create a sphere
+    let sphere = create_default_sphere();
     
-    // Add your game plugin
-    app.add_plugin(MyGamePlugin);
+    // Register the mesh with the render window
+    let mesh_id = render_window.register_mesh(&sphere)?;
     
-    // Run the application
-    app.run();
-}
-
-// Define a game plugin
-struct MyGamePlugin;
-
-impl Plugin for MyGamePlugin {
-    fn build(&self, app: &mut App) {
-        // Setup your game here
-    }
+    // Run the render loop
+    render_window.run(move |canvas| {
+        // Clear the canvas
+        canvas.clear([0.1, 0.2, 0.3, 1.0]);
+        
+        // Draw the sphere
+        canvas.draw_mesh(mesh_id);
+        
+        Ok(())
+    })?;
+    
+    Ok(())
 }
 ```
 
-### Running the Example
+## Development Approach
 
-```bash
-# Run the starfield example
-cargo run --bin starfield
-```
+Rustica is developed using a prototype-first approach:
 
-## Documentation
+1. Create a prototype to prove a concept
+2. Extract the functionality into the appropriate crate
+3. Update the prototype to use the crate
+4. Repeat for the next feature
 
-Comprehensive documentation is available in the `docs/` directory:
+This approach ensures that each component is thoroughly tested and proven before being integrated into the main engine.
 
-- [Architecture Overview](docs/architecture.md): System design and component relationships
-- [API Conventions](docs/api_conventions.md): Rules for API design
-- [Testing Standards](docs/testing_standards.md): Testing requirements and patterns
-- [Implementation Rules](docs/implementation_rules.md): Guidelines for implementation
+## Project Structure
 
-Each subsystem (crate) also has its own `MODULE_GUIDE.md` file with specific guidelines:
-
-- [Core Module Guide](crates/rustica_core/MODULE_GUIDE.md)
-- [ECS Module Guide](crates/rustica_ecs/MODULE_GUIDE.md)
-- [Main Module Guide](crates/rustica/MODULE_GUIDE.md)
-
-## Status
-
-This project is in the early scaffolding stage. The current implementation provides:
-
-- Core orchestration layer (plugin system, application lifecycle)
-- ECS subsystem interfaces
-- Main library module that re-exports functionality
-- Starfield example demonstrating the API
-
-Future work will implement the subsystem functionality and add additional features.
+- **Foundation/**: Core geometric primitives
+- **crates/**: Main engine crates
+  - **render/**: Rendering functionality
+  - **graphics/**: Graphics primitives
+  - **window/**: Window management
+  - **render-derive/**: Procedural macros
+- **Core/**: Central engine component (in development)
+- **Extensions/**: Optional engine extensions (in development)
+- **Prototypes/**: Proof-of-concept implementations
+- **Examples/**: Example applications
 
 ## License
 
-N/A Yet, Expect GPL
+This project is licensed under the MIT License - see the LICENSE file for details.

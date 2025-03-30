@@ -1,0 +1,9 @@
+[package]
+name = "rustica_core"
+version = "0.1.0"
+edition = "2024"
+description = "Core engine for Rustica"
+
+[dependencies]
+rustica_foundation = { path = "../Foundation" }
+rustica_window = { path = "../crates/window" }

@@ -1,20 +1,23 @@
 [workspace]
-resolver = "2"
 members = [
-    "crates/rustica",
-    "crates/rustica_common",
-    "crates/rustica_core",
-    "crates/rustica_debug_render",
-    "crates/rustica_ecs",
-    "crates/rustica_event",
-    "crates/rustica_render",
-    "crates/rustica_scheduler",
-    "examples/starfield",
+    "Foundation",
+    "Extensions",
+    "Core",
+    "crates/window",
+    "crates/render",
+    "crates/render-derive",
+    "crates/rustica-ecs",
+    "Prototypes/001-BasicWindow",
+    "Prototypes/002-BasicWGPU",
+    "Prototypes/003-BasicTriangle",
+    "Prototypes/004-AnimatedTriangle",
+    "Prototypes/005-CustomShader",
+    "Prototypes/006-BasicMesh",
+    "Prototypes/007-UVSphere",
+    "Prototypes/008-Teapot",
+    "Prototypes/009-ECS-Conway",
+    "Prototypes/010-ECS-Conway-Graphics",
+    "Examples/001-Integration",
 ]
 
-[workspace.package]
-version = "0.1.0"
-edition = "2021"
-authors = ["Rustica Contributors"]
-repository = "https://github.com/username/rustica"
-license = "MIT"
+resolver = "2"
