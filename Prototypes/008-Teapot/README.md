@@ -2,6 +2,7 @@
 
 This prototype demonstrates rendering the classic Utah teapot using Bezier patches in the Rustica engine.
 
+It's jank as hell, the LLM didn't get it right, but the patches seem to work. I'll probably refine this POC to another more predictable NURBS/Bezier surfaces,
 ## Features
 
 - Implementation of Bezier curves and patches in the Foundation crate

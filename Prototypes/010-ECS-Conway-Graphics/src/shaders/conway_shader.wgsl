@@ -7,8 +7,7 @@ struct VertexOutput {
     @location(3) world_position: vec3<f32>,
 };
 
-@group(0) @binding(0)
-var<uniform> model: mat4x4<f32>;
+// Removed model uniform since it now comes from instance data
 
 @group(0) @binding(1)
 var<uniform> view: mat4x4<f32>;
@@ -19,24 +18,39 @@ var<uniform> projection: mat4x4<f32>;
 @vertex
 fn vs_main(
     @location(0) position: vec3<f32>,
-    @location(1) color: vec3<f32>,
+    @location(1) vertex_color: vec3<f32>,
     @location(2) normal: vec3<f32>,
+    // Instance data - model matrix rows
+    @location(3) model_row0: vec4<f32>,
+    @location(4) model_row1: vec4<f32>,
+    @location(5) model_row2: vec4<f32>,
+    @location(6) model_row3: vec4<f32>,
+    // Instance color data
+    @location(7) instance_color: vec3<f32>,
 ) -> VertexOutput {
     var out: VertexOutput;
+    
+    // Reconstruct model matrix from instance data
+    let model = mat4x4<f32>(
+        model_row0,
+        model_row1,
+        model_row2,
+        model_row3
+    );
     
     // Transform the vertex position
     let world_position = model * vec4<f32>(position, 1.0);
     out.clip_position = projection * view * world_position;
     
-    // Pass data to fragment shader
-    out.color = color;
+    // Use instance color instead of vertex color
+    out.color = instance_color;
     out.normal = normal;
     
     // Calculate world normal for lighting
     let normal_matrix = mat3x3<f32>(
-        model[0].xyz,
-        model[1].xyz,
-        model[2].xyz
+        model_row0.xyz,
+        model_row1.xyz,
+        model_row2.xyz
     );
     out.world_normal = normalize(normal_matrix * normal);
     out.world_position = world_position.xyz;

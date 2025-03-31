@@ -83,9 +83,43 @@ impl<'a> Canvas<'a> {
         });
     }
     
+    /// Draw instanced triangles using a custom shader
+    pub fn draw_instanced_triangles<V: Vertex>(
+        &mut self, 
+        triangles: &[Triangle<V>], 
+        instances: &[[[f32; 4]; 4]], // Array of model matrices in shader-compatible format
+        shader_id: usize,
+        uniforms: HashMap<String, UniformValue>
+    ) {
+        // Flatten the triangles into a single vertex buffer
+        let vertices: Vec<V> = triangles.iter()
+            .flat_map(|t| t.vertices)
+            .collect();
+        
+        // Convert to raw bytes
+        let vertices_bytes = bytemuck::cast_slice(&vertices).to_vec();
+        
+        // Create instances buffer
+        let instances_bytes = bytemuck::cast_slice(instances).to_vec();
+        
+        self.commands.push(DrawCommand::CustomInstancedTriangles {
+            shader_id,
+            vertices: vertices_bytes,
+            instances: instances_bytes,
+            vertex_count: (triangles.len() * 3) as u32,
+            instance_count: instances.len() as u32,
+            uniforms,
+        });
+    }
+    
     /// Create a shader draw builder for more fluent API
     pub fn draw_with_shader(&mut self, shader_id: usize) -> ShaderDrawBuilder<'_, 'a> {
         ShaderDrawBuilder::new(self, shader_id)
+    }
+    
+    /// Create a shader draw builder for instanced drawing
+    pub fn draw_with_instances(&mut self, shader_id: usize) -> InstancedShaderDrawBuilder<'_, 'a> {
+        InstancedShaderDrawBuilder::new(self, shader_id)
     }
     
     /// Get the elapsed time since the application started
@@ -121,6 +155,59 @@ impl<'b, 'a> ShaderDrawBuilder<'b, 'a> {
     pub fn triangles<V: Vertex>(self, triangles: &[Triangle<V>]) {
         self.canvas.draw_triangles_with_uniforms(triangles, self.shader_id, self.uniforms);
     }
+}
+
+/// Builder for instanced shader draw operations
+pub struct InstancedShaderDrawBuilder<'b, 'a> {
+    canvas: &'b mut Canvas<'a>,
+    shader_id: usize,
+    uniforms: HashMap<String, UniformValue>,
+}
+
+impl<'b, 'a> InstancedShaderDrawBuilder<'b, 'a> {
+    /// Create a new instanced shader draw builder
+    fn new(canvas: &'b mut Canvas<'a>, shader_id: usize) -> Self {
+        Self {
+            canvas,
+            shader_id,
+            uniforms: HashMap::new(),
+        }
+    }
+    
+    /// Add a uniform value
+    pub fn uniform<S: Into<String>, V: Into<UniformValue>>(mut self, name: S, value: V) -> Self {
+        self.uniforms.insert(name.into(), value.into());
+        self
+    }
+    
+/// Draw instanced triangles with the configured shader and uniforms
+pub fn instanced_triangles<V: Vertex>(self, triangles: &[Triangle<V>], instances: &[[[f32; 4]; 4]]) {
+    self.canvas.draw_instanced_triangles(triangles, instances, self.shader_id, self.uniforms);
+}
+
+/// Draw colored instanced triangles with the configured shader and uniforms
+pub fn colored_instanced_triangles<V: Vertex, I: bytemuck::Pod>(
+    self, 
+    triangles: &[Triangle<V>], 
+    instances: &[I]
+) {
+    // Convert to raw bytes
+    let vertices: Vec<V> = triangles.iter()
+        .flat_map(|t| t.vertices)
+        .collect();
+    
+    let vertices_bytes = bytemuck::cast_slice(&vertices).to_vec();
+    let instances_bytes = bytemuck::cast_slice(instances).to_vec();
+    
+    self.canvas.commands.push(DrawCommand::CustomInstancedTriangles {
+        shader_id: self.shader_id,
+        vertices: vertices_bytes,
+        instances: instances_bytes,
+        vertex_count: (triangles.len() * 3) as u32,
+        instance_count: instances.len() as u32,
+        uniforms: self.uniforms,
+    });
+}
 }
 
 // Implement From traits for UniformValue to make the API more ergonomic

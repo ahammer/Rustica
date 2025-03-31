@@ -2,7 +2,7 @@
 
 // Core ECS types
 pub use crate::component::Component;
-pub use crate::entity::{Entity, EntityBuilder};
+pub use crate::entity::{Entity, EntityBuilder, EntityExt};
 pub use crate::system::System;
 pub use crate::world::World;
 

@@ -52,6 +52,58 @@ pub struct CustomShader {
     descriptor: Option<ShaderDescriptor>,
 }
 
+/// Create the instance buffer attributes for model matrices (4 rows of vec4)
+/// Plus an instance color attribute at the end
+/// Since these are static attributes, we'll use a static array
+pub fn get_instance_attributes() -> [wgpu::VertexAttribute; 5] {
+    use std::mem;
+    
+    [
+        wgpu::VertexAttribute {
+            offset: 0,
+            shader_location: 3, // Start after the main vertex attributes
+            format: wgpu::VertexFormat::Float32x4,
+        },
+        wgpu::VertexAttribute {
+            offset: mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
+            shader_location: 4,
+            format: wgpu::VertexFormat::Float32x4,
+        },
+        wgpu::VertexAttribute {
+            offset: mem::size_of::<[f32; 8]>() as wgpu::BufferAddress,
+            shader_location: 5,
+            format: wgpu::VertexFormat::Float32x4,
+        },
+        wgpu::VertexAttribute {
+            offset: mem::size_of::<[f32; 12]>() as wgpu::BufferAddress,
+            shader_location: 6,
+            format: wgpu::VertexFormat::Float32x4,
+        },
+        wgpu::VertexAttribute {
+            offset: mem::size_of::<[f32; 16]>() as wgpu::BufferAddress,
+            shader_location: 7, // Location for instance color
+            format: wgpu::VertexFormat::Float32x3,
+        },
+    ]
+}
+
+/// Create an instance buffer layout for model matrices (4 rows of vec4)
+pub fn create_instance_buffer_layout<'a>() -> wgpu::VertexBufferLayout<'a> {
+    use std::mem;
+    
+    // Create a static reference to the attributes
+    static INSTANCE_ATTRIBUTES: once_cell::sync::Lazy<[wgpu::VertexAttribute; 5]> = 
+        once_cell::sync::Lazy::new(get_instance_attributes);
+    
+    // The stride needs to include both the 4x4 matrix (16 floats) and the color (3 floats)
+    // Plus padding (1 float) for alignment, totaling 20 floats
+    wgpu::VertexBufferLayout {
+        array_stride: mem::size_of::<[f32; 20]>() as wgpu::BufferAddress,
+        step_mode: wgpu::VertexStepMode::Instance,
+        attributes: &INSTANCE_ATTRIBUTES[..],
+    }
+}
+
 impl CustomShader {
     /// Create a new custom shader from a descriptor
     pub fn new(device: &Device, format: TextureFormat, descriptor: ShaderDescriptor) -> Self {
@@ -150,14 +202,22 @@ impl CustomShader {
             }).collect::<Vec<_>>(),
         };
 
-        // Create render pipeline
+        // Add the instance buffer layout
+        let instance_layout = create_instance_buffer_layout();
+        
+        // We need to collect the buffer layouts into a Vec because they need to live long enough
+        let mut buffer_layouts = Vec::new();
+        buffer_layouts.push(vertex_buffer_layout);
+        buffer_layouts.push(instance_layout);
+        
+        // Create render pipeline with both vertex and instance buffers
         let pipeline = device.create_render_pipeline(&RenderPipelineDescriptor {
             label: Some(&format!("{} Pipeline", descriptor.name)),
             layout: Some(&pipeline_layout),
             vertex: VertexState {
                 module: &shader_module,
                 entry_point: Some("vs_main"),
-                buffers: &[vertex_buffer_layout],
+                buffers: &buffer_layouts,
                 compilation_options: Default::default(),
             },
             fragment: Some(FragmentState {
@@ -179,7 +239,13 @@ impl CustomShader {
                 unclipped_depth: false,
                 conservative: false,
             },
-            depth_stencil: None,
+            depth_stencil: Some(wgpu::DepthStencilState {
+                format: TextureFormat::Depth32Float,
+                depth_write_enabled: true,
+                depth_compare: wgpu::CompareFunction::Less, // Standard depth test
+                stencil: wgpu::StencilState::default(),
+                bias: wgpu::DepthBiasState::default(),
+            }),
             multisample: MultisampleState {
                 count: 1,
                 mask: !0,

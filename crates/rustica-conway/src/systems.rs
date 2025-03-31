@@ -8,6 +8,7 @@ use crate::components::{Position, CellState};
 pub struct LifeSystem {
     pub grid_width: usize,
     pub grid_height: usize,
+    pub wraparound: bool,
 }
 
 impl System for LifeSystem {
@@ -38,13 +39,25 @@ impl System for LifeSystem {
                         continue;
                     }
                     
-                    let nx = (x as isize + dx) as usize;
-                    let ny = (y as isize + dy) as usize;
-                    
-                    // Check bounds
-                    if nx < self.grid_width && ny < self.grid_height {
-                        if grid[ny][nx] {
+                    // Handle wraparound when enabled
+                    if self.wraparound {
+                        // Use modulo arithmetic to wrap around the grid
+                        let nx = (((x as isize + dx) % self.grid_width as isize) + self.grid_width as isize) % self.grid_width as isize;
+                        let ny = (((y as isize + dy) % self.grid_height as isize) + self.grid_height as isize) % self.grid_height as isize;
+                        
+                        if grid[ny as usize][nx as usize] {
                             live_neighbors += 1;
+                        }
+                    } else {
+                        // Original non-wraparound behavior
+                        let nx = (x as isize + dx) as usize;
+                        let ny = (y as isize + dy) as usize;
+                        
+                        // Check bounds
+                        if nx < self.grid_width && ny < self.grid_height {
+                            if grid[ny][nx] {
+                                live_neighbors += 1;
+                            }
                         }
                     }
                 }

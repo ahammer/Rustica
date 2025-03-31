@@ -24,11 +24,42 @@ pub fn setup_conway_grid(
     world.register::<Position>();
     world.register::<CellState>();
     
+    // Calculate the bounding box of the pattern to center it
+    let mut min_x = usize::MAX;
+    let mut max_x = 0;
+    let mut min_y = usize::MAX;
+    let mut max_y = 0;
+    
+    for &(x, y) in initial_pattern {
+        min_x = min_x.min(x);
+        max_x = max_x.max(x);
+        min_y = min_y.min(y);
+        max_y = max_y.max(y);
+    }
+    
+    // Calculate pattern dimensions
+    let pattern_width = if initial_pattern.is_empty() { 0 } else { max_x - min_x + 1 };
+    let pattern_height = if initial_pattern.is_empty() { 0 } else { max_y - min_y + 1 };
+    
+    // Calculate offsets to center the pattern
+    let offset_x = (width.saturating_sub(pattern_width)) / 2;
+    let offset_y = (height.saturating_sub(pattern_height)) / 2;
+    
     // Create entities for each cell in the grid
     for y in 0..height {
         for x in 0..width {
-            // Default state is dead (false)
-            let is_alive = initial_pattern.contains(&(x, y));
+            // Check if this position corresponds to a live cell in the centered pattern
+            let pattern_x = x.checked_sub(offset_x);
+            let pattern_y = y.checked_sub(offset_y);
+            
+            let is_alive = match (pattern_x, pattern_y) {
+                (Some(px), Some(py)) => {
+                    px <= max_x - min_x && 
+                    py <= max_y - min_y && 
+                    initial_pattern.contains(&(px + min_x, py + min_y))
+                },
+                _ => false
+            };
             
             world.create_entity()
                 .with(Position { x, y })

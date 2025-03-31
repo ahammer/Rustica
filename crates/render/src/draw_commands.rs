@@ -39,4 +39,13 @@ pub enum DrawCommand {
         vertex_count: u32,
         uniforms: HashMap<String, UniformValue>, // Uniform values to set before drawing
     },
+    /// Draw instanced triangles with a custom shader
+    CustomInstancedTriangles {
+        shader_id: usize,          // Reference to the shader in the registry
+        vertices: Vec<u8>,         // Raw vertex data
+        instances: Vec<u8>,        // Raw instance data (array of model matrices)
+        vertex_count: u32,
+        instance_count: u32,
+        uniforms: HashMap<String, UniformValue>, // Global uniforms
+    },
 }
