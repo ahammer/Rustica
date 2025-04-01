@@ -112,7 +112,6 @@ impl System for VisualAnimationSystem {
 
 /// System for animating camera position and target
 pub struct CameraAnimationSystem {
-    pub transition_duration: f32, // How long transitions take in seconds
     pub delta_time: f32,          // Time since last frame
     pub grid_width: usize,        // Grid dimensions for calculating positions
     pub grid_height: usize,

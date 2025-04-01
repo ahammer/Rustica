@@ -1,7 +1,6 @@
 use std::sync::Arc;
-use cgmath::{Vector2, Vector3};
 use rustica_render::{
-    RenderWindow, ShaderDescriptor, Triangle, Vertex, StandardMeshAdapter
+    RenderWindow, ShaderDescriptor, Vertex, StandardMeshAdapter
 };
 
 use rustica_foundation::prelude::*;

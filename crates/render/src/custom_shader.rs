@@ -6,13 +6,13 @@ use wgpu::{
     BindGroupLayoutEntry, BindingType, Buffer, BufferBindingType, BufferDescriptor,
     BufferUsages, Device, PipelineLayoutDescriptor, RenderPipeline,
     RenderPipelineDescriptor, ShaderModuleDescriptor, ShaderSource, ShaderStages,
-    TextureFormat, VertexBufferLayout, VertexFormat, VertexState, FragmentState, ColorTargetState,
+    TextureFormat, VertexBufferLayout, VertexState, FragmentState, ColorTargetState,
     BlendState, ColorWrites, PrimitiveState, PrimitiveTopology, FrontFace, Face, PolygonMode,
     MultisampleState, Queue,
 };
 
 // Import core geometry traits from Foundation
-use rustica_foundation::geometry::{Vertex, VertexAttributeProvider, VertexAttribute, Triangle};
+use rustica_foundation::geometry::VertexAttribute;
 
 /// Uniform parameter descriptor
 pub struct UniformParameter {

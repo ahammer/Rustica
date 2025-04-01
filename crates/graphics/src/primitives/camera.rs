@@ -1,6 +1,6 @@
 // Camera primitive - Represents a camera in 3D space
 
-use cgmath::{perspective, Deg, EuclideanSpace, InnerSpace, Matrix4, Point3, Rad, Vector3};
+use cgmath::{perspective, Deg, EuclideanSpace, InnerSpace, Matrix4, Point3, Vector3};
 
 /// A camera in 3D space
 pub struct Camera {

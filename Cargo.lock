@@ -1414,10 +1414,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustica_extensions"
-version = "0.1.0"
-
-[[package]]
 name = "rustica_foundation"
 version = "0.1.0"
 dependencies = [

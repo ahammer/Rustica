@@ -11,7 +11,6 @@ use wgpu::{
 use wgpu::util::DeviceExt;
 use winit::dpi::PhysicalSize;
 use rustica_window::WindowApp;
-use cgmath::Matrix4;
 
 use crate::shader_types::ShaderType;
 use crate::draw_commands::DrawCommand;

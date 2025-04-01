@@ -5,7 +5,7 @@ use rustica_foundation::geometry::Mesh as FoundationMesh;
 use super::{
     cube::create_cube,
     plane::create_plane,
-    teapot::{create_teapot, create_default_teapot, UtahTeapot},
+    teapot::{create_teapot, create_default_teapot},
     sphere::{create_uv_sphere, create_solid_sphere, create_default_sphere}
 };
 

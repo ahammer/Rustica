@@ -56,10 +56,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Use a larger pattern for better visual effect
     setup_conway_grid(&mut world, grid_width, grid_height, &patterns::PULSAR);
     
-    // Calculate total grid size for camera positioning
-    let total_width = (grid_width as f32) * (cube_size + spacing);
-    let total_height = (grid_height as f32) * (cube_size + spacing);
-    
     // Create render window
     let mut window = RenderWindow::new("Conway's Game of Life - Infinity Board", 800, 600);
     
@@ -128,7 +124,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // 2. Camera animation
         let camera_system = CameraAnimationSystem {
-            transition_duration: animation_duration * 2.0, // Slower camera movements
             delta_time,
             grid_width,
             grid_height,

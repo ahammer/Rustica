@@ -1,7 +1,0 @@
-[package]
-name = "rustica_extensions"
-version = "0.1.0"
-edition = "2024"
-description = "Extensions for Rustica engine"
-
-[dependencies]

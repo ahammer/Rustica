@@ -1,7 +1,6 @@
 [workspace]
 members = [
-    "Foundation",
-    "Extensions",
+    "Foundation",    
     "Core",
     "crates/window",
     "crates/render",

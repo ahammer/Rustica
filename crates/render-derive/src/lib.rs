@@ -375,8 +375,8 @@ pub fn derive_shader_descriptor(input: TokenStream) -> TokenStream {
         }
     });
     
-    // Generate field names for dummy usage
-    let field_names = fields.iter().filter_map(|f| f.ident.as_ref()).collect::<Vec<_>>();
+    // Generate field names for dummy usage - adding underscore to mark as intentionally unused
+    let _field_names = fields.iter().filter_map(|f| f.ident.as_ref()).collect::<Vec<_>>();
     
     let expanded = quote! {
         #[allow(dead_code)]

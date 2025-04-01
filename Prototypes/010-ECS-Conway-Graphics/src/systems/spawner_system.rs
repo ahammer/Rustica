@@ -44,11 +44,11 @@ impl CellSpawnerSystem {
             }
 
             // Choose a random top-left starting position for the pattern
-            let mut rng = rand::thread_rng();
+            let mut rng = rand::rng();
             let max_start_x = self.grid_width - GLIDER_WIDTH;
             let max_start_y = self.grid_height - GLIDER_HEIGHT;
-            let start_x = rng.gen_range(0..=max_start_x);
-            let start_y = rng.gen_range(0..=max_start_y);
+            let start_x = rng.random_range(0..=max_start_x);
+            let start_y = rng.random_range(0..=max_start_y);
 
             // Collect entities and their positions first to avoid borrowing issues
             let mut entities_to_update = Vec::new();
