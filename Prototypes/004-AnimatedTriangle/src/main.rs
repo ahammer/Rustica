@@ -1,6 +1,5 @@
-use cgmath::{Point3, Vector3, Rad};
-use rustica_render::{RenderWindow, Triangle};
-use rustica_render_derive::{ShaderDescriptor, Vertex};
+use cgmath::{Matrix4, Point3, Vector3, Rad};
+use rustica_render::{RenderWindow, Triangle, Vertex, ShaderDescriptor};
 use rustica_foundation::geometry::Triangle as GeometryTriangle;
 use std::f32::consts::PI;
 
@@ -10,6 +9,25 @@ use std::f32::consts::PI;
 struct BasicVertex {
     position: [f32; 3], // location = 0
     color: [f32; 3],    // location = 1
+}
+
+// Define an instance struct for instanced rendering
+#[repr(C)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+struct TriangleInstance {
+    model_matrix: [[f32; 4]; 4], // locations 3,4,5,6 (4 rows)
+    color: [f32; 3],             // location 7
+    _padding: u32,               // For memory alignment
+}
+
+impl TriangleInstance {
+    pub fn new(model_matrix: [[f32; 4]; 4], color: [f32; 3]) -> Self {
+        Self {
+            model_matrix,
+            color,
+            _padding: 0,
+        }
+    }
 }
 
 // Define a shader descriptor using the derive macro
@@ -28,81 +46,103 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let shader_descriptor = AnimatedShaderDescriptor::descriptor();
     
     // Create a render window and register the shader
-    let mut window = RenderWindow::new("Spinning/Scaling Triangle", 800, 600);
+    let mut window = RenderWindow::new("Spinning/Scaling Triangle (Instanced)", 800, 600);
     let shader_id = window.register_shader(shader_descriptor);
     
     window.with_frame_callback(move |canvas| {
         let time = canvas.time();
         let seconds = time.as_secs_f32();
         
-        // Rotation: full rotation every 4 seconds.
-        let angle = Rad(seconds * PI / 2.0);
-        
-        // Scaling: oscillates between 0.5 and 1.5.
-        let scale = 0.5 * (seconds * 2.0).sin() + 1.0;
-        
-        // Original triangle vertices (not centered)
+        // Original triangle vertices (static, unit triangle)
         let vertices = [
-            Point3::new(0.0, 0.5, 0.0),
-            Point3::new(-0.5, -0.5, 0.0),
-            Point3::new(0.5, -0.5, 0.0),
-        ];
-        
-        // Compute the centroid of the triangle.
-        let center = Point3::new(
-            (vertices[0].x + vertices[1].x + vertices[2].x) / 3.0,
-            (vertices[0].y + vertices[1].y + vertices[2].y) / 3.0,
-            0.0,
-        );
-        
-        // Apply rotation and scaling around the centroid.
-        let transformed_points: Vec<Point3<f32>> = vertices.iter().map(|p| {
-            // Translate vertex so that the centroid is at the origin.
-            let dx = p.x - center.x;
-            let dy = p.y - center.y;
-            
-            // Rotate the point.
-            let rotated_x = dx * angle.0.cos() - dy * angle.0.sin();
-            let rotated_y = dx * angle.0.sin() + dy * angle.0.cos();
-            
-            // Scale and translate back.
-            Point3::new(
-                rotated_x * scale + center.x,
-                rotated_y * scale + center.y,
-                p.z,
-            )
-        }).collect();
-        
-        // Define colors that still pulse over time.
-        let colors = [
-            Vector3::new((seconds * 2.0).sin() * 0.5 + 0.5, 0.0, 0.0),
-            Vector3::new(0.0, (seconds * 2.0 + PI / 3.0).sin() * 0.5 + 0.5, 0.0),
-            Vector3::new(0.0, 0.0, (seconds * 2.0 + 2.0 * PI / 3.0).sin() * 0.5 + 0.5),
-        ];
-        
-        // Create basic vertices with transformed positions and colors
-        let basic_vertices = [
             BasicVertex {
-                position: [transformed_points[0].x, transformed_points[0].y, transformed_points[0].z],
-                color: [colors[0].x, colors[0].y, colors[0].z],
+                position: [0.0, 0.5, 0.0],    // Top
+                color: [1.0, 0.0, 0.0],       // Red
             },
             BasicVertex {
-                position: [transformed_points[1].x, transformed_points[1].y, transformed_points[1].z],
-                color: [colors[1].x, colors[1].y, colors[1].z],
+                position: [-0.5, -0.5, 0.0],  // Bottom left
+                color: [0.0, 1.0, 0.0],       // Green
             },
             BasicVertex {
-                position: [transformed_points[2].x, transformed_points[2].y, transformed_points[2].z],
-                color: [colors[2].x, colors[2].y, colors[2].z],
+                position: [0.5, -0.5, 0.0],   // Bottom right
+                color: [0.0, 0.0, 1.0],       // Blue
             },
         ];
         
         // Create a triangle from vertices
-        let triangle = GeometryTriangle { vertices: basic_vertices };
+        let triangle = GeometryTriangle { vertices };
         
-        // Draw the transformed triangle using the modern shader API
-        canvas.draw_with_shader(shader_id)
+        // Create instance data for multiple triangles
+        let mut instances = Vec::new();
+        
+        // Create a central spinning triangle
+        
+        // Rotation: full rotation every 4 seconds
+        let angle = seconds * PI / 2.0;
+        
+        // Scaling: oscillates between 0.5 and 1.5
+        let scale = 0.5 * (seconds * 2.0).sin() + 1.0;
+        
+        // Create rotation matrix
+        let rot_matrix = [
+            [angle.cos() * scale, -angle.sin() * scale, 0.0, 0.0],
+            [angle.sin() * scale, angle.cos() * scale, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ];
+        
+        // Add central rotating triangle with pulsing colors
+        let r = (seconds * 2.0).sin() * 0.5 + 0.5;
+        let g = (seconds * 2.0 + PI / 3.0).sin() * 0.5 + 0.5;
+        let b = (seconds * 2.0 + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
+        
+        instances.push(TriangleInstance::new(
+            rot_matrix,
+            [r, g, b]
+        ));
+        
+        // Add orbiting triangles
+        let num_orbits = 3;
+        for i in 0..num_orbits {
+            // Different orbit radius for each triangle
+            let orbit_radius = 0.6 + (i as f32 * 0.2);
+            
+            // Different rotation speeds
+            let orbit_speed = 1.0 + (i as f32 * 0.5);
+            let orbit_angle = seconds * orbit_speed;
+            
+            // Position on orbit
+            let orbit_x = orbit_radius * orbit_angle.cos();
+            let orbit_y = orbit_radius * orbit_angle.sin();
+            
+            // Individual rotation
+            let local_angle = seconds * (i as f32 + 1.0) * 1.5;
+            let local_scale = 0.3; // Smaller triangles
+            
+            // Create transformation matrix
+            let model_matrix = [
+                [local_angle.cos() * local_scale, -local_angle.sin() * local_scale, 0.0, 0.0],
+                [local_angle.sin() * local_scale, local_angle.cos() * local_scale, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [orbit_x, orbit_y, 0.0, 1.0],
+            ];
+            
+            // Create instance with unique color
+            let phase = (i as f32 / num_orbits as f32) * 2.0 * PI;
+            let r = (seconds * 1.5 + phase).sin() * 0.5 + 0.5;
+            let g = (seconds * 1.5 + phase + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
+            let b = (seconds * 1.5 + phase + 4.0 * PI / 3.0).sin() * 0.5 + 0.5;
+            
+            instances.push(TriangleInstance::new(
+                model_matrix,
+                [r, g, b]
+            ));
+        }
+        
+        // Draw all triangles using instanced rendering
+        canvas.draw_with_instances(shader_id)
               .uniform("time", seconds)
-              .triangles(&[triangle]);
+              .colored_instanced_triangles(&[triangle], &instances);
     })
     .run()?;
     
