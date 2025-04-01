@@ -1,8 +1,6 @@
 // Drawing commands for the rendering system
 
 use std::collections::HashMap;
-use cgmath::{Point3, Vector3};
-use crate::shader_types::ShaderType;
 
 /// Uniform value that can be passed to a shader
 #[derive(Debug, Clone)]

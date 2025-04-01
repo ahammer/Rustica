@@ -2,8 +2,7 @@
 
 use std::time::Duration;
 use std::collections::HashMap;
-use cgmath::{Point3, Vector3, Matrix4};
-use crate::shader_types::ShaderType;
+use cgmath::Matrix4;
 use crate::draw_commands::{DrawCommand, UniformValue};
 use crate::custom_shader::CustomShader;
 use rustica_foundation::geometry::{Triangle, Vertex};

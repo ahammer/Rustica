@@ -4,7 +4,7 @@ use std::time::Instant;
 use wgpu::{
     Backends, Color, CommandEncoderDescriptor, Device, Features, Instance, InstanceDescriptor, 
     Limits, LoadOp, MemoryHints, Operations, PowerPreference, Queue, RenderPassColorAttachment,
-    RenderPassDepthStencilAttachment, RenderPassDescriptor, RenderPipeline, RequestAdapterOptions, 
+    RenderPassDepthStencilAttachment, RenderPassDescriptor, RequestAdapterOptions, 
     StoreOp, Surface, SurfaceConfiguration, SurfaceTargetUnsafe, TextureUsages, TextureViewDescriptor,
     TextureDescriptor, TextureDimension, TextureFormat, TextureView, Extent3d
 };
@@ -12,9 +12,7 @@ use wgpu::util::DeviceExt;
 use winit::dpi::PhysicalSize;
 use rustica_window::WindowApp;
 
-use crate::shader_types::ShaderType;
 use crate::draw_commands::DrawCommand;
-use crate::shaders;
 use crate::custom_shader::CustomShader;
 
 /// Internal rendering context that manages WGPU resources
@@ -25,7 +23,6 @@ pub struct RenderContext {
     pub(crate) queue: Option<Queue>,
     pub(crate) config: Option<SurfaceConfiguration>,
     clear_color: Color,
-    shader_pipelines: std::collections::HashMap<ShaderType, RenderPipeline>,
     pub(crate) start_time: Instant,
     custom_shaders: Vec<CustomShader>,
     depth_texture: Option<TextureView>,
@@ -50,7 +47,6 @@ impl RenderContext {
                 b: 0.0,
                 a: 1.0,
             },
-            shader_pipelines: std::collections::HashMap::new(),
             start_time: Instant::now(),
             custom_shaders: Vec::new(),
             depth_texture: None,
@@ -122,10 +118,7 @@ impl RenderContext {
         self.config = Some(config);
         self.depth_texture = Some(depth_texture);
         
-        // Initialize shaders
-        self.initialize_shaders();
-        
-        // Initialize any placeholder custom shaders
+        // Initialize any custom shaders
         if let (Some(device), Some(config)) = (&self.device, &self.config) {
             for shader in &mut self.custom_shaders {
                 if !shader.is_initialized() {
@@ -159,19 +152,6 @@ impl RenderContext {
             b,
             a,
         };
-    }
-    
-    fn initialize_shaders(&mut self) {
-        if self.device.is_none() || self.config.is_none() {
-            return;
-        }
-        
-        let device_ref = self.device.as_ref().unwrap();
-        let config_ref = self.config.as_ref().unwrap();
-        let format = config_ref.format;
-        
-        // Initialize shaders using the shader module
-        self.shader_pipelines = shaders::initialize_shaders(device_ref, format);
     }
     
     pub fn process_draw_commands(&mut self, commands: &[DrawCommand]) -> Result<(), wgpu::SurfaceError> {
@@ -264,6 +244,7 @@ impl RenderContext {
                                 usage: wgpu::BufferUsages::VERTEX,
                             });
                             
+
                             // Draw the triangles if the shader is initialized
                             if let Some(pipeline) = shader.pipeline() {
                                 render_pass.set_pipeline(pipeline);
@@ -319,6 +300,7 @@ impl RenderContext {
                                 usage: wgpu::BufferUsages::VERTEX,
                             });
                             
+
                             // Create instance buffer
                             let instance_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                                 label: Some(&format!("{} Instance Buffer", shader.name)),
@@ -326,6 +308,7 @@ impl RenderContext {
                                 usage: wgpu::BufferUsages::VERTEX,
                             });
                             
+
                             // Draw the instanced triangles if the shader is initialized
                             if let Some(pipeline) = shader.pipeline() {
                                 render_pass.set_pipeline(pipeline);

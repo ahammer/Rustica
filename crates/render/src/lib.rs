@@ -8,19 +8,18 @@ pub use rustica_render_derive::*;
 pub use rustica_foundation::geometry::{Vertex, VertexAttributeProvider, VertexAttribute, Triangle};
 
 // Re-export public API
-pub use shader_types::ShaderType;
 pub use canvas::Canvas;
 pub use render_window::RenderWindow;
 pub use custom_shader::{CustomShader, ShaderDescriptor, UniformParameter};
 pub use standard_mesh::StandardMeshAdapter;
 
 // Internal modules
-mod shader_types;
+mod shader_types; // Empty file kept for backward compatibility
 mod draw_commands;
 mod canvas;
 mod render_context;
 mod render_window;
-mod shaders;
+mod shaders; // Simplified module, no built-in shaders
 mod custom_shader;
 mod standard_mesh;
 pub mod prelude;
