@@ -26,12 +26,6 @@ pub enum UniformValue {
 /// A draw command for the rendering system
 #[derive(Debug)]
 pub enum DrawCommand {
-    /// Draw a triangle with the given points and shader
-    Triangle {
-        points: [Point3<f32>; 3],
-        colors: [Vector3<f32>; 3],
-        shader: ShaderType,
-    },
     /// Draw triangles with a custom shader
     CustomTriangles {
         shader_id: usize,  // Reference to the shader in the registry

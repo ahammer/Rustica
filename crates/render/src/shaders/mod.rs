@@ -4,6 +4,14 @@ use wgpu::{Device, RenderPipeline};
 use crate::shader_types::ShaderType;
 
 /// Initialize shaders and create render pipelines
+/// 
+/// # Deprecated
+/// This function is deprecated and will be removed in a future version.
+/// Use the modern shader API with `ShaderDescriptor` and `draw_with_shader` instead.
+#[deprecated(
+    since = "0.2.0",
+    note = "This is being replaced by the custom shader API. Use the ShaderDescriptor derive macro instead."
+)]
 pub fn initialize_shaders(
     device: &Device,
     format: wgpu::TextureFormat,

@@ -46,15 +46,6 @@ impl<'a> Canvas<'a> {
         self.queue = Some(queue);
     }
     
-    /// Draw a triangle with the given points and shader
-    pub fn draw_triangle(&mut self, points: [Point3<f32>; 3], colors: [Vector3<f32>; 3], shader: ShaderType) {
-        self.commands.push(DrawCommand::Triangle {
-            points,
-            colors,
-            shader,
-        });
-    }
-    
     /// Draw triangles using a custom shader
     pub fn draw_triangles<V: Vertex>(&mut self, triangles: &[Triangle<V>], shader_id: usize) {
         self.draw_triangles_with_uniforms(triangles, shader_id, HashMap::new());
@@ -264,6 +255,7 @@ impl From<Matrix4<f32>> for UniformValue {
 mod tests {
     use super::*;
     use std::time::Duration;
+    use rustica_foundation::geometry::Triangle;
 
     #[test]
     fn test_canvas_new() {
@@ -273,33 +265,4 @@ mod tests {
         assert!(canvas.commands.is_empty());
     }
 
-    #[test]
-    fn test_canvas_draw_triangle() {
-        let time = Duration::from_secs(0);
-        let mut canvas = Canvas::new(time);
-        
-        let points = [
-            Point3::new(0.0, 0.5, 0.0),
-            Point3::new(-0.5, -0.5, 0.0),
-            Point3::new(0.5, -0.5, 0.0),
-        ];
-        
-        let colors = [
-            Vector3::new(1.0, 0.0, 0.0),
-            Vector3::new(0.0, 1.0, 0.0),
-            Vector3::new(0.0, 0.0, 1.0),
-        ];
-        
-        canvas.draw_triangle(points, colors, ShaderType::DebugColor);
-        
-        assert_eq!(canvas.commands.len(), 1);
-        
-        if let DrawCommand::Triangle { points: p, colors: c, shader } = &canvas.commands[0] {
-            assert_eq!(p, &points);
-            assert_eq!(c, &colors);
-            assert_eq!(shader, &ShaderType::DebugColor);
-        } else {
-            panic!("Expected Triangle draw command");
-        }
-    }
 }

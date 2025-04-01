@@ -130,6 +130,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             cube_size,
             spacing,
         };
+        
         camera_system.run(&mut world);
         
         // Get current camera state

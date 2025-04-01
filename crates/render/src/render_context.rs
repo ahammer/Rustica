@@ -223,38 +223,6 @@ impl RenderContext {
             // Process each draw command
             for command in commands {
                 match command {
-                    DrawCommand::Triangle { points, colors, shader } => {
-                        if let Some(pipeline) = self.shader_pipelines.get(shader) {
-                            // Create vertices from points and colors
-                            let vertices = [
-                                shaders::Vertex { 
-                                    position: [points[0].x, points[0].y, points[0].z], 
-                                    color: [colors[0].x, colors[0].y, colors[0].z] 
-                                },
-                                shaders::Vertex { 
-                                    position: [points[1].x, points[1].y, points[1].z], 
-                                    color: [colors[1].x, colors[1].y, colors[1].z] 
-                                },
-                                shaders::Vertex { 
-                                    position: [points[2].x, points[2].y, points[2].z], 
-                                    color: [colors[2].x, colors[2].y, colors[2].z] 
-                                },
-                            ];
-                            
-
-                            // Create vertex buffer
-                            let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                                label: Some("Vertex Buffer"),
-                                contents: bytemuck::cast_slice(&vertices),
-                                usage: wgpu::BufferUsages::VERTEX,
-                            });
-                            
-                            // Draw the triangle
-                            render_pass.set_pipeline(pipeline);
-                            render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
-                            render_pass.draw(0..3, 0..1);
-                        }
-                    },
                     DrawCommand::CustomTriangles { shader_id, vertices, vertex_count, uniforms } => {
                         // Get the custom shader from the registry
                         if let Some(shader) = self.custom_shaders.get(*shader_id) {

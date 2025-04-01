@@ -73,7 +73,9 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "cgmath",
+ "rustica_foundation",
  "rustica_render",
+ "rustica_render_derive",
  "wgpu",
  "winit",
 ]
@@ -145,7 +147,9 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "cgmath",
+ "rustica_foundation",
  "rustica_render",
+ "rustica_render_derive",
  "wgpu",
  "winit",
 ]
