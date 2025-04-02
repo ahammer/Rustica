@@ -150,7 +150,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         
         // Draw all teapots with a single instanced draw call
-        canvas.draw_with_shader(shader_id)
+        canvas.draw_with_instances(shader_id)
               .uniform("view", view)
               .uniform("projection", projection)
               .uniform("time", time)

@@ -102,11 +102,6 @@ impl<'a> Canvas<'a> {
         });
     }
     
-    /// Create a shader draw builder for more fluent API
-    pub fn draw_with_shader(&mut self, shader_id: usize) -> ShaderDrawBuilder<'_, 'a> {
-        ShaderDrawBuilder::new(self, shader_id)
-    }
-    
     /// Create a shader draw builder for instanced drawing
     pub fn draw_with_instances(&mut self, shader_id: usize) -> InstancedShaderDrawBuilder<'_, 'a> {
         InstancedShaderDrawBuilder::new(self, shader_id)
@@ -118,34 +113,6 @@ impl<'a> Canvas<'a> {
     }
 }
 
-/// Builder for shader draw operations
-pub struct ShaderDrawBuilder<'b, 'a> {
-    canvas: &'b mut Canvas<'a>,
-    shader_id: usize,
-    uniforms: HashMap<String, UniformValue>,
-}
-
-impl<'b, 'a> ShaderDrawBuilder<'b, 'a> {
-    /// Create a new shader draw builder
-    fn new(canvas: &'b mut Canvas<'a>, shader_id: usize) -> Self {
-        Self {
-            canvas,
-            shader_id,
-            uniforms: HashMap::new(),
-        }
-    }
-    
-    /// Add a uniform value
-    pub fn uniform<S: Into<String>, V: Into<UniformValue>>(mut self, name: S, value: V) -> Self {
-        self.uniforms.insert(name.into(), value.into());
-        self
-    }
-    
-    /// Draw triangles with the configured shader and uniforms
-    pub fn triangles<V: Vertex>(self, triangles: &[Triangle<V>]) {
-        self.canvas.draw_triangles_with_uniforms(triangles, self.shader_id, self.uniforms);
-    }
-}
 
 /// Builder for instanced shader draw operations
 pub struct InstancedShaderDrawBuilder<'b, 'a> {

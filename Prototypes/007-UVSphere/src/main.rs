@@ -190,7 +190,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         
         // Draw all spheres with a single instanced call
-        canvas.draw_with_shader(shader_id)
+        canvas.draw_with_instances(shader_id)
               .uniform("view", view)
               .uniform("projection", projection)
               .uniform("time", time)
