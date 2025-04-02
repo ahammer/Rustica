@@ -14,7 +14,6 @@ pub use custom_shader::{CustomShader, ShaderDescriptor, UniformParameter};
 pub use standard_mesh::StandardMeshAdapter;
 
 // Internal modules
-mod shader_types; // Empty file kept for backward compatibility
 mod draw_commands;
 mod canvas;
 mod render_context;
