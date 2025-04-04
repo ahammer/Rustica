@@ -1,11 +1,33 @@
-use cgmath::{Matrix4, Point3, Vector3, Rad};
-use rustica_render::{RenderWindow, Triangle, Vertex, ShaderDescriptor};
-use rustica_foundation::geometry::Triangle as GeometryTriangle;
 use std::f32::consts::PI;
+use rustica_render::{RenderWindow, ShaderProperties};
+use rustica_foundation::geometry::Triangle as GeometryTriangle;
 
-// Define a custom vertex type with the Vertex trait
+// Define our shader using the ShaderProperties derive macro
+#[derive(ShaderProperties)]
+#[shader(file = "./src/shaders/animated_triangle.wgsl")]
+struct AnimatedShader {
+    // Vertex attributes
+    #[vertex(location = 0)]
+    position: [f32; 3],
+    
+    #[vertex(location = 1)]
+    color: [f32; 3],
+    
+    // Instance attributes
+    #[instance(location = 3)]
+    model_matrix: [[f32; 4]; 4],
+    
+    #[instance(location = 7)]
+    instance_color: [f32; 3],
+    
+    // Uniform
+    #[uniform(binding = 0)]
+    time: f32,
+}
+
+// Define a custom vertex type
 #[repr(C)]
-#[derive(Copy, Clone, Debug, Vertex)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 struct BasicVertex {
     position: [f32; 3], // location = 0
     color: [f32; 3],    // location = 1
@@ -30,20 +52,9 @@ impl TriangleInstance {
     }
 }
 
-// Define a shader descriptor using the derive macro
-#[derive(ShaderDescriptor)]
-#[shader(source = "./src/shaders/animated_triangle.wgsl")]
-struct AnimatedShaderDescriptor {
-    #[vertex_type]
-    vertex: BasicVertex,
-    
-    #[uniform(binding = 0)]
-    time: f32,
-}
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a shader descriptor
-    let shader_descriptor = AnimatedShaderDescriptor::descriptor();
+    let shader_descriptor = AnimatedShader::descriptor();
     
     // Create a render window and register the shader
     let mut window = RenderWindow::new("Spinning/Scaling Triangle (Instanced)", 800, 600);
@@ -53,17 +64,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let time = canvas.time();
         let seconds = time.as_secs_f32();
         
-        // Original triangle vertices (static, unit triangle)
+        // Define the triangle vertices using the generated vertex type
         let vertices = [
-            BasicVertex {
+            AnimatedShaderVertex {
                 position: [0.0, 0.5, 0.0],    // Top
                 color: [1.0, 0.0, 0.0],       // Red
             },
-            BasicVertex {
+            AnimatedShaderVertex {
                 position: [-0.5, -0.5, 0.0],  // Bottom left
                 color: [0.0, 1.0, 0.0],       // Green
             },
-            BasicVertex {
+            AnimatedShaderVertex {
                 position: [0.5, -0.5, 0.0],   // Bottom right
                 color: [0.0, 0.0, 1.0],       // Blue
             },
@@ -96,10 +107,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let g = (seconds * 2.0 + PI / 3.0).sin() * 0.5 + 0.5;
         let b = (seconds * 2.0 + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
         
-        instances.push(TriangleInstance::new(
-            rot_matrix,
-            [r, g, b]
-        ));
+        instances.push(AnimatedShaderInstances {
+            model_matrix: rot_matrix,
+            instance_color: [r, g, b],
+        });
         
         // Add orbiting triangles
         let num_orbits = 3;
@@ -133,10 +144,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let g = (seconds * 1.5 + phase + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
             let b = (seconds * 1.5 + phase + 4.0 * PI / 3.0).sin() * 0.5 + 0.5;
             
-            instances.push(TriangleInstance::new(
-                model_matrix,
-                [r, g, b]
-            ));
+            instances.push(AnimatedShaderInstances {
+                model_matrix: model_matrix,
+                instance_color: [r, g, b],
+            });
         }
         
         // Draw all triangles using instanced rendering
