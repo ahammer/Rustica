@@ -327,7 +327,7 @@ for command in commands {
         DrawCommand::GeometryWithInstances { 
             shader_id, vertices, indices, instances, 
             vertex_count, index_count, instance_count, 
-            primitive_type, uniforms 
+            uniforms 
         } => {
             // Get the custom shader from the registry
             if let Some(shader) = self.custom_shaders.get(*shader_id) {

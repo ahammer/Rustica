@@ -1,7 +1,6 @@
 // Drawing commands for the rendering system
 
 use std::collections::HashMap;
-use rustica_foundation::geometry::PrimitiveType;
 
 /// Uniform value that can be passed to a shader
 #[derive(Debug, Clone)]
@@ -52,7 +51,6 @@ pub enum DrawCommand {
         vertex_count: u32,
         index_count: u32,
         instance_count: u32,
-        primitive_type: PrimitiveType, // Triangle list or strip
         uniforms: HashMap<String, UniformValue>, // Global uniforms
     },
 }

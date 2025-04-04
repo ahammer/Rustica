@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use cgmath::Matrix4;
 use crate::draw_commands::{DrawCommand, UniformValue};
 use crate::custom_shader::CustomShader;
-use rustica_foundation::geometry::{Triangle, Vertex, Geometry, PrimitiveType};
+use rustica_foundation::geometry::{Triangle, Vertex, Geometry};
 use wgpu::Queue;
 
 /// Canvas for drawing operations
@@ -192,7 +192,6 @@ pub fn pump_geometry<V: Vertex, I: bytemuck::Pod>(
         vertex_count: geometry.vertices.len() as u32,
         index_count: geometry.indices.len() as u32,
         instance_count: instances.len() as u32,
-        primitive_type: geometry.primitive_type.clone(),
         uniforms: self.uniforms,
     });
 }

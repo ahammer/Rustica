@@ -1,25 +1,16 @@
 use crate::geometry::Vertex;
 
-/// Primitive type for rendering
-#[derive(Debug, Clone)]
-pub enum PrimitiveType {
-    TriangleList,
-    TriangleStrip,
-}
-
-/// Geometry container with vertices and indices
+/// Geometry container with vertices and indices for triangle lists
 #[derive(Debug)]
 pub struct Geometry<V: Vertex> {
     pub vertices: Vec<V>,
     pub indices: Vec<u32>,
-    pub primitive_type: PrimitiveType,
 }
 
-/// Builder for geometry with optimized primitive types
+/// Builder for geometry using triangle lists
 pub struct GeometryBuilder<V: Vertex> {
     vertices: Vec<V>,
     indices: Vec<u32>,
-    primitive_type: PrimitiveType,
 }
 
 impl<V: Vertex> GeometryBuilder<V> {
@@ -28,7 +19,6 @@ impl<V: Vertex> GeometryBuilder<V> {
         Self {
             vertices: Vec::new(),
             indices: Vec::new(),
-            primitive_type: PrimitiveType::TriangleList,
         }
     }
     
@@ -37,7 +27,6 @@ impl<V: Vertex> GeometryBuilder<V> {
         Self {
             vertices: Vec::with_capacity(vertices),
             indices: Vec::with_capacity(indices),
-            primitive_type: PrimitiveType::TriangleList,
         }
     }
     
@@ -56,23 +45,32 @@ impl<V: Vertex> GeometryBuilder<V> {
     }
     
     /// Add a triangle strip to the geometry
+    /// 
+    /// Takes vertices that would form a triangle strip but internally converts them
+    /// to a triangle list with proper indices to maintain consistent winding order.
     pub fn triangle_strip(&mut self, vertices: &[V]) -> &mut Self {
         if vertices.len() < 3 {
             return self; // Need at least 3 vertices for a strip
         }
         
-        // Set primitive type to strip
-        self.primitive_type = PrimitiveType::TriangleStrip;
-        
         // Add all vertices
         let base_index = self.vertices.len() as u32;
         self.vertices.extend_from_slice(vertices);
         
-        // For a triangle strip, we need indices for (n-2) triangles
+        // Generate triangle list indices that replicate a strip
+        // Ensuring consistent winding order for all triangles
         for i in 0..(vertices.len() - 2) {
-            self.indices.push(base_index + i as u32);
-            self.indices.push(base_index + (i + 1) as u32);
-            self.indices.push(base_index + (i + 2) as u32);
+            if i % 2 == 0 {
+                // Even triangles: counter-clockwise winding
+                self.indices.push(base_index + i as u32);
+                self.indices.push(base_index + (i + 1) as u32);
+                self.indices.push(base_index + (i + 2) as u32);
+            } else {
+                // Odd triangles: reverse vertex order to maintain winding direction
+                self.indices.push(base_index + i as u32);
+                self.indices.push(base_index + (i + 2) as u32);
+                self.indices.push(base_index + (i + 1) as u32);
+            }
         }
         
         self
@@ -83,7 +81,6 @@ impl<V: Vertex> GeometryBuilder<V> {
         Geometry {
             vertices: self.vertices,
             indices: self.indices,
-            primitive_type: self.primitive_type,
         }
     }
 }
