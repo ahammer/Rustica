@@ -1,45 +1,23 @@
-use cgmath::{Matrix4, Point3, Vector3};
-use rustica_render::{RenderWindow, Triangle, Vertex, ShaderDescriptor};
+use rustica_render::RenderWindow;
+use rustica_render_derive::ShaderProperties;
 use rustica_foundation::geometry::Triangle as GeometryTriangle;
 
-// Define a custom vertex type with the Vertex trait
-#[repr(C)]
-#[derive(Copy, Clone, Debug, Vertex)]
-struct BasicVertex {
-    position: [f32; 3], // location = 0
-    color: [f32; 3],    // location = 1
-}
-
-// Define an instance struct for instanced rendering
-#[repr(C)]
-#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
-struct TriangleInstance {
-    model_matrix: [[f32; 4]; 4], // locations 3,4,5,6 (4 rows)
-    color: [f32; 3],             // location 7
-    _padding: u32,               // For memory alignment
-}
-
-impl TriangleInstance {
-    pub fn new(model_matrix: [[f32; 4]; 4], color: [f32; 3]) -> Self {
-        Self {
-            model_matrix,
-            color,
-            _padding: 0,
-        }
-    }
-}
-
-// Define a shader descriptor using the derive macro
-#[derive(ShaderDescriptor)]
-#[shader(source = "./src/shaders/basic_triangle.wgsl")]
-struct BasicShaderDescriptor {
-    #[vertex_type]
-    vertex: BasicVertex,
+// Define our shader using the ShaderProperties derive macro
+#[derive(ShaderProperties)]
+#[shader(file = "./src/shaders/basic_triangle.wgsl")]
+struct BasicShader {
+    // We only need to specify the attributes, not the actual data
+    // Instance attributes
+    #[instance(location = 3)]
+    model_matrix: [[f32; 4]; 4],
+    
+    #[instance(location = 7)]
+    color: [f32; 3],
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a shader descriptor
-    let shader_descriptor = BasicShaderDescriptor::descriptor();
+    let shader_descriptor = BasicShader::descriptor();
     
     // Create a render window with a frame callback
     let mut window = RenderWindow::new("Basic Triangle (Instanced)", 800, 600);
@@ -48,17 +26,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let shader_id = window.register_shader(shader_descriptor);
     
     window.with_frame_callback(move |canvas| {
-        // Define the triangle vertices (static positions)
+        // Define the triangle vertices using our custom vertex type
         let vertices = [
-            BasicVertex {
+            BasicShaderVertex {
                 position: [0.0, 0.5, 0.0],    // Top
                 color: [1.0, 0.0, 0.0],       // Red
             },
-            BasicVertex {
+            BasicShaderVertex {
                 position: [-0.5, -0.5, 0.0],  // Bottom left
                 color: [0.0, 1.0, 0.0],       // Green
             },
-            BasicVertex {
+            BasicShaderVertex {
                 position: [0.5, -0.5, 0.0],   // Bottom right
                 color: [0.0, 0.0, 1.0],       // Blue
             },
@@ -79,7 +57,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ];
         
         // Add center triangle with full color
-        instances.push(TriangleInstance::new(
+        instances.push(InstanceData::new(
             identity,
             [1.0, 1.0, 1.0] // White tint (preserves original vertex colors)
         ));
@@ -103,7 +81,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ];
             
             // Create instance with position offset and slightly dimmer color
-            instances.push(TriangleInstance::new(
+            instances.push(InstanceData::new(
                 model,
                 [0.7, 0.7, 0.7] // Slightly dimmer
             ));

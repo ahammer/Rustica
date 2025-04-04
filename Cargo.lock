@@ -148,6 +148,7 @@ dependencies = [
  "cgmath",
  "rustica_foundation",
  "rustica_render",
+ "rustica_render_derive",
  "wgpu",
  "winit",
 ]
