@@ -6,13 +6,19 @@ use rustica_foundation::geometry::Triangle as GeometryTriangle;
 #[derive(ShaderProperties)]
 #[shader(file = "./src/shaders/basic_triangle.wgsl")]
 struct BasicShader {
-    // We only need to specify the attributes, not the actual data
+    // Vertex attributes
+    #[vertex(location = 0)]
+    position: [f32; 3],
+    
+    #[vertex(location = 1)]
+    color: [f32; 3],
+    
     // Instance attributes
     #[instance(location = 3)]
     model_matrix: [[f32; 4]; 4],
     
     #[instance(location = 7)]
-    color: [f32; 3],
+    instance_color: [f32; 3],
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -26,7 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let shader_id = window.register_shader(shader_descriptor);
     
     window.with_frame_callback(move |canvas| {
-        // Define the triangle vertices using our custom vertex type
+        // Define the triangle vertices using the generated vertex type
         let vertices = [
             BasicShaderVertex {
                 position: [0.0, 0.5, 0.0],    // Top
@@ -57,10 +63,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ];
         
         // Add center triangle with full color
-        instances.push(InstanceData::new(
-            identity,
-            [1.0, 1.0, 1.0] // White tint (preserves original vertex colors)
-        ));
+        instances.push(BasicShaderInstances {
+            model_matrix: identity,
+            instance_color: [1.0, 1.0, 1.0], // White tint (preserves original vertex colors)
+        });
         
         // Add smaller triangles arranged in a pattern
         for i in 0..3 {
@@ -81,10 +87,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ];
             
             // Create instance with position offset and slightly dimmer color
-            instances.push(InstanceData::new(
-                model,
-                [0.7, 0.7, 0.7] // Slightly dimmer
-            ));
+            instances.push(BasicShaderInstances {
+                model_matrix: model,
+                instance_color: [0.7, 0.7, 0.7], // Slightly dimmer
+            });
         }
         
         // Draw all triangles using instanced rendering

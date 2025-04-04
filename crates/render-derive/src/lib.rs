@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
-use syn::{parse_macro_input, DeriveInput, Fields, Data, Meta, Lit, Expr, ExprLit, Type, Attribute};
+use syn::{parse_macro_input, DeriveInput, Fields, Data, Meta, Lit, Expr, ExprLit, Type};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
 
@@ -144,35 +144,85 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
     let uniform_name = format_ident!("{}Uniforms", name);
     let instance_name = format_ident!("{}Instances", name);
 
+    // Create vertex attribute definitions for the layout implementation
+    let vertex_attribute_defs = vertex_fields.iter().enumerate().map(|(idx, (field_ident, _, loc, _))| {
+        // Use a simpler approach for calculating offsets - all as wgpu::BufferAddress
+        let offset = if idx == 0 {
+            quote! { 0u64 }
+        } else {
+            quote! { 
+                // Calculate offset based on previous fields, ensuring consistent types
+                (#idx * std::mem::size_of::<[f32; 3]>()) as u64
+            }
+        };
+        
+        quote! {
+            wgpu::VertexAttribute {
+                format: wgpu::VertexFormat::Float32x3, // Default to Float32x3, could be customized
+                offset: #offset,
+                shader_location: #loc,
+            }
+        }
+    }).collect::<Vec<_>>();
+
+    // Create vertex struct with Vertex trait implementation
     let vertex_def = if !vertex_fields.is_empty() {
         let fields = vertex_fields.iter().map(|(i, t, _, _)| quote! { pub #i: #t });
+        
         quote! {
-            #[repr(C)] #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+            #[repr(C)]
+            #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #vertex_name {
                 #(#fields,)*
             }
+            
+            // Implement Vertex trait
+            impl rustica_render::Vertex for #vertex_name {
+                fn layout() -> wgpu::VertexBufferLayout<'static> {
+                    static ATTRIBUTES: &[wgpu::VertexAttribute] = &[
+                        #(#vertex_attribute_defs,)*
+                    ];
+                    
+                    wgpu::VertexBufferLayout {
+                        array_stride: std::mem::size_of::<Self>() as wgpu::BufferAddress,
+                        step_mode: wgpu::VertexStepMode::Vertex,
+                        attributes: ATTRIBUTES,
+                    }
+                }
+            }
+            
+            // We don't need to explicitly implement VertexAttributeProvider since it's 
+            // automatically implemented for any type that implements Vertex
         }
-    } else { quote! {} };
+    } else { 
+        quote! {} 
+    };
 
     let uniform_def = if !uniform_fields.is_empty() {
         let fields = uniform_fields.iter().map(|(i, t, _)| quote! { pub #i: #t });
         quote! {
-            #[repr(C)] #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+            #[repr(C)]
+            #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #uniform_name {
                 #(#fields,)*
             }
         }
-    } else { quote! {} };
+    } else { 
+        quote! {} 
+    };
 
     let instance_def = if !instance_fields.is_empty() {
         let fields = instance_fields.iter().map(|(i, t, _)| quote! { pub #i: #t });
         quote! {
-            #[repr(C)] #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+            #[repr(C)]
+            #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #instance_name {
                 #(#fields,)*
             }
         }
-    } else { quote! {} };
+    } else { 
+        quote! {} 
+    };
 
     let shader_source = if let Some(s) = shader_inline {
         quote! { String::from(#s) }
