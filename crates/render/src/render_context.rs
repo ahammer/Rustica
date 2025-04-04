@@ -200,132 +200,207 @@ impl RenderContext {
                 occlusion_query_set: None,
             });
             
-            // Process each draw command
-            for command in commands {
-                match command {
-                    DrawCommand::CustomTriangles { shader_id, vertices, vertex_count, uniforms } => {
-                        // Get the custom shader from the registry
-                        if let Some(shader) = self.custom_shaders.get(*shader_id) {
-                            // Apply uniforms if any
-                            if !uniforms.is_empty() && self.queue.is_some() {
-                                let queue = self.queue.as_ref().unwrap();
-                                for (name, value) in uniforms {
-                                    match value {
-                                        crate::draw_commands::UniformValue::Float(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Vec2(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Vec3(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Vec4(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Mat4(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Int(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::UInt(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                    }
-                                }
-                            }
-                            
-
-                            // Create vertex buffer
-                            let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                                label: Some(&format!("{} Vertex Buffer", shader.name)),
-                                contents: vertices,
-                                usage: wgpu::BufferUsages::VERTEX,
-                            });
-                            
-
-                            // Draw the triangles if the shader is initialized
-                            if let Some(pipeline) = shader.pipeline() {
-                                render_pass.set_pipeline(pipeline);
-                                render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
-                                
-                                // Set bind group if available
-                                if let Some(bind_group) = shader.bind_group() {
-                                    render_pass.set_bind_group(0, bind_group, &[]);
-                                }
-                                
-                                render_pass.draw(0..*vertex_count, 0..1);
-                            }
-                        }
-                    },
-                    DrawCommand::CustomInstancedTriangles { shader_id, vertices, instances, vertex_count, instance_count, uniforms } => {
-                        // Get the custom shader from the registry
-                        if let Some(shader) = self.custom_shaders.get(*shader_id) {
-                            // Apply uniforms if any
-                            if !uniforms.is_empty() && self.queue.is_some() {
-                                let queue = self.queue.as_ref().unwrap();
-                                for (name, value) in uniforms {
-                                    match value {
-                                        crate::draw_commands::UniformValue::Float(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Vec2(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Vec3(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Vec4(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Mat4(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::Int(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                        crate::draw_commands::UniformValue::UInt(val) => {
-                                            shader.set_uniform(name, *val, Some(queue));
-                                        },
-                                    }
-                                }
-                            }
-                            
-
-                            // Create vertex buffer
-                            let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                                label: Some(&format!("{} Vertex Buffer", shader.name)),
-                                contents: vertices,
-                                usage: wgpu::BufferUsages::VERTEX,
-                            });
-                            
-
-                            // Create instance buffer
-                            let instance_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                                label: Some(&format!("{} Instance Buffer", shader.name)),
-                                contents: instances,
-                                usage: wgpu::BufferUsages::VERTEX,
-                            });
-                            
-
-                            // Draw the instanced triangles if the shader is initialized
-                            if let Some(pipeline) = shader.pipeline() {
-                                render_pass.set_pipeline(pipeline);
-                                render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
-                                render_pass.set_vertex_buffer(1, instance_buffer.slice(..));
-                                
-                                // Set bind group if available
-                                if let Some(bind_group) = shader.bind_group() {
-                                    render_pass.set_bind_group(0, bind_group, &[]);
-                                }
-                                
-                                render_pass.draw(0..*vertex_count, 0..*instance_count);
-                            }
+// Process each draw command
+for command in commands {
+    match command {
+        DrawCommand::CustomTriangles { shader_id, vertices, vertex_count, uniforms } => {
+            // Get the custom shader from the registry
+            if let Some(shader) = self.custom_shaders.get(*shader_id) {
+                // Apply uniforms if any
+                if !uniforms.is_empty() && self.queue.is_some() {
+                    let queue = self.queue.as_ref().unwrap();
+                    for (name, value) in uniforms {
+                        match value {
+                            crate::draw_commands::UniformValue::Float(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec2(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec3(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec4(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Mat4(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Int(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::UInt(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
                         }
                     }
                 }
+                
+
+                // Create vertex buffer
+                let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some(&format!("{} Vertex Buffer", shader.name)),
+                    contents: vertices,
+                    usage: wgpu::BufferUsages::VERTEX,
+                });
+                
+
+                // Draw the triangles if the shader is initialized
+                if let Some(pipeline) = shader.pipeline() {
+                    render_pass.set_pipeline(pipeline);
+                    render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
+                    
+                    // Set bind group if available
+                    if let Some(bind_group) = shader.bind_group() {
+                        render_pass.set_bind_group(0, bind_group, &[]);
+                    }
+                    
+                    render_pass.draw(0..*vertex_count, 0..1);
+                }
             }
+        },
+        DrawCommand::CustomInstancedTriangles { shader_id, vertices, instances, vertex_count, instance_count, uniforms } => {
+            // Get the custom shader from the registry
+            if let Some(shader) = self.custom_shaders.get(*shader_id) {
+                // Apply uniforms if any
+                if !uniforms.is_empty() && self.queue.is_some() {
+                    let queue = self.queue.as_ref().unwrap();
+                    for (name, value) in uniforms {
+                        match value {
+                            crate::draw_commands::UniformValue::Float(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec2(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec3(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec4(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Mat4(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Int(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::UInt(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                        }
+                    }
+                }
+                
+
+                // Create vertex buffer
+                let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some(&format!("{} Vertex Buffer", shader.name)),
+                    contents: vertices,
+                    usage: wgpu::BufferUsages::VERTEX,
+                });
+                
+
+                // Create instance buffer
+                let instance_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some(&format!("{} Instance Buffer", shader.name)),
+                    contents: instances,
+                    usage: wgpu::BufferUsages::VERTEX,
+                });
+                
+
+                // Draw the instanced triangles if the shader is initialized
+                if let Some(pipeline) = shader.pipeline() {
+                    render_pass.set_pipeline(pipeline);
+                    render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
+                    render_pass.set_vertex_buffer(1, instance_buffer.slice(..));
+                    
+                    // Set bind group if available
+                    if let Some(bind_group) = shader.bind_group() {
+                        render_pass.set_bind_group(0, bind_group, &[]);
+                    }
+                    
+                    render_pass.draw(0..*vertex_count, 0..*instance_count);
+                }
+            }
+        },
+        DrawCommand::GeometryWithInstances { 
+            shader_id, vertices, indices, instances, 
+            vertex_count, index_count, instance_count, 
+            primitive_type, uniforms 
+        } => {
+            // Get the custom shader from the registry
+            if let Some(shader) = self.custom_shaders.get(*shader_id) {
+                // Apply uniforms if any
+                if !uniforms.is_empty() && self.queue.is_some() {
+                    let queue = self.queue.as_ref().unwrap();
+                    for (name, value) in uniforms {
+                        match value {
+                            crate::draw_commands::UniformValue::Float(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec2(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec3(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Vec4(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Mat4(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::Int(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                            crate::draw_commands::UniformValue::UInt(val) => {
+                                shader.set_uniform(name, *val, Some(queue));
+                            },
+                        }
+                    }
+                }
+                
+                // Create vertex buffer
+                let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some(&format!("{} Vertex Buffer", shader.name)),
+                    contents: vertices,
+                    usage: wgpu::BufferUsages::VERTEX,
+                });
+                
+                // Create instance buffer
+                let instance_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some(&format!("{} Instance Buffer", shader.name)),
+                    contents: instances,
+                    usage: wgpu::BufferUsages::VERTEX,
+                });
+                
+                // Create index buffer
+                let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some(&format!("{} Index Buffer", shader.name)),
+                    contents: indices,
+                    usage: wgpu::BufferUsages::INDEX,
+                });
+                
+                // Draw the indexed geometry if the shader is initialized
+                if let Some(pipeline) = shader.pipeline() {
+                    render_pass.set_pipeline(pipeline);
+                    render_pass.set_vertex_buffer(0, vertex_buffer.slice(..));
+                    render_pass.set_vertex_buffer(1, instance_buffer.slice(..));
+                    render_pass.set_index_buffer(index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+                    
+                    // Set bind group if available
+                    if let Some(bind_group) = shader.bind_group() {
+                        render_pass.set_bind_group(0, bind_group, &[]);
+                    }
+                    
+                    // Draw using indices
+                    render_pass.draw_indexed(0..*index_count, 0, 0..*instance_count);
+                }
+            }
+        }
+    }
+}
         }
         
         queue.submit(std::iter::once(encoder.finish()));

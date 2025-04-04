@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
-use syn::{parse_macro_input, DeriveInput, Fields, Data, Meta, Lit, Expr, ExprLit, Type};
+use syn::{parse_macro_input, DeriveInput, Fields, Data, Meta, Lit, Expr, ExprLit};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
 
@@ -246,22 +246,27 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         }
     });
 
-    let expanded = quote! {
-        #vertex_def
-        #uniform_def
-        #instance_def
+let expanded = quote! {
+    #vertex_def
+    #uniform_def
+    #instance_def
 
-        impl #name {
-            pub fn descriptor() -> rustica_render::ShaderDescriptor {
-                rustica_render::ShaderDescriptor {
-                    name: stringify!(#name).to_string(),
-                    shader_source: #shader_source,
-                    vertex_attributes: <#vertex_name as rustica_render::VertexAttributeProvider>::attributes(),
-                    uniforms: vec![ #(#uniform_param_exprs),* ]
-                }
+    impl #name {
+        pub fn descriptor() -> rustica_render::ShaderDescriptor {
+            rustica_render::ShaderDescriptor {
+                name: stringify!(#name).to_string(),
+                shader_source: #shader_source,
+                vertex_attributes: <#vertex_name as rustica_render::VertexAttributeProvider>::attributes(),
+                uniforms: vec![ #(#uniform_param_exprs),* ]
             }
         }
-    };
+        
+        /// Create a new geometry builder for this shader's vertex type
+        pub fn geometry_builder() -> rustica_foundation::geometry::GeometryBuilder<#vertex_name> {
+            rustica_foundation::geometry::GeometryBuilder::new()
+        }
+    }
+};
 
     TokenStream::from(expanded)
 }

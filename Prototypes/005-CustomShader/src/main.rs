@@ -1,5 +1,5 @@
 use rustica_render::{RenderWindow, ShaderProperties};
-use rustica_foundation::geometry::Triangle as GeometryTriangle;
+use rustica_foundation::geometry::GeometryBuilder;
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
@@ -44,8 +44,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     window.with_frame_callback(move |canvas| {
         let time_value = canvas.time().as_secs_f32();
         
-        // Define vertices for a full-screen quad with proper UV coordinates
-        let vertices = [
+        // Create a full-screen quad using triangle strip (more efficient)
+        let mut builder = PlasmaShader::geometry_builder();
+        
+        // Add vertices for a triangle strip (quad)
+        builder.triangle_strip(&[
             PlasmaShaderVertex {
                 position: [-1.0, 1.0, 0.0],    // Top-left
                 color: [1.0, 1.0, 1.0],        // White
@@ -57,29 +60,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 uv: [0.0, 1.0],                // Bottom-left UV
             },
             PlasmaShaderVertex {
+                position: [1.0, 1.0, 0.0],     // Top-right
+                color: [1.0, 1.0, 1.0],        // White
+                uv: [1.0, 0.0],                // Top-right UV
+            },
+            PlasmaShaderVertex {
                 position: [1.0, -1.0, 0.0],    // Bottom-right
                 color: [1.0, 1.0, 1.0],        // White
                 uv: [1.0, 1.0],                // Bottom-right UV
-            },
-        ];
+            }
+        ]);
         
-        // Create first triangle for the quad
-        let triangle1 = GeometryTriangle {
-            vertices: [vertices[0], vertices[1], vertices[2]],
-        };
-        
-        // Create second triangle to complete the quad
-        let triangle2 = GeometryTriangle {
-            vertices: [
-                vertices[0],                   // Top-left
-                vertices[2],                   // Bottom-right
-                PlasmaShaderVertex {
-                    position: [1.0, 1.0, 0.0], // Top-right
-                    color: [1.0, 1.0, 1.0],    // White
-                    uv: [1.0, 0.0],            // Top-right UV
-                },
-            ],
-        };
+        // Build the final geometry
+        let geometry = builder.build();
 
         // Identity matrix for the instance (no transformation)
         let identity = [
@@ -95,10 +88,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             instance_color: [1.0, 1.0, 1.0],  // White (allows plasma colors to shine through)
         };
 
-        // Draw the triangles using instanced rendering
+        // Draw using our new pump_geometry method
         canvas.draw_with_instances(shader_id)
               .uniform("time", time_value)
-              .colored_instanced_triangles(&[triangle1, triangle2], &[instance]);
+              .pump_geometry(&geometry, &[instance]);
     })
     .run()?;
 
