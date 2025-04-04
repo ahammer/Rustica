@@ -95,10 +95,11 @@ pub fn create_instance_buffer_layout<'a>() -> wgpu::VertexBufferLayout<'a> {
     static INSTANCE_ATTRIBUTES: once_cell::sync::Lazy<[wgpu::VertexAttribute; 5]> = 
         once_cell::sync::Lazy::new(get_instance_attributes);
     
-    // The stride needs to include both the 4x4 matrix (16 floats) and the color (3 floats)
-    // Plus padding (1 float) for alignment, totaling 20 floats
+    // Dynamically calculate stride based on the actual instance data
+    // The instance data should have a 4x4 matrix (16 floats) and color (3 floats)
+    // This calculates to 19 floats total (no padding)
     wgpu::VertexBufferLayout {
-        array_stride: mem::size_of::<[f32; 20]>() as wgpu::BufferAddress,
+        array_stride: mem::size_of::<[f32; 19]>() as wgpu::BufferAddress,
         step_mode: wgpu::VertexStepMode::Instance,
         attributes: &INSTANCE_ATTRIBUTES[..],
     }
