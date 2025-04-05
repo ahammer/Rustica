@@ -12,3 +12,9 @@ syn = { version = "2.0", features = ["full", "extra-traits"] }
 quote = "1.0"
 proc-macro2 = "1.0"
 bytemuck = "1.14"
+
+[dev-dependencies]
+trybuild = "1.0"
+wgpu = "24.0.3"
+rustica_render = { path = "../render" }
+rustica_foundation = { path = "../../Foundation" }

@@ -294,4 +294,46 @@ mod tests {
 
         let _ = derive_shader_properties(TokenStream::from(quote! { #input }));
     }
+    
+    #[test]
+    fn test_vertex_format_respected() {
+        // Define a test struct with different vertex format attributes
+        let input: DeriveInput = parse_quote! {
+            #[derive(ShaderProperties)]
+            #[shader(inline = "test shader")]
+            struct TestFormatShader {
+                #[vertex(location = 0, format = "Float32x2")]
+                position_2d: [f32; 2],
+                
+                #[vertex(location = 1, format = "Float32x3")]
+                normal: [f32; 3],
+                
+                #[vertex(location = 2, format = "Float32x4")]
+                color: [f32; 4],
+            }
+        };
+
+        // Get the generated code
+        let result = derive_shader_properties(TokenStream::from(quote! { #input }));
+        let result_str = result.to_string();
+        
+        // Check that the vertex format is respected
+        assert!(result_str.contains("format : wgpu :: VertexFormat :: Float32x2"), 
+                "Float32x2 format should be used for position_2d");
+        assert!(result_str.contains("format : wgpu :: VertexFormat :: Float32x3"), 
+                "Float32x3 format should be used for normal");
+        assert!(result_str.contains("format : wgpu :: VertexFormat :: Float32x4"), 
+                "Float32x4 format should be used for color");
+        
+        // Check offset calculation is correct based on actual sizes
+        // Find offset references in generated code
+        assert!(!result_str.contains("offset : (1u64 * std :: mem :: size_of :: < [f32 ; 3] > ())"), 
+                "Offset should not be based on hardcoded [f32; 3] size");
+                
+        // Verify appropriate offset calculations
+        assert!(result_str.contains("offset : 0u64"), "First vertex attribute should have 0 offset");
+        assert!(result_str.contains("offset : 8u64") || 
+                result_str.contains("offset : (std :: mem :: size_of :: < [f32 ; 2] > ())"),
+                "Second vertex attribute should have offset after [f32; 2]");
+    }
 }
