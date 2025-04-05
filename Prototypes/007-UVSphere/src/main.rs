@@ -2,7 +2,7 @@ use std::sync::Arc;
 use cgmath::{Matrix4, Point3, Vector3, Rad, Deg};
 use rustica_graphics::{Camera, primitives::shapes::sphere::create_default_sphere};
 use rustica_render::{
-    RenderWindow, ShaderDescriptor, Vertex, StandardMeshAdapter,    
+    RenderWindow, ShaderDescriptor, Vertex, StandardMeshAdapter, GeometryBuilder,
 };
 
 // Minimal vertex type for the sphere
@@ -190,11 +190,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         
         // Draw all spheres with a single instanced call
+        let geometry = GeometryBuilder::new().with_triangles(&mesh_adapter.to_triangles()).build();
         canvas.draw_with_instances(shader_id)
               .uniform("view", view)
               .uniform("projection", projection)
               .uniform("time", time)
-              .colored_instanced_triangles(&mesh_adapter.to_triangles(), &instances);
+              .pump_geometry(&geometry, &instances);
     }).run()?;
     
     Ok(())

@@ -2,7 +2,7 @@ use std::sync::Arc;
 use cgmath::{Matrix4, Point3, Rad, Vector3};
 use rustica_graphics::{Camera, primitives::shapes::cube::create_cube};
 use rustica_render::{
-    RenderWindow, ShaderDescriptor, Vertex, StandardMeshAdapter
+    RenderWindow, ShaderDescriptor, Vertex, StandardMeshAdapter, GeometryBuilder
 };
 
 // Define a custom vertex type with derive macro
@@ -145,11 +145,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         
         // Draw all cubes with a single instanced call
+        let geometry = GeometryBuilder::new().with_triangles(&triangles).build();
         canvas.draw_with_instances(shader_id)
               .uniform("view", view)
               .uniform("projection", projection)
               .uniform("time", time)
-              .colored_instanced_triangles(&triangles, &instances);
+              .pump_geometry(&geometry, &instances);
     }).run()?;
     
     Ok(())

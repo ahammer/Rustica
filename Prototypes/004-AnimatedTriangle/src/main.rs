@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 use rustica_render::{RenderWindow, ShaderProperties};
-use rustica_foundation::geometry::Triangle as GeometryTriangle;
+use rustica_foundation::geometry::{Triangle as GeometryTriangle, GeometryBuilder};
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
@@ -150,10 +150,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             });
         }
         
+        // Build geometry from vertices
+        let mut builder = AnimatedShader::geometry_builder();
+        builder.triangle_strip(&vertices);
+        let geometry = builder.build();
+        
         // Draw all triangles using instanced rendering
         canvas.draw_with_instances(shader_id)
               .uniform("time", seconds)
-              .colored_instanced_triangles(&[triangle], &instances);
+              .pump_geometry(&geometry, &instances);
     })
     .run()?;
     

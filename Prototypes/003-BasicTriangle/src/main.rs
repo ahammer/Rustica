@@ -1,6 +1,6 @@
 use rustica_render::RenderWindow;
 use rustica_render_derive::ShaderProperties;
-use rustica_foundation::geometry::Triangle as GeometryTriangle;
+use rustica_foundation::geometry::{Triangle as GeometryTriangle, GeometryBuilder};
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ];
         
         // Create a triangle from vertices
-        let triangle = GeometryTriangle { vertices };
+        let triangle = GeometryTriangle { vertices: vertices.clone() };
         
         // Create instance data for multiple triangles
         let mut instances = Vec::new();
@@ -94,8 +94,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         
         // Draw all triangles using instanced rendering
+        let mut builder = BasicShader::geometry_builder();
+
+        builder.triangle_strip(&[
+            BasicShaderVertex {
+            position: [0.0, 0.5, 0.0],    // Top
+            color: [1.0, 0.0, 0.0],       // Red
+            },
+            BasicShaderVertex {
+            position: [-0.5, -0.5, 0.0],  // Bottom left
+            color: [0.0, 1.0, 0.0],       // Green
+            },
+            BasicShaderVertex {
+            position: [0.5, -0.5, 0.0],   // Bottom right
+            color: [0.0, 0.0, 1.0],       // Blue
+            },
+        ]);
+
+        let geometry = builder.build();
         canvas.draw_with_instances(shader_id)
-              .colored_instanced_triangles(&[triangle], &instances);
+              .pump_geometry(&geometry, &instances);
     })
     .run()?;
     

@@ -138,64 +138,27 @@ impl<'b, 'a> InstancedShaderDrawBuilder<'b, 'a> {
         self
     }
     
-/// Draw instanced triangles with the configured shader and uniforms
-#[deprecated(
-    since = "0.1.0",
-    note = "Use pump_geometry instead for better performance and flexibility"
-)]
-pub fn instanced_triangles<V: Vertex>(self, triangles: &[Triangle<V>], instances: &[[[f32; 4]; 4]]) {
-    self.canvas.draw_instanced_triangles(triangles, instances, self.shader_id, self.uniforms);
-}
-
-/// Draw colored instanced triangles with the configured shader and uniforms
-#[deprecated(
-    since = "0.1.0",
-    note = "Use pump_geometry instead for better performance and flexibility"
-)]
-pub fn colored_instanced_triangles<V: Vertex, I: bytemuck::Pod>(
-    self, 
-    triangles: &[Triangle<V>], 
-    instances: &[I]
-) {
-    // Convert to raw bytes
-    let vertices: Vec<V> = triangles.iter()
-        .flat_map(|t| t.vertices)
-        .collect();
-    
-    let vertices_bytes = bytemuck::cast_slice(&vertices).to_vec();
-    let instances_bytes = bytemuck::cast_slice(instances).to_vec();
-    
-    self.canvas.commands.push(DrawCommand::CustomInstancedTriangles {
-        shader_id: self.shader_id,
-        vertices: vertices_bytes,
-        instances: instances_bytes,
-        vertex_count: (triangles.len() * 3) as u32,
-        instance_count: instances.len() as u32,
-        uniforms: self.uniforms,
-    });
-}
-
-/// Draw geometry with instances using the configured shader and uniforms
-pub fn pump_geometry<V: Vertex, I: bytemuck::Pod>(
-    self,
-    geometry: &Geometry<V>,
-    instances: &[I]
-) {
-    let vertices_bytes = bytemuck::cast_slice(&geometry.vertices).to_vec();
-    let indices_bytes = bytemuck::cast_slice(&geometry.indices).to_vec();
-    let instances_bytes = bytemuck::cast_slice(instances).to_vec();
-    
-    self.canvas.commands.push(DrawCommand::GeometryWithInstances {
-        shader_id: self.shader_id,
-        vertices: vertices_bytes,
-        indices: indices_bytes,
-        instances: instances_bytes,
-        vertex_count: geometry.vertices.len() as u32,
-        index_count: geometry.indices.len() as u32,
-        instance_count: instances.len() as u32,
-        uniforms: self.uniforms,
-    });
-}
+    /// Draw geometry with instances using the configured shader and uniforms
+    pub fn pump_geometry<V: Vertex, I: bytemuck::Pod>(
+        self,
+        geometry: &Geometry<V>,
+        instances: &[I]
+    ) {
+        let vertices_bytes = bytemuck::cast_slice(&geometry.vertices).to_vec();
+        let indices_bytes = bytemuck::cast_slice(&geometry.indices).to_vec();
+        let instances_bytes = bytemuck::cast_slice(instances).to_vec();
+        
+        self.canvas.commands.push(DrawCommand::GeometryWithInstances {
+            shader_id: self.shader_id,
+            vertices: vertices_bytes,
+            indices: indices_bytes,
+            instances: instances_bytes,
+            vertex_count: geometry.vertices.len() as u32,
+            index_count: geometry.indices.len() as u32,
+            instance_count: instances.len() as u32,
+            uniforms: self.uniforms,
+        });
+    }
 }
 
 // Implement From traits for UniformValue to make the API more ergonomic

@@ -215,10 +215,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Draw all cells with a single instanced draw call if any cells are ready to render
         if !instances.is_empty() {
+            let geometry = GeometryBuilder::new().with_triangles(&triangles).build();
             canvas.draw_with_instances(shader_id)
                   .uniform("view", view)
                   .uniform("projection", projection)
-                  .colored_instanced_triangles(&triangles, &instances);
+                  .pump_geometry(&geometry, &instances);
         }
     }).run()?;
     
