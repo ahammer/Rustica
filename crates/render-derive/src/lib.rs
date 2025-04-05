@@ -1,5 +1,5 @@
 use proc_macro::TokenStream;
-use quote::{format_ident, quote};
+use quote::{format_ident, quote, ToTokens};
 use syn::{parse_macro_input, DeriveInput, Fields, Data, Meta, Lit, Expr, ExprLit};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
@@ -145,20 +145,46 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
     let instance_name = format_ident!("{}Instances", name);
 
     // Create vertex attribute definitions for the layout implementation
-    let vertex_attribute_defs = vertex_fields.iter().enumerate().map(|(idx, (field_ident, _, loc, _))| {
-        // Use a simpler approach for calculating offsets - all as wgpu::BufferAddress
+    let vertex_attribute_defs = vertex_fields.iter().enumerate().map(|(idx, (field_ident, ty, loc, format_opt))| {
+        // Determine format based on provided format or Rust type
+        let format = if let Some(fmt) = format_opt {
+            // If format is explicitly provided, use it
+            quote! { wgpu::VertexFormat::#fmt }
+        } else {
+            // Otherwise infer from the Rust type
+            match ty.to_token_stream().to_string().as_str() {
+                "[f32; 2]" => quote! { wgpu::VertexFormat::Float32x2 },
+                "[f32; 3]" => quote! { wgpu::VertexFormat::Float32x3 },
+                "[f32; 4]" => quote! { wgpu::VertexFormat::Float32x4 },
+                "f32" => quote! { wgpu::VertexFormat::Float32 },
+                // Add more mappings as needed
+                _ => quote! { wgpu::VertexFormat::Float32x3 }, // Default fallback
+            }
+        };
+        
+        // Calculate offset based on actual field sizes
         let offset = if idx == 0 {
             quote! { 0u64 }
         } else {
-            quote! { 
-                // Calculate offset based on previous fields, ensuring consistent types
-                (#idx * std::mem::size_of::<[f32; 3]>()) as u64
+            // Get previous field types for offset calculation
+            let previous_fields = vertex_fields.iter().take(idx).map(|(_, ty, _, _)| ty);
+            
+            // Calculate cumulative offset based on actual sizes of previous fields
+            quote! {
+                {
+                    let mut offset = 0;
+                    #(
+                        // Get size of each previous field type
+                        offset += std::mem::size_of::<#previous_fields>();
+                    )*
+                    offset as u64
+                }
             }
         };
         
         quote! {
             wgpu::VertexAttribute {
-                format: wgpu::VertexFormat::Float32x3, // Default to Float32x3, could be customized
+                format: #format,
                 offset: #offset,
                 shader_location: #loc,
             }
@@ -173,14 +199,14 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
             #[repr(C)]
             #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #vertex_name {
-                #(#fields,)*
+                #(#fields,)* 
             }
             
             // Implement Vertex trait
             impl rustica_render::Vertex for #vertex_name {
                 fn layout() -> wgpu::VertexBufferLayout<'static> {
-                    static ATTRIBUTES: &[wgpu::VertexAttribute] = &[
-                        #(#vertex_attribute_defs,)*
+                    static ATTRIBUTES: &[wgpu::VertexAttribute] = &[ 
+                        #(#vertex_attribute_defs,)* 
                     ];
                     
                     wgpu::VertexBufferLayout {
@@ -204,7 +230,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
             #[repr(C)]
             #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #uniform_name {
-                #(#fields,)*
+                #(#fields,)* 
             }
         }
     } else { 
@@ -217,7 +243,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
             #[repr(C)]
             #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #instance_name {
-                #(#fields,)*
+                #(#fields,)* 
             }
         }
     } else { 

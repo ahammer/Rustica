@@ -8,13 +8,13 @@ use wgpu;
 #[derive(ShaderProperties)]
 #[shader(inline = "test shader for vertex format diagnostics")]
 struct DiagnosticFormatShader {
-    #[vertex(location = 0, format = "Float32x2")]
+    #[vertex(location = 0)]
     position_2d: [f32; 2],
     
-    #[vertex(location = 1, format = "Float32x3")]
+    #[vertex(location = 1)]
     normal: [f32; 3],
     
-    #[vertex(location = 2, format = "Float32x4")]
+    #[vertex(location = 2)]
     color: [f32; 4],
 }
 
