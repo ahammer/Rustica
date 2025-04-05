@@ -9,45 +9,8 @@ use rustica_render::{
 };
 
 
-// Define a shader descriptor using the derive macro
-// #[derive(ShaderDescriptor)]
-// #[shader(source = "./src/shaders/mesh_shader.wgsl")]
-// struct MeshShaderDescriptor {    
-//     #[vertex_type]
-//     vertex: MeshVertex,
-    
-//     // Now we don't need the model uniform since it's supplied per-instance
-    
-//     #[uniform(binding = 1)]
-//     view: Matrix4<f32>,
-    
-//     #[uniform(binding = 2)]
-//     projection: Matrix4<f32>,
-    
-//     #[uniform(binding = 3)]
-//     time: f32,
-// }
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Create a shader descriptor
-    // let shader_descriptor = MeshShaderDescriptor::descriptor();
     
-    // let mut window = RenderWindow::new("Basic Mesh Demo (Instanced)", 800, 600);
-    
-    // // Register the shader with the render context
-    // let shader_id = window.register_shader(shader_descriptor);
-    
-    // // Create a cube mesh using Graphics factory function
-    // let cube_mesh = Arc::new(create_cube(0.5)); // Smaller cube size
-    
-    // // Create a mesh adapter with a vertex mapper function
-    // let mesh_adapter = StandardMeshAdapter::new(cube_mesh, |standard_vertex| {
-    //     MeshVertex {
-    //         position: standard_vertex.position,
-    //         color: standard_vertex.color,
-    //         normal: standard_vertex.normal,
-    //     }
-    // });
     
     // // Set up the frame callback
     // window.with_frame_callback(move |canvas| {
