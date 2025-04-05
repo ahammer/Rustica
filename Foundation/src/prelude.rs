@@ -18,6 +18,9 @@ pub use crate::geometry::{
     BezierPatch,
     CubicBezier2D,
     CubicBezier3D,
+
+    // Geometry
+    geometry_builder::Geometry,
 };
 
 // Re-export common external types used throughout the codebase

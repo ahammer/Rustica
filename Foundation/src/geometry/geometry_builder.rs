@@ -61,16 +61,17 @@ impl<V: Vertex> GeometryBuilder<V> {
         // Ensuring consistent winding order for all triangles
         for i in 0..(vertices.len() - 2) {
             if i % 2 == 0 {
-                // Even triangles: counter-clockwise winding
+                // Even triangles — use natural winding
                 self.indices.push(base_index + i as u32);
                 self.indices.push(base_index + (i + 1) as u32);
                 self.indices.push(base_index + (i + 2) as u32);
             } else {
-                // Odd triangles: reverse vertex order to maintain winding direction
+                // Odd triangles — flip first two to preserve winding
+                self.indices.push(base_index + (i + 1) as u32);
                 self.indices.push(base_index + i as u32);
                 self.indices.push(base_index + (i + 2) as u32);
-                self.indices.push(base_index + (i + 1) as u32);
             }
+            
         }
         
         self

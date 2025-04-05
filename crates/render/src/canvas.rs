@@ -1,11 +1,12 @@
 // Canvas for drawing operations
 
+
 use std::time::Duration;
 use std::collections::HashMap;
 use cgmath::Matrix4;
 use crate::draw_commands::{DrawCommand, UniformValue};
 use crate::custom_shader::CustomShader;
-use rustica_foundation::geometry::{Triangle, Vertex, Geometry};
+use rustica_foundation::prelude::*;
 use wgpu::Queue;
 
 /// Canvas for drawing operations
