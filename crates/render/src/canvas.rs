@@ -44,64 +44,7 @@ impl<'a> Canvas<'a> {
     /// Set the queue for submitting GPU commands
     pub fn set_queue(&mut self, queue: &'a Queue) {
         self.queue = Some(queue);
-    }
-    
-    /// Draw triangles using a custom shader
-    pub fn draw_triangles<V: Vertex>(&mut self, triangles: &[Triangle<V>], shader_id: usize) {
-        self.draw_triangles_with_uniforms(triangles, shader_id, HashMap::new());
-    }
-    
-    /// Draw triangles using a custom shader with uniform values
-    pub fn draw_triangles_with_uniforms<V: Vertex>(
-        &mut self, 
-        triangles: &[Triangle<V>], 
-        shader_id: usize,
-        uniforms: HashMap<String, UniformValue>
-    ) {
-        // Flatten the triangles into a single vertex buffer
-        let vertices: Vec<V> = triangles.iter()
-            .flat_map(|t| t.vertices)
-            .collect();
-        
-        // Convert to raw bytes
-        let vertices_bytes = bytemuck::cast_slice(&vertices).to_vec();
-        
-        self.commands.push(DrawCommand::CustomTriangles {
-            shader_id,
-            vertices: vertices_bytes,
-            vertex_count: (triangles.len() * 3) as u32,
-            uniforms,
-        });
-    }
-    
-    /// Draw instanced triangles using a custom shader
-    pub fn draw_instanced_triangles<V: Vertex>(
-        &mut self, 
-        triangles: &[Triangle<V>], 
-        instances: &[[[f32; 4]; 4]], // Array of model matrices in shader-compatible format
-        shader_id: usize,
-        uniforms: HashMap<String, UniformValue>
-    ) {
-        // Flatten the triangles into a single vertex buffer
-        let vertices: Vec<V> = triangles.iter()
-            .flat_map(|t| t.vertices)
-            .collect();
-        
-        // Convert to raw bytes
-        let vertices_bytes = bytemuck::cast_slice(&vertices).to_vec();
-        
-        // Create instances buffer
-        let instances_bytes = bytemuck::cast_slice(instances).to_vec();
-        
-        self.commands.push(DrawCommand::CustomInstancedTriangles {
-            shader_id,
-            vertices: vertices_bytes,
-            instances: instances_bytes,
-            vertex_count: (triangles.len() * 3) as u32,
-            instance_count: instances.len() as u32,
-            uniforms,
-        });
-    }
+    }    
     
     /// Create a shader draw builder for instanced drawing
     pub fn draw_with_instances(&mut self, shader_id: usize) -> InstancedShaderDrawBuilder<'_, 'a> {
