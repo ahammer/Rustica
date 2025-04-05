@@ -11,7 +11,6 @@ pub use rustica_foundation::geometry::{Vertex, VertexAttributeProvider, VertexAt
 pub use canvas::Canvas;
 pub use render_window::RenderWindow;
 pub use custom_shader::{CustomShader, ShaderDescriptor, UniformParameter};
-pub use standard_mesh::StandardMeshAdapter;
 
 // Internal modules
 mod draw_commands;
@@ -20,7 +19,6 @@ mod render_context;
 mod render_window;
 mod shaders; // Simplified module, no built-in shaders
 mod custom_shader;
-mod standard_mesh;
 pub mod prelude;
 
 #[cfg(test)]

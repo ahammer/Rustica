@@ -1,24 +1,12 @@
 // Prelude module - Re-exports commonly used types from the Foundation crate
 
 // Re-export geometry types
-pub use crate::geometry::{
-    // Core types
-    StandardVertex,
-    Face,
-    Mesh,
-    
+pub use crate::geometry::{    
     // Traits
     Vertex,
     VertexAttributeProvider,
     VertexAttribute,
-    Triangle,
-    
-    // Bezier types
-    BezierCurve,
-    BezierPatch,
-    CubicBezier2D,
-    CubicBezier3D,
-
+    Triangle,    
     // Geometry
     geometry_builder::Geometry,
 };

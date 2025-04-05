@@ -7,6 +7,5 @@ pub use crate::{
     CustomShader,
     ShaderDescriptor,
     UniformParameter,
-    StandardMeshAdapter,
 };
 

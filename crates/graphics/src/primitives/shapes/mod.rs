@@ -11,4 +11,3 @@ pub use cube::*;
 pub use teapot::*;
 pub use plane::*;
 pub use sphere::*;
-pub use factory::ShapeFactory;
