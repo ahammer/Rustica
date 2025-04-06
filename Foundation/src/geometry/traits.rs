@@ -3,6 +3,19 @@
 use bytemuck::{Pod, Zeroable};
 use wgpu::{VertexBufferLayout, VertexFormat};
 
+
+// Semantic types for vertex attributes
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum VertexSemantic {
+    Position,
+    Normal,
+    Color,
+    TexCoord,
+    Tangent,
+    Bitangent,
+    // Add other semantics as needed
+}
+
 /// Trait for vertex data that can be used with shaders
 pub trait Vertex: Pod + Zeroable {
     /// Get the vertex buffer layout for this vertex type
@@ -27,6 +40,7 @@ impl<T: Vertex> VertexAttributeProvider for T {
                 location: attr.shader_location,
                 format: attr.format,
                 offset: attr.offset,
+                semantic: None, // Default to None, semantics would be handled by the macro
             });
         }
         
@@ -44,6 +58,8 @@ pub struct VertexAttribute {
     pub format: VertexFormat,
     /// Offset in the vertex buffer
     pub offset: u64,
+    /// Semantic meaning of the attribute (optional)
+    pub semantic: Option<VertexSemantic>,
 }
 
 /// A triangle with generic vertex data

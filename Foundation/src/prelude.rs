@@ -11,6 +11,7 @@ pub use crate::geometry::{
     geometry_builder::Geometry,
 };
 
+pub use crate::geometry::traits::VertexSemantic;
 // Re-export common external types used throughout the codebase
 pub use cgmath::{Vector2, Vector3, Point3, Matrix4, InnerSpace, EuclideanSpace};
 pub use bytemuck::{Pod, Zeroable};

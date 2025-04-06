@@ -200,6 +200,7 @@ impl CustomShader {
                 offset: attr.offset,
                 shader_location: attr.location,
                 format: attr.format,
+                // semantic field isn't part of wgpu's VertexAttribute, so we don't map it
             }).collect::<Vec<_>>(),
         };
 

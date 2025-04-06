@@ -36,21 +36,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     window.with_frame_callback(move |canvas| {
         let time = canvas.time();
         let seconds = time.as_secs_f32();
-        let vertexFactory = AnimatedShader::vertex_factory();
+        let vertex_factory = AnimatedShader::vertex_factory();
         // Define the triangle vertices using the generated vertex type
         let vertices = [
-            vertexFactory.create_vertex(
-                position: [0.0, 0.5, 0.0],    // Top
-                color: [1.0, 0.0, 0.0],       // Red
-            },
-            vertexFactory.create_vertex(
-                position: [-0.5, -0.5, 0.0],  // Bottom left
-                color: [0.0, 1.0, 0.0],       // Green
-            },
-            vertexFactory.create_vertex(
-                position: [0.5, -0.5, 0.0],   // Bottom right
-                color: [0.0, 0.0, 1.0],       // Blue
-            },
+            vertex_factory.create_vertex(
+                [0.0, 0.5, 0.0],    // Top
+                [1.0, 0.0, 0.0]     // Red
+            ),
+            vertex_factory.create_vertex(
+                [-0.5, -0.5, 0.0],  // Bottom left
+                [0.0, 1.0, 0.0]     // Green
+            ),
+            vertex_factory.create_vertex(
+                [0.5, -0.5, 0.0],   // Bottom right
+                [0.0, 0.0, 1.0]     // Blue
+            ),
         ];
         
 

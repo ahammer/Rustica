@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::{format_ident, quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput, Fields, Data, Meta, Lit, Expr, ExprLit};
+use syn::{parse_macro_input, DeriveInput, Fields, Data, Meta, Lit, Expr, ExprLit, Path};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
 
@@ -11,7 +11,7 @@ use syn::token::Comma;
 /// #[derive(ShaderProperties)]
 /// #[shader(file = "shaders/my_shader.wgsl")]
 /// struct MyShader {
-///     #[vertex(location = 0, format = "Float32x3")]
+///     #[vertex(location = 0, semantic = VertexSemantic::Position)]
 ///     position: [f32; 3],
 ///
 ///     #[instance(location = 1)]
@@ -25,6 +25,7 @@ use syn::token::Comma;
 /// // - MyShaderVertex { position: [f32; 3] }
 /// // - MyShaderInstances { model_matrix: [[f32; 4]; 4] }
 /// // - MyShaderUniforms { color: [f32; 4] }
+/// // - MyShaderVertexFactory for creating vertices
 /// ```
 #[proc_macro_derive(ShaderProperties, attributes(shader, vertex, uniform, instance))]
 pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
@@ -75,6 +76,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         let mut location = None;
         let mut binding = None;
         let mut format = None;
+        let mut semantic = None;
 
         for attr in &field.attrs {
             if attr.path().is_ident("vertex") || attr.path().is_ident("uniform") || attr.path().is_ident("instance") {
@@ -91,6 +93,10 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
                             } else if nv.path.is_ident("format") {
                                 if let Expr::Lit(ExprLit { lit: Lit::Str(fmt), .. }) = &nv.value {
                                     format = Some(fmt.value());
+                                }
+                            } else if nv.path.is_ident("semantic") {
+                                if let Expr::Path(path_expr) = &nv.value {
+                                    semantic = Some(path_expr.path.clone());
                                 }
                             }
                         }
@@ -126,7 +132,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         match field_category {
             Some("vertex") => {
                 let loc = location.unwrap_or_else(|| { let l = location_counter; location_counter += 1; l });
-                vertex_fields.push((ident, ty, loc, format));
+                vertex_fields.push((ident, ty, loc, format, semantic));
             },
             Some("uniform") => {
                 let bind = binding.unwrap_or_else(|| { let b = binding_counter; binding_counter += 1; b });
@@ -145,7 +151,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
     let instance_name = format_ident!("{}Instances", name);
 
     // Create vertex attribute definitions for the layout implementation
-    let vertex_attribute_defs = vertex_fields.iter().enumerate().map(|(idx, (field_ident, ty, loc, format_opt))| {
+    let vertex_attribute_defs = vertex_fields.iter().enumerate().map(|(idx, (field_ident, ty, loc, format_opt, semantic_opt))| {
         // Determine format based on provided format or Rust type
         let format = if let Some(fmt) = format_opt {
             // If format is explicitly provided, use it
@@ -167,7 +173,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
             quote! { 0u64 }
         } else {
             // Get previous field types for offset calculation
-            let previous_fields = vertex_fields.iter().take(idx).map(|(_, ty, _, _)| ty);
+            let previous_fields = vertex_fields.iter().take(idx).map(|(_, ty, _, _, _)| ty);
             
             // Calculate cumulative offset based on actual sizes of previous fields
             quote! {
@@ -182,18 +188,25 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
             }
         };
         
+        let semantic = if let Some(sem) = semantic_opt {
+            quote! { Some(#sem) }
+        } else {
+            quote! { None }
+        };
+        
         quote! {
             wgpu::VertexAttribute {
                 format: #format,
                 offset: #offset,
                 shader_location: #loc,
+                semantic: #semantic,
             }
         }
     }).collect::<Vec<_>>();
 
     // Create vertex struct with Vertex trait implementation
     let vertex_def = if !vertex_fields.is_empty() {
-        let fields = vertex_fields.iter().map(|(i, t, _, _)| quote! { pub #i: #t });
+        let fields = vertex_fields.iter().map(|(i, t, _, _, _)| quote! { pub #i: #t });
         
         quote! {
             #[repr(C)]
@@ -222,6 +235,57 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         }
     } else { 
         quote! {} 
+    };
+
+    // Define the vertex factory if there are vertex fields
+    let factory_def = if !vertex_fields.is_empty() {
+        let factory_name = format_ident!("{}VertexFactory", name);
+        
+        // Generate constructor parameters for create_vertex
+        let factory_params = vertex_fields.iter().map(|(i, t, _, _, _)| {
+            quote! { #i: #t }
+        });
+        
+        // Generate field assignments for create_vertex
+        let factory_field_assignments = vertex_fields.iter().map(|(i, _, _, _, _)| {
+            quote! { #i }
+        });
+        
+        quote! {
+            /// Factory for creating shader-compatible vertices
+            #[derive(Debug, Clone, Copy)]
+            pub struct #factory_name;
+            
+            impl #factory_name {
+                /// Create a new vertex factory
+                pub fn new() -> Self {
+                    Self
+                }
+                
+                /// Create a vertex with the given attributes
+                pub fn create_vertex(&self, #(#factory_params),*) -> #vertex_name {
+                    #vertex_name {
+                        #(#factory_field_assignments),*
+                    }
+                }
+            }
+        }
+    } else {
+        quote! {}
+    };
+    
+    // Generate vertex_factory method if there are vertex fields
+    let vertex_factory_method = if !vertex_fields.is_empty() {
+        let factory_name = format_ident!("{}VertexFactory", name);
+        
+        quote! {
+            /// Get a vertex factory for this shader
+            pub fn vertex_factory() -> #factory_name {
+                #factory_name::new()
+            }
+        }
+    } else {
+        quote! {}
     };
 
     let uniform_def = if !uniform_fields.is_empty() {
@@ -272,27 +336,30 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         }
     });
 
-let expanded = quote! {
-    #vertex_def
-    #uniform_def
-    #instance_def
+    let expanded = quote! {
+        #vertex_def
+        #factory_def
+        #uniform_def
+        #instance_def
 
-    impl #name {
-        pub fn descriptor() -> rustica_render::ShaderDescriptor {
-            rustica_render::ShaderDescriptor {
-                name: stringify!(#name).to_string(),
-                shader_source: #shader_source,
-                vertex_attributes: <#vertex_name as rustica_render::VertexAttributeProvider>::attributes(),
-                uniforms: vec![ #(#uniform_param_exprs),* ]
+        impl #name {
+            pub fn descriptor() -> rustica_render::ShaderDescriptor {
+                rustica_render::ShaderDescriptor {
+                    name: stringify!(#name).to_string(),
+                    shader_source: #shader_source,
+                    vertex_attributes: <#vertex_name as rustica_render::VertexAttributeProvider>::attributes(),
+                    uniforms: vec![ #(#uniform_param_exprs),* ]
+                }
             }
+            
+            /// Create a new geometry builder for this shader's vertex type
+            pub fn geometry_builder() -> rustica_foundation::geometry::GeometryBuilder<#vertex_name> {
+                rustica_foundation::geometry::GeometryBuilder::new()
+            }
+            
+            #vertex_factory_method
         }
-        
-        /// Create a new geometry builder for this shader's vertex type
-        pub fn geometry_builder() -> rustica_foundation::geometry::GeometryBuilder<#vertex_name> {
-            rustica_foundation::geometry::GeometryBuilder::new()
-        }
-    }
-};
+    };
 
     TokenStream::from(expanded)
 }
