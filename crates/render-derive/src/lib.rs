@@ -151,7 +151,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
     let instance_name = format_ident!("{}Instances", name);
 
     // Create vertex attribute definitions for the layout implementation
-    let vertex_attribute_defs = vertex_fields.iter().enumerate().map(|(idx, (field_ident, ty, loc, format_opt, semantic_opt))| {
+    let vertex_attribute_defs = vertex_fields.iter().enumerate().map(|(idx, (field_ident, ty, loc, format_opt, _semantic_opt))| {
         // Determine format based on provided format or Rust type
         let format = if let Some(fmt) = format_opt {
             // If format is explicitly provided, use it
@@ -188,22 +188,57 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
             }
         };
         
-        let semantic = if let Some(sem) = semantic_opt {
-            quote! { Some(#sem) }
-        } else {
-            quote! { None }
-        };
-        
         quote! {
             wgpu::VertexAttribute {
                 format: #format,
                 offset: #offset,
                 shader_location: #loc,
-                semantic: #semantic,
             }
         }
     }).collect::<Vec<_>>();
 
+    // Now we need to properly store the semantic information from the attributes
+    // Create a way to map our vertex fields to semantics for our custom VertexAttribute
+    let custom_attributes = if !vertex_fields.is_empty() {
+        // Generate code to create custom vertex attributes with semantics from our Vertex implementation
+        let attribute_fields = vertex_fields.iter().enumerate().map(|(idx, (field_name, _, loc, _, semantic_opt))| {
+            let field_str = field_name.to_string();
+            let semantic = if let Some(sem) = semantic_opt {
+                quote! { Some(#sem) }
+            } else {
+                quote! { None }
+            };
+            
+            quote! {
+                rustica_foundation::geometry::VertexAttribute {
+                    name: #field_str.to_string(),
+                    location: #loc,
+                    format: ATTRIBUTES[#idx].format,
+                    offset: ATTRIBUTES[#idx].offset,
+                    semantic: #semantic,
+                }
+            }
+        });
+        
+        quote! {
+            // Override VertexAttributeProvider implementation to include semantics
+            impl rustica_foundation::geometry::VertexAttributeProvider for #vertex_name {
+                fn attributes() -> Vec<rustica_foundation::geometry::VertexAttribute> {
+                    let layout = Self::layout();
+                    static ATTRIBUTES: &[wgpu::VertexAttribute] = &[ 
+                        #(#vertex_attribute_defs,)* 
+                    ];
+                    
+                    vec![
+                        #(#attribute_fields),*
+                    ]
+                }
+            }
+        }
+    } else {
+        quote! {}
+    };
+    
     // Create vertex struct with Vertex trait implementation
     let vertex_def = if !vertex_fields.is_empty() {
         let fields = vertex_fields.iter().map(|(i, t, _, _, _)| quote! { pub #i: #t });
@@ -216,7 +251,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
             }
             
             // Implement Vertex trait
-            impl rustica_render::Vertex for #vertex_name {
+            impl rustica_foundation::geometry::Vertex for #vertex_name {
                 fn layout() -> wgpu::VertexBufferLayout<'static> {
                     static ATTRIBUTES: &[wgpu::VertexAttribute] = &[ 
                         #(#vertex_attribute_defs,)* 
@@ -230,8 +265,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
                 }
             }
             
-            // We don't need to explicitly implement VertexAttributeProvider since it's 
-            // automatically implemented for any type that implements Vertex
+            #custom_attributes
         }
     } else { 
         quote! {} 

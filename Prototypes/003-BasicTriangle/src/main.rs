@@ -1,4 +1,4 @@
-use rustica_render::RenderWindow;
+use rustica_render::{RenderWindow, Vertex};
 use rustica_render_derive::ShaderProperties;
 use rustica_foundation::{geometry::{GeometryBuilder, Triangle as GeometryTriangle}, VertexSemantic};
 
@@ -32,25 +32,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let shader_id = window.register_shader(shader_descriptor);
     
     window.with_frame_callback(move |canvas| {
-        // Define the triangle vertices using the generated vertex type
+        // Get the vertex factory
+        let vertex_factory = BasicShader::vertex_factory();
+        
+        // Define the triangle vertices using the vertex factory
         let vertices = [
-            BasicShaderVertex {
-                position: [0.0, 0.5, 0.0],    // Top
-                color: [1.0, 0.0, 0.0],       // Red
-            },
-            BasicShaderVertex {
-                position: [-0.5, -0.5, 0.0],  // Bottom left
-                color: [0.0, 1.0, 0.0],       // Green
-            },
-            BasicShaderVertex {
-                position: [0.5, -0.5, 0.0],   // Bottom right
-                color: [0.0, 0.0, 1.0],       // Blue
-            },
+            vertex_factory.create_vertex(
+                [0.0, 0.5, 0.0],     // Position: Top
+                [1.0, 0.0, 0.0]      // Color: Red
+            ),
+            vertex_factory.create_vertex(
+                [-0.5, -0.5, 0.0],   // Position: Bottom left
+                [0.0, 1.0, 0.0]      // Color: Green
+            ),
+            vertex_factory.create_vertex(
+                [0.5, -0.5, 0.0],    // Position: Bottom right
+                [0.0, 0.0, 1.0]      // Color: Blue
+            ),
         ];
-        
-        // Create a triangle from vertices
-        let triangle = GeometryTriangle { vertices: vertices.clone() };
-        
+                
         // Create instance data for multiple triangles
         let mut instances = Vec::new();
         
@@ -95,22 +95,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Draw all triangles using instanced rendering
         let mut builder = BasicShader::geometry_builder();
-
-        builder.triangle_strip(&[
-            BasicShaderVertex {
-            position: [0.0, 0.5, 0.0],    // Top
-            color: [1.0, 0.0, 0.0],       // Red
-            },
-            BasicShaderVertex {
-            position: [-0.5, -0.5, 0.0],  // Bottom left
-            color: [0.0, 1.0, 0.0],       // Green
-            },
-            BasicShaderVertex {
-            position: [0.5, -0.5, 0.0],   // Bottom right
-            color: [0.0, 0.0, 1.0],       // Blue
-            },
-        ]);
-
+        builder.triangle_strip(&vertices);
         let geometry = builder.build();
         canvas.draw_with_instances(shader_id)
               .pump_geometry(&geometry, &instances);

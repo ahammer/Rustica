@@ -9,3 +9,12 @@ pub use crate::{
     UniformParameter,
 };
 
+// Re-export geometry traits
+pub use rustica_foundation::geometry::{
+    Vertex,
+    VertexAttributeProvider,
+    VertexAttribute,
+    Triangle,
+    GeometryBuilder,
+};
+

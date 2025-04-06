@@ -28,26 +28,6 @@ pub trait VertexAttributeProvider {
     fn attributes() -> Vec<VertexAttribute>;
 }
 
-/// Implement VertexAttributeProvider for any type that implements Vertex
-impl<T: Vertex> VertexAttributeProvider for T {
-    fn attributes() -> Vec<VertexAttribute> {
-        let layout = T::layout();
-        let mut attributes = Vec::new();
-        
-        for attr in layout.attributes {
-            attributes.push(VertexAttribute {
-                name: format!("attribute_{}", attr.shader_location), // Default name
-                location: attr.shader_location,
-                format: attr.format,
-                offset: attr.offset,
-                semantic: None, // Default to None, semantics would be handled by the macro
-            });
-        }
-        
-        attributes
-    }
-}
-
 /// Vertex attribute descriptor
 pub struct VertexAttribute {
     /// Name of the attribute
