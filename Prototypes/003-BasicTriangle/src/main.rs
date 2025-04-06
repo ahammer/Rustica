@@ -9,10 +9,10 @@ use rustica_foundation::VertexSemantic;
 #[shader(file = "./src/shaders/basic_triangle.wgsl")]
 struct BasicShader {
     // Vertex attributes
-    #[vertex(location = 0, semantic = VertexSemantic::Position)]
+    #[vertex(location = 0)]
     position: [f32; 3],
     
-    #[vertex(location = 1, semantic = VertexSemantic::Color)]
+    #[vertex(location = 1)]
     color: [f32; 3],
     
     // Instance attributes
