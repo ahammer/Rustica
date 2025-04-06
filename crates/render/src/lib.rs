@@ -1,9 +1,5 @@
 // Rendering module for Rustica engine
 
-// Re-export derive macros when the "derive" feature is enabled
-#[cfg(feature = "derive")]
-pub use rustica_render_derive::*;
-
 // Re-export Foundation geometry types
 pub use rustica_foundation::geometry::{Vertex, VertexAttributeProvider, VertexAttribute, Triangle};
 

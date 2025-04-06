@@ -137,6 +137,7 @@ dependencies = [
  "rustica_foundation",
  "rustica_graphics",
  "rustica_render",
+ "rustica_render_derive",
  "rustica_window",
  "wgpu",
 ]
@@ -1356,6 +1357,7 @@ dependencies = [
  "pollster 0.3.0",
  "rustica_foundation",
  "rustica_render",
+ "rustica_render_derive",
  "rustica_window",
  "wgpu",
 ]
@@ -1370,7 +1372,6 @@ dependencies = [
  "pollster 0.4.0",
  "raw-window-handle",
  "rustica_foundation",
- "rustica_render_derive",
  "rustica_window",
  "wgpu",
  "winit",

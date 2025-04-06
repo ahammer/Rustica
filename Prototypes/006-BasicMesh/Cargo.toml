@@ -5,7 +5,9 @@ edition = "2021"
 
 [dependencies]
 rustica_window = { path = "../../crates/window" }
-rustica_render = { path = "../../crates/render", features = ["derive"] }
+rustica_render = { path = "../../crates/render" }
+rustica_render_derive = { path = "../../crates/render-derive" }
+
 rustica_foundation = { path = "../../Foundation" }
 rustica_graphics = { path = "../../crates/graphics" }
 cgmath = "0.18.0"

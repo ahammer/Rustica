@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 rustica_window = { path = "../window" }
 rustica_render = { path = "../render" }
+rustica_render_derive = { path = "../render-derive" }
 rustica_foundation = { path = "../../Foundation" }
 cgmath = "0.18.0"
 wgpu = "24.0.3"
@@ -14,4 +15,3 @@ pollster = "0.3.0"
 
 [features]
 default = []
-derive = ["rustica_render/derive"]
