@@ -1,16 +1,18 @@
 use std::f32::consts::PI;
-use rustica_render::{RenderWindow, ShaderProperties};
-use rustica_foundation::geometry::{Triangle as GeometryTriangle, GeometryBuilder};
+
+use rustica_render::{RenderWindow, Vertex};
+use rustica_render_derive::ShaderProperties;
+use rustica_foundation::{geometry::{GeometryBuilder, Triangle as GeometryTriangle}, VertexSemantic};
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
 #[shader(file = "./src/shaders/animated_triangle.wgsl")]
 struct AnimatedShader {
     // Vertex attributes
-    #[vertex(location = 0, semantic = VertexSemantic::Position)]
+    #[vertex(location = 0)]
     position: [f32; 3],
     
-    #[vertex(location = 1, semantic = VertexSemantic::Color)]
+    #[vertex(location = 1)]
     color: [f32; 3],
     
     // Instance attributes
@@ -37,7 +39,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let time = canvas.time();
         let seconds = time.as_secs_f32();
         let vertex_factory = AnimatedShader::vertex_factory();
-        // Define the triangle vertices using the generated vertex type
+        
+        // Define the triangle vertices using the vertex factory
         let vertices = [
             vertex_factory.create_vertex(
                 [0.0, 0.5, 0.0],    // Top
@@ -53,7 +56,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ),
         ];
         
-
         // Create instance data for multiple triangles
         let mut instances = Vec::new();
         
