@@ -4,5 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-raw-window-handle = "0.6.0"
-rustica_render = { path = "../../crates/render" }
+rustica_core = { path = "../../Core" }

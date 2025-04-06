@@ -146,21 +146,14 @@ dependencies = [
 name = "basic_triangle"
 version = "0.1.0"
 dependencies = [
- "bytemuck",
- "cgmath",
- "rustica_foundation",
- "rustica_render",
- "rustica_render_derive",
- "wgpu",
- "winit",
+ "rustica_core",
 ]
 
 [[package]]
 name = "basic_wgpu"
 version = "0.1.0"
 dependencies = [
- "raw-window-handle",
- "rustica_render",
+ "rustica_core",
 ]
 
 [[package]]
