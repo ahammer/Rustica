@@ -1,34 +1,27 @@
 use rustica_render::{RenderWindow, ShaderProperties};
-use rustica_foundation::geometry::GeometryBuilder;
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
 #[shader(file = "./src/shaders/custom_shader.wgsl")]
 struct PlasmaShader {
     // Vertex attributes
-    #[allow(dead_code)]
     #[vertex(location = 0)]
     position: [f32; 3],
     
-    #[allow(dead_code)]
     #[vertex(location = 1)]
     color: [f32; 3],
     
-    #[allow(dead_code)]
     #[vertex(location = 2)]
     uv: [f32; 2],
     
     // Instance attributes
-    #[allow(dead_code)]
     #[instance(location = 3)]
     model_matrix: [[f32; 4]; 4],
     
-    #[allow(dead_code)]
     #[instance(location = 7)]
     instance_color: [f32; 3],
     
-    // Uniform for time animation
-    #[allow(dead_code)]
+    // Uniform for time animation    
     #[uniform(binding = 0)]
     time: f32,
 }
