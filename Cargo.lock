@@ -167,7 +167,6 @@ dependencies = [
 name = "basic_window"
 version = "0.1.0"
 dependencies = [
- "raw-window-handle",
  "rustica_core",
 ]
 
