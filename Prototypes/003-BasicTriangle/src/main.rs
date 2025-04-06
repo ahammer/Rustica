@@ -7,10 +7,10 @@ use rustica_foundation::geometry::{Triangle as GeometryTriangle, GeometryBuilder
 #[shader(file = "./src/shaders/basic_triangle.wgsl")]
 struct BasicShader {
     // Vertex attributes
-    #[vertex(location = 0)]
+    #[vertex(location = 0, semantic = VertexSemantic::Position)]
     position: [f32; 3],
     
-    #[vertex(location = 1)]
+    #[vertex(location = 1, semantic = VertexSemantic::Color)]
     color: [f32; 3],
     
     // Instance attributes

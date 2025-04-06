@@ -7,10 +7,10 @@ use rustica_foundation::geometry::{Triangle as GeometryTriangle, GeometryBuilder
 #[shader(file = "./src/shaders/animated_triangle.wgsl")]
 struct AnimatedShader {
     // Vertex attributes
-    #[vertex(location = 0)]
+    #[vertex(location = 0, semantic = VertexSemantic::Position)]
     position: [f32; 3],
     
-    #[vertex(location = 1)]
+    #[vertex(location = 1, semantic = VertexSemantic::Color)]
     color: [f32; 3],
     
     // Instance attributes
@@ -25,33 +25,6 @@ struct AnimatedShader {
     time: f32,
 }
 
-// Define a custom vertex type
-#[repr(C)]
-#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
-struct BasicVertex {
-    position: [f32; 3], // location = 0
-    color: [f32; 3],    // location = 1
-}
-
-// Define an instance struct for instanced rendering
-#[repr(C)]
-#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
-struct TriangleInstance {
-    model_matrix: [[f32; 4]; 4], // locations 3,4,5,6 (4 rows)
-    color: [f32; 3],             // location 7
-    _padding: u32,               // For memory alignment
-}
-
-impl TriangleInstance {
-    pub fn new(model_matrix: [[f32; 4]; 4], color: [f32; 3]) -> Self {
-        Self {
-            model_matrix,
-            color,
-            _padding: 0,
-        }
-    }
-}
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a shader descriptor
     let shader_descriptor = AnimatedShader::descriptor();
@@ -63,26 +36,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     window.with_frame_callback(move |canvas| {
         let time = canvas.time();
         let seconds = time.as_secs_f32();
-        
+        let vertexFactory = AnimatedShader::vertex_factory();
         // Define the triangle vertices using the generated vertex type
         let vertices = [
-            AnimatedShaderVertex {
+            vertexFactory.create_vertex(
                 position: [0.0, 0.5, 0.0],    // Top
                 color: [1.0, 0.0, 0.0],       // Red
             },
-            AnimatedShaderVertex {
+            vertexFactory.create_vertex(
                 position: [-0.5, -0.5, 0.0],  // Bottom left
                 color: [0.0, 1.0, 0.0],       // Green
             },
-            AnimatedShaderVertex {
+            vertexFactory.create_vertex(
                 position: [0.5, -0.5, 0.0],   // Bottom right
                 color: [0.0, 0.0, 1.0],       // Blue
             },
         ];
         
-        // Create a triangle from vertices
-        let triangle = GeometryTriangle { vertices };
-        
+
         // Create instance data for multiple triangles
         let mut instances = Vec::new();
         
