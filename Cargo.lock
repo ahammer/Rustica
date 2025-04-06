@@ -1335,7 +1335,11 @@ dependencies = [
 name = "rustica_core"
 version = "0.1.0"
 dependencies = [
+ "rustica-ecs",
  "rustica_foundation",
+ "rustica_graphics",
+ "rustica_render",
+ "rustica_render_derive",
  "rustica_window",
 ]
 
