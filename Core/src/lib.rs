@@ -19,15 +19,9 @@ pub mod prelude {
     pub use rustica_foundation::prelude::*;
     pub use rustica_graphics::prelude::*;
     pub use rustica_render::prelude::*;
-    
-    // Common window types
-    pub use rustica_window::{
-        Window,
-        WindowConfig,
-        EventHandler,
-    };
+    pub use rustica_window::prelude::*;
 
-    // Common render types
+    // Additional direct imports for convenience (if needed)
     pub use rustica_render::{
         Canvas,
         RenderWindow,

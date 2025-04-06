@@ -8,6 +8,9 @@ use winit::{
     window::{Window as WinitWindow, WindowAttributes, WindowId},
 };
 
+// Export the prelude module
+pub mod prelude;
+
 /// A window application that handles window creation and events
 #[derive(Default)]
 pub struct WindowApp {
