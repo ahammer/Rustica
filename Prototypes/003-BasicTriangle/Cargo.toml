@@ -4,4 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-rustica_core = { path = "../../core" }
+rustica_render = { path = "../../crates/render" }
+rustica_render_derive = { path = "../../crates/render-derive" }
+rustica_foundation = { path = "../../Foundation" }
+wgpu = "24.0.3"
+bytemuck = { version = "1.14", features = ["derive"] }
+cgmath = "0.18"
+winit = "0.30.9"

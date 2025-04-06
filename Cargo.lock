@@ -146,21 +146,28 @@ dependencies = [
 name = "basic_triangle"
 version = "0.1.0"
 dependencies = [
- "rustica_core",
+ "bytemuck",
+ "cgmath",
+ "rustica_foundation",
+ "rustica_render",
+ "rustica_render_derive",
+ "wgpu",
+ "winit",
 ]
 
 [[package]]
 name = "basic_wgpu"
 version = "0.1.0"
 dependencies = [
- "rustica_core",
+ "rustica_render",
+ "rustica_window",
 ]
 
 [[package]]
 name = "basic_window"
 version = "0.1.0"
 dependencies = [
- "rustica_core",
+ "rustica_window",
 ]
 
 [[package]]
@@ -647,7 +654,7 @@ dependencies = [
 name = "integration_example"
 version = "0.1.0"
 dependencies = [
- "rustica_core",
+ "rustica_window",
 ]
 
 [[package]]
@@ -1340,18 +1347,6 @@ name = "rustica-ecs"
 version = "0.1.0"
 dependencies = [
  "rustica_foundation",
-]
-
-[[package]]
-name = "rustica_core"
-version = "0.1.0"
-dependencies = [
- "rustica-ecs",
- "rustica_foundation",
- "rustica_graphics",
- "rustica_render",
- "rustica_render_derive",
- "rustica_window",
 ]
 
 [[package]]

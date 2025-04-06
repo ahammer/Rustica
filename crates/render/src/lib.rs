@@ -3,18 +3,6 @@
 // Re-export Foundation geometry types
 pub use rustica_foundation::geometry::{Vertex, VertexAttributeProvider, VertexAttribute, Triangle};
 
-// Semantic types for vertex attributes
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum VertexSemantic {
-    Position,
-    Normal,
-    Color,
-    TexCoord,
-    Tangent,
-    Bitangent,
-    // Add other semantics as needed
-}
-
 // Re-export public API
 pub use canvas::Canvas;
 pub use render_window::RenderWindow;

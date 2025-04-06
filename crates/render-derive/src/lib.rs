@@ -203,8 +203,20 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         // Generate code to create custom vertex attributes with semantics from our Vertex implementation
         let attribute_fields = vertex_fields.iter().enumerate().map(|(idx, (field_name, _, loc, _, semantic_opt))| {
             let field_str = field_name.to_string();
-            let semantic = if let Some(sem) = semantic_opt {
-                quote! { Some(#sem) }
+            let semantic = if let Some(sem_path) = semantic_opt {
+                // Check if the path starts with "VertexSemantic"
+                if let Some(first_segment) = sem_path.segments.first() {
+                    if first_segment.ident == "VertexSemantic" {
+                        // Prepend the full path from foundation
+                        quote! { Some(rustica_foundation::geometry::#sem_path) }
+                    } else {
+                        // Use the path as provided by the user if it's not VertexSemantic
+                        quote! { Some(#sem_path) }
+                    }
+                } else {
+                     // Use the path as provided if it's simple (shouldn't happen for enums like this)
+                     quote! { Some(#sem_path) }
+                }
             } else {
                 quote! { None }
             };

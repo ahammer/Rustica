@@ -1,4 +1,5 @@
-use rustica_core::prelude::*;
+use rustica_window::WindowApp;
+
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a window application

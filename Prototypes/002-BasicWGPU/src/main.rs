@@ -1,4 +1,5 @@
-use rustica_core::prelude::*;
+use rustica_render::RenderWindow;
+
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a render window

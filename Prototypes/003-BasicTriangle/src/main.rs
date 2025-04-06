@@ -1,4 +1,8 @@
-use rustica_core::prelude::*;
+use rustica_render::{RenderWindow, Vertex};
+use rustica_render_derive::ShaderProperties;
+use rustica_foundation::geometry::{VertexAttributeProvider, VertexAttribute};
+use rustica_foundation::VertexSemantic;
+
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
