@@ -5,4 +5,4 @@ edition = "2024"
 description = "Integration example for Rustica engine"
 
 [dependencies]
-rustica_core = { path = "../../Core" }
+rustica_core = { path = "../../core" }

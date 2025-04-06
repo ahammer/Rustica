@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "Foundation",    
-    "Core",
+    "core",
     "crates/window",
     "crates/render",
     "crates/render-derive",
