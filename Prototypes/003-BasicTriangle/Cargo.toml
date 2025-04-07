@@ -8,6 +8,7 @@ rustica_render = { path = "../../crates/render" }
 rustica_render_derive = { path = "../../crates/render-derive" }
 rustica_foundation = { path = "../../Foundation" }
 rustica_standard_shader = { path = "../../crates/standard-shader" }
+rustica_graphics = { path = "../../crates/graphics" }
 wgpu = "24.0.3"
 bytemuck = { version = "1.14", features = ["derive"] }
 cgmath = "0.18"
