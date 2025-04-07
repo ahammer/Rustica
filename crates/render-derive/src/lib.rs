@@ -256,7 +256,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         let fields = vertex_fields.iter().map(|(i, t, _, _, _)| quote! { pub #i: #t });
         
         quote! {
-            #[repr(C, align(16))]
+            #[repr(C)]
             #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #vertex_name {
                 #(#fields,)* 
@@ -332,7 +332,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         let fields = uniform_fields.iter().map(|(i, t, _)| quote! { pub #i: #t });
         
         quote! {
-            #[repr(C, align(16))]
+            #[repr(C)]
             #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #uniform_name {
                 #(#fields,)* 
@@ -346,7 +346,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         let fields = instance_fields.iter().map(|(i, t, _)| quote! { pub #i: #t });
         
         quote! {
-            #[repr(C, align(16))]
+            #[repr(C)]
             #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #instance_name {
                 #(#fields,)* 
