@@ -15,15 +15,17 @@ struct InstanceInput {
     @location(8) instance_color: vec3<f32>,
 };
 
-struct Uniforms {
-    view: mat4x4<f32>,
-    projection: mat4x4<f32>,
-    time: f32,
-    _padding: vec3<f32>, // Padding to ensure alignment
-};
-
 @group(0) @binding(0)
-var<uniform> uniforms: Uniforms;
+var<uniform> view: mat4x4<f32>;
+
+@group(0) @binding(1)
+var<uniform> projection: mat4x4<f32>;
+
+@group(0) @binding(2)
+var<uniform> time: f32;
+
+@group(0) @binding(3)
+var<uniform> _padding: vec3<f32>;
 
 struct VertexOutput {
     @builtin(position) clip_position: vec4<f32>,
@@ -52,8 +54,8 @@ fn vs_main(
     // Calculate world position
     let world_position = model * vec4<f32>(vertex.position, 1.0);
     
-    // Calculate final position
-    output.clip_position = uniforms.projection * uniforms.view * world_position;
+    // Calculate final position - Updated to use separate uniform variables
+    output.clip_position = projection * view * world_position;
     
     // Transform normal to world space
     output.world_normal = normalize((model * vec4<f32>(vertex.normal, 0.0)).xyz);
@@ -83,8 +85,8 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     let lighting = ambient + diffuse;
     let combined_color = in.color * in.instance_color;
     
-    // Add a simple animation effect based on time
-    let time_effect = sin(uniforms.time + in.world_position.x + in.world_position.z) * 0.1 + 0.9;
+    // Add a simple animation effect based on time - Updated to use direct time variable
+    let time_effect = sin(time + in.world_position.x + in.world_position.z) * 0.1 + 0.9;
     
     return vec4<f32>(combined_color * lighting * time_effect, 1.0);
 }
