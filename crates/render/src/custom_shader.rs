@@ -54,46 +54,50 @@ pub struct CustomShader {
 
 /// Create the instance buffer attributes for model matrices (4 rows of vec4)
 /// Plus an instance color attribute at the end
-/// Since these are static attributes, we'll use a static array
-pub fn get_instance_attributes() -> [wgpu::VertexAttribute; 5] {
+/// Takes a start_location parameter to determine where to begin assigning locations
+pub fn get_instance_attributes(start_location: u32) -> [wgpu::VertexAttribute; 5] {
     use std::mem;
     
     [
         wgpu::VertexAttribute {
             offset: 0,
-            shader_location: 3, // Start after the main vertex attributes
+            shader_location: start_location, // Start at the provided location
             format: wgpu::VertexFormat::Float32x4,
         },
         wgpu::VertexAttribute {
             offset: mem::size_of::<[f32; 4]>() as wgpu::BufferAddress,
-            shader_location: 4,
+            shader_location: start_location + 1,
             format: wgpu::VertexFormat::Float32x4,
         },
         wgpu::VertexAttribute {
             offset: mem::size_of::<[f32; 8]>() as wgpu::BufferAddress,
-            shader_location: 5,
+            shader_location: start_location + 2,
             format: wgpu::VertexFormat::Float32x4,
         },
         wgpu::VertexAttribute {
             offset: mem::size_of::<[f32; 12]>() as wgpu::BufferAddress,
-            shader_location: 6,
+            shader_location: start_location + 3,
             format: wgpu::VertexFormat::Float32x4,
         },
         wgpu::VertexAttribute {
             offset: mem::size_of::<[f32; 16]>() as wgpu::BufferAddress,
-            shader_location: 7, // Location for instance color
+            shader_location: start_location + 4, // Location for instance color
             format: wgpu::VertexFormat::Float32x3,
         },
     ]
 }
 
 /// Create an instance buffer layout for model matrices (4 rows of vec4)
-pub fn create_instance_buffer_layout<'a>() -> wgpu::VertexBufferLayout<'a> {
+/// Takes the count of vertex attributes to correctly assign instance attribute locations
+pub fn create_instance_buffer_layout<'a>(vertex_attr_count: u32) -> wgpu::VertexBufferLayout<'a> {
     use std::mem;
     
-    // Create a static reference to the attributes
-    static INSTANCE_ATTRIBUTES: once_cell::sync::Lazy<[wgpu::VertexAttribute; 5]> = 
-        once_cell::sync::Lazy::new(get_instance_attributes);
+    // Create the instance attributes with dynamic starting location
+    let instance_attributes = get_instance_attributes(vertex_attr_count);
+    
+    // Create a boxed slice and leak it to extend its lifetime
+    // This is safe because the attributes are only needed during pipeline creation
+    let attributes = Box::leak(Box::new(instance_attributes));
     
     // Dynamically calculate stride based on the actual instance data
     // The instance data should have a 4x4 matrix (16 floats) and color (3 floats)
@@ -101,7 +105,7 @@ pub fn create_instance_buffer_layout<'a>() -> wgpu::VertexBufferLayout<'a> {
     wgpu::VertexBufferLayout {
         array_stride: mem::size_of::<[f32; 19]>() as wgpu::BufferAddress,
         step_mode: wgpu::VertexStepMode::Instance,
-        attributes: &INSTANCE_ATTRIBUTES[..],
+        attributes,
     }
 }
 
@@ -204,8 +208,11 @@ impl CustomShader {
             }).collect::<Vec<_>>(),
         };
 
-        // Add the instance buffer layout
-        let instance_layout = create_instance_buffer_layout();
+        // Calculate the number of vertex attributes
+        let vertex_attribute_count = descriptor.vertex_attributes.len() as u32;
+
+        // Add the instance buffer layout with dynamic location starting after vertex attributes
+        let instance_layout = create_instance_buffer_layout(vertex_attribute_count);
         
         // We need to collect the buffer layouts into a Vec because they need to live long enough
         let mut buffer_layouts = Vec::new();
