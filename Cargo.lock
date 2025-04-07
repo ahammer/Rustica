@@ -68,19 +68,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "animated_triangle"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "cgmath",
- "rustica_foundation",
- "rustica_render",
- "rustica_render_derive",
- "wgpu",
- "winit",
-]
-
-[[package]]
 name = "approx"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -129,20 +116,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
-name = "basic-mesh"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "cgmath",
- "rustica_foundation",
- "rustica_graphics",
- "rustica_render",
- "rustica_render_derive",
- "rustica_window",
- "wgpu",
-]
-
-[[package]]
 name = "basic_triangle"
 version = "0.1.0"
 dependencies = [
@@ -151,6 +124,7 @@ dependencies = [
  "rustica_foundation",
  "rustica_render",
  "rustica_render_derive",
+ "rustica_standard_shader",
  "wgpu",
  "winit",
 ]
@@ -392,19 +366,6 @@ name = "cursor-icon"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "96a6ac251f4a2aca6b3f91340350eab87ae57c3f127ffeb585e92bd336717991"
-
-[[package]]
-name = "custom_shader"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "cgmath",
- "rustica_foundation",
- "rustica_render",
- "rustica_render_derive",
- "wgpu",
- "winit",
-]
 
 [[package]]
 name = "dispatch"
@@ -1398,6 +1359,19 @@ dependencies = [
  "rustica_render",
  "syn",
  "trybuild",
+ "wgpu",
+]
+
+[[package]]
+name = "rustica_standard_shader"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "cgmath",
+ "rustica_foundation",
+ "rustica_graphics",
+ "rustica_render",
+ "rustica_render_derive",
  "wgpu",
 ]
 

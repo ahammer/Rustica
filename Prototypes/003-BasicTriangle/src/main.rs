@@ -2,30 +2,13 @@ use rustica_render::{RenderWindow, Vertex};
 use rustica_render_derive::ShaderProperties;
 use rustica_foundation::geometry::{VertexAttributeProvider, VertexAttribute};
 use rustica_foundation::VertexSemantic;
+use rustica_standard_shader::{StandardShader, StandardShaderInstances};
 
 
-// Define our shader using the ShaderProperties derive macro
-#[derive(ShaderProperties)]
-#[shader(file = "./src/shaders/basic_triangle.wgsl")]
-struct BasicShader {
-    // Vertex attributes
-    #[vertex(location = 0)]
-    position: [f32; 3],
-    
-    #[vertex(location = 1)]
-    color: [f32; 3],
-    
-    // Instance attributes
-    #[instance(location = 3)]
-    model_matrix: [[f32; 4]; 4],
-    
-    #[instance(location = 7)]
-    instance_color: [f32; 3],
-}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a shader descriptor
-    let shader_descriptor = BasicShader::descriptor();
+    let shader_descriptor = StandardShader::descriptor();
     
     // Create a render window with a frame callback
     let mut window = RenderWindow::new("Basic Triangle (Instanced)", 800, 600);
@@ -35,21 +18,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     window.with_frame_callback(move |canvas| {
         // Get the vertex factory
-        let vertex_factory = BasicShader::vertex_factory();
+        let vertex_factory = StandardShader::vertex_factory();
         
         // Define the triangle vertices using the vertex factory
         let vertices = [
             vertex_factory.create_vertex(
-                [0.0, 0.5, 0.0],     // Position: Top
-                [1.0, 0.0, 0.0]      // Color: Red
+                [0.0, 0.5, 0.0],
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [1.0, 0.0],
             ),
             vertex_factory.create_vertex(
-                [-0.5, -0.5, 0.0],   // Position: Bottom left
-                [0.0, 1.0, 0.0]      // Color: Green
+                [-0.5, -0.5, 0.0],
+                [0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [1.0, 0.0],
             ),
             vertex_factory.create_vertex(
                 [0.5, -0.5, 0.0],    // Position: Bottom right
-                [0.0, 0.0, 1.0]      // Color: Blue
+                [0.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0],
+                [1.0, 0.0],
             ),
         ];
                 
@@ -65,7 +54,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ];
         
         // Add center triangle with full color
-        instances.push(BasicShaderInstances {
+        instances.push(StandardShaderInstances {
             model_matrix: identity,
             instance_color: [1.0, 1.0, 1.0], // White tint (preserves original vertex colors)
         });
@@ -89,16 +78,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ];
             
             // Create instance with position offset and slightly dimmer color
-            instances.push(BasicShaderInstances {
+            instances.push(StandardShaderInstances {
                 model_matrix: model,
                 instance_color: [0.7, 0.7, 0.7], // Slightly dimmer
             });
         }
         
         // Draw all triangles using instanced rendering
-        let mut builder = BasicShader::geometry_builder();
+        let mut builder = StandardShader::geometry_builder();
         builder.triangle_strip(&vertices);
         let geometry = builder.build();
+
         canvas.draw_with_instances(shader_id)
               .pump_geometry(&geometry, &instances);
     })
