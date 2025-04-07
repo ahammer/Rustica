@@ -3,28 +3,56 @@ use quote::{format_ident, quote, ToTokens};
 use syn::{parse_macro_input, DeriveInput, Fields, Data, Meta, Lit, Expr, ExprLit, Path};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
+use std::collections::HashSet;
 
 /// `#[derive(ShaderProperties)]` macro splits one struct into multiple data blocks: Vertex, Uniforms, Instances
+///
+/// This macro automatically:
+/// - Generates separate structs for vertex, instance, and uniform data
+/// - Auto-assigns binding and location values if not explicitly provided
+/// - Validates that there are no duplicate bindings or locations
+/// - Creates helper methods to work with the shader
+///
+/// # Automatic Assignment
+/// - For `#[vertex]` and `#[instance]` fields without a `location`, a unique location is auto-assigned
+/// - For `#[uniform]` fields without a `binding`, a unique binding point is auto-assigned
+/// - Auto-assignment skips over any explicitly assigned values to avoid conflicts
+/// - Compile-time errors are generated if duplicate bindings or locations are detected
 ///
 /// # Example
 /// ```ignore
 /// #[derive(ShaderProperties)]
 /// #[shader(file = "shaders/my_shader.wgsl")]
 /// struct MyShader {
-///     #[vertex(location = 0, semantic = VertexSemantic::Position)]
+///     // Location 0 automatically assigned
+///     #[vertex(semantic = VertexSemantic::Position)]
 ///     position: [f32; 3],
 ///
-///     #[instance(location = 1)]
-///     model_matrix: [[f32; 4]; 4],
+///     // Explicitly set location 2 (skipping 1)
+///     #[vertex(location = 2, semantic = VertexSemantic::Normal)]
+///     normal: [f32; 3],
 ///
-///     #[uniform(binding = 0)]
+///     // Location 1 automatically assigned (filling the gap)
+///     #[vertex]
 ///     color: [f32; 4],
+///
+///     // Auto-assigned binding 0
+///     #[uniform]
+///     model: [[f32; 4]; 4],
+///
+///     // Explicitly set binding 1
+///     #[uniform(binding = 1)]
+///     view_proj: [[f32; 4]; 4],
+///
+///     // Explicitly set location 3
+///     #[instance(location = 3)]
+///     model_matrix: [[f32; 4]; 4],
 /// }
 ///
 /// // Generates:
-/// // - MyShaderVertex { position: [f32; 3] }
+/// // - MyShaderVertex { position: [f32; 3], normal: [f32; 3], color: [f32; 4] }
 /// // - MyShaderInstances { model_matrix: [[f32; 4]; 4] }
-/// // - MyShaderUniforms { color: [f32; 4] }
+/// // - MyShaderUniforms { model: [[f32; 4]; 4], view_proj: [[f32; 4]; 4] }
 /// // - MyShaderVertexFactory for creating vertices
 /// ```
 #[proc_macro_derive(ShaderProperties, attributes(shader, vertex, uniform, instance))]
@@ -68,6 +96,8 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
 
     let mut binding_counter = 0;
     let mut location_counter = 0;
+    let mut used_bindings = HashSet::new();
+    let mut used_locations = HashSet::new();
 
     for field in fields {
         let ident = field.ident.as_ref().unwrap();
@@ -130,17 +160,57 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         }
 
         match field_category {
-            Some("vertex") => {
-                let loc = location.unwrap_or_else(|| { let l = location_counter; location_counter += 1; l });
-                vertex_fields.push((ident.clone(), ty.clone(), loc, format, semantic));
+            Some("vertex") | Some("instance") => {
+                // Get location (user-defined or auto-assigned)
+                let loc = if let Some(user_loc) = location {
+                    // Check for duplicate location
+                    if !used_locations.insert(user_loc) {
+                        return syn::Error::new_spanned(
+                            ident, 
+                            format!("Duplicate location assignment: {}. Each vertex/instance attribute must have a unique location.", user_loc)
+                        ).to_compile_error().into();
+                    }
+                    user_loc
+                } else {
+                    // Auto-assign: find the next available location
+                    while used_locations.contains(&location_counter) {
+                        location_counter += 1;
+                    }
+                    let assigned = location_counter;
+                    used_locations.insert(assigned);
+                    location_counter += 1;
+                    assigned
+                };
+
+                if field_category == Some("vertex") {
+                    vertex_fields.push((ident.clone(), ty.clone(), loc, format, semantic));
+                } else {
+                    instance_fields.push((ident.clone(), ty.clone(), loc));
+                }
             },
             Some("uniform") => {
-                let bind = binding.unwrap_or_else(|| { let b = binding_counter; binding_counter += 1; b });
+                // Get binding (user-defined or auto-assigned)
+                let bind = if let Some(user_bind) = binding {
+                    // Check for duplicate binding
+                    if !used_bindings.insert(user_bind) {
+                        return syn::Error::new_spanned(
+                            ident, 
+                            format!("Duplicate binding assignment: {}. Each uniform must have a unique binding.", user_bind)
+                        ).to_compile_error().into();
+                    }
+                    user_bind
+                } else {
+                    // Auto-assign: find the next available binding
+                    while used_bindings.contains(&binding_counter) {
+                        binding_counter += 1;
+                    }
+                    let assigned = binding_counter;
+                    used_bindings.insert(assigned);
+                    binding_counter += 1;
+                    assigned
+                };
+                
                 uniform_fields.push((ident.clone(), ty.clone(), bind));
-            },
-            Some("instance") => {
-                let loc = location.unwrap_or_else(|| { let l = location_counter; location_counter += 1; l });
-                instance_fields.push((ident.clone(), ty.clone(), loc));
             },
             _ => {}
         }
@@ -470,5 +540,131 @@ mod tests {
         assert!(result_str.contains("offset : 8u64") || 
                 result_str.contains("offset : (std :: mem :: size_of :: < [f32 ; 2] > ())"),
                 "Second vertex attribute should have offset after [f32; 2]");
+    }
+
+    #[test]
+    fn test_auto_assignment() {
+        // Test that locations and bindings are auto-assigned when not provided
+        let input: DeriveInput = parse_quote! {
+            #[derive(ShaderProperties)]
+            #[shader(inline = "test shader")]
+            struct AutoAssignShader {
+                // No location provided - should be assigned location 0
+                #[vertex]
+                position: [f32; 3],
+                
+                // No location provided - should be assigned location 1
+                #[vertex]
+                normal: [f32; 3],
+                
+                // No binding provided - should be assigned binding 0
+                #[uniform]
+                model: [[f32; 4]; 4],
+                
+                // No binding provided - should be assigned binding 1
+                #[uniform]
+                color: [f32; 4],
+            }
+        };
+
+        // Process the input
+        let result = derive_shader_properties(TokenStream::from(quote! { #input }));
+        let result_str = result.to_string();
+        
+        // Check location assignments in the output
+        assert!(result_str.contains("shader_location : 0"), "First vertex attribute should be assigned location 0");
+        assert!(result_str.contains("shader_location : 1"), "Second vertex attribute should be assigned location 1");
+        
+        // Check binding assignments in the output
+        assert!(result_str.contains("binding : 0"), "First uniform should be assigned binding 0");
+        assert!(result_str.contains("binding : 1"), "Second uniform should be assigned binding 1");
+    }
+
+    #[test]
+    fn test_mixed_assignment() {
+        // Test that auto-assignment skips over explicitly assigned values
+        let input: DeriveInput = parse_quote! {
+            #[derive(ShaderProperties)]
+            #[shader(inline = "test shader")]
+            struct MixedAssignShader {
+                // No location provided - should be assigned location 0
+                #[vertex]
+                position: [f32; 3],
+                
+                // Explicitly assigned location 2
+                #[vertex(location = 2)]
+                normal: [f32; 3],
+                
+                // No location provided - should be assigned location 1 (skipping 2)
+                #[vertex]
+                color: [f32; 4],
+                
+                // Explicitly assigned binding 3
+                #[uniform(binding = 3)]
+                model: [[f32; 4]; 4],
+                
+                // No binding provided - should be assigned binding 0
+                #[uniform]
+                view: [[f32; 4]; 4],
+                
+                // No binding provided - should be assigned binding 1
+                #[uniform]
+                projection: [[f32; 4]; 4],
+            }
+        };
+
+        // Process the input
+        let result = derive_shader_properties(TokenStream::from(quote! { #input }));
+        let result_str = result.to_string();
+        
+        // Check for expected location assignments in the generated code
+        assert!(result_str.contains("shader_location : 0"), "Auto-assigned first vertex location should be 0");
+        assert!(result_str.contains("shader_location : 2"), "Explicitly assigned location 2 should be respected");
+        assert!(result_str.contains("shader_location : 1"), "Auto-assigned location should skip occupied location 2");
+        
+        // Check for expected binding assignments in the generated code
+        assert!(result_str.contains("binding : 3"), "Explicitly assigned binding 3 should be respected");
+        assert!(result_str.contains("binding : 0"), "Auto-assigned first uniform binding should be 0");
+        assert!(result_str.contains("binding : 1"), "Auto-assigned second uniform binding should be 1");
+    }
+
+    #[test]
+    #[should_panic(expected = "Duplicate location assignment")]
+    fn test_duplicate_location_detection() {
+        // Test that duplicate locations are detected and cause a compile error
+        let input: DeriveInput = parse_quote! {
+            #[derive(ShaderProperties)]
+            #[shader(inline = "test shader")]
+            struct DuplicateLocationShader {
+                #[vertex(location = 1)]
+                position: [f32; 3],
+                
+                #[vertex(location = 1)] // Duplicate location should cause an error
+                normal: [f32; 3],
+            }
+        };
+
+        // This should panic with a duplicate location error
+        derive_shader_properties(TokenStream::from(quote! { #input }));
+    }
+
+    #[test]
+    #[should_panic(expected = "Duplicate binding assignment")]
+    fn test_duplicate_binding_detection() {
+        // Test that duplicate bindings are detected and cause a compile error
+        let input: DeriveInput = parse_quote! {
+            #[derive(ShaderProperties)]
+            #[shader(inline = "test shader")]
+            struct DuplicateBindingShader {
+                #[uniform(binding = 2)]
+                model: [[f32; 4]; 4],
+                
+                #[uniform(binding = 2)] // Duplicate binding should cause an error
+                view: [[f32; 4]; 4],
+            }
+        };
+
+        // This should panic with a duplicate binding error
+        derive_shader_properties(TokenStream::from(quote! { #input }));
     }
 }
