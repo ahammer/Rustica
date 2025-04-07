@@ -7,8 +7,6 @@ struct VertexOutput {
     @location(3) world_position: vec3<f32>,
 };
 
-// Removed model uniform since it now comes from instance data
-
 @group(0) @binding(1)
 var<uniform> view: mat4x4<f32>;
 
