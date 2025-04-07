@@ -10,28 +10,6 @@ use rustica_render::Vertex;
 
 use bytemuck::{Pod, Zeroable};
 
-// Define our shader using the ShaderProperties derive macro
-#[derive(ShaderProperties)]
-#[shader(file = "shaders/animated_triangle.wgsl")]
-struct AnimatedShader {
-    // Vertex attributes
-    #[vertex(location = 0)]
-    position: [f32; 3],
-    
-    #[vertex(location = 1)]
-    color: [f32; 3],
-    
-    // Instance attributes
-    #[instance(location = 3)]
-    model_matrix: [[f32; 4]; 4],
-    
-    #[instance(location = 7)]
-    instance_color: [f32; 3],
-    
-    // Uniform
-    #[uniform(binding = 0)]
-    time: f32,
-}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a shader descriptor

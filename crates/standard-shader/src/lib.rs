@@ -41,9 +41,6 @@ pub struct StandardShader {
     
     #[uniform(binding = 2)]
     pub time: f32,
-    
-    #[uniform(binding = 3)]
-    pub _padding: [f32; 3], // Padding to ensure alignment
 }
 
 /// Create a prelude module to simplify imports

@@ -132,15 +132,15 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         match field_category {
             Some("vertex") => {
                 let loc = location.unwrap_or_else(|| { let l = location_counter; location_counter += 1; l });
-                vertex_fields.push((ident, ty, loc, format, semantic));
+                vertex_fields.push((ident.clone(), ty.clone(), loc, format, semantic));
             },
             Some("uniform") => {
                 let bind = binding.unwrap_or_else(|| { let b = binding_counter; binding_counter += 1; b });
-                uniform_fields.push((ident, ty, bind));
+                uniform_fields.push((ident.clone(), ty.clone(), bind));
             },
             Some("instance") => {
                 let loc = location.unwrap_or_else(|| { let l = location_counter; location_counter += 1; l });
-                instance_fields.push((ident, ty, loc));
+                instance_fields.push((ident.clone(), ty.clone(), loc));
             },
             _ => {}
         }
@@ -250,18 +250,18 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
     } else {
         quote! {}
     };
-    
+
     // Create vertex struct with Vertex trait implementation
     let vertex_def = if !vertex_fields.is_empty() {
         let fields = vertex_fields.iter().map(|(i, t, _, _, _)| quote! { pub #i: #t });
         
         quote! {
-            #[repr(C)]
+            #[repr(C, align(16))]
             #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #vertex_name {
                 #(#fields,)* 
             }
-            
+
             // Implement Vertex trait
             impl rustica_foundation::geometry::Vertex for #vertex_name {
                 fn layout() -> wgpu::VertexBufferLayout<'static> {
@@ -303,13 +303,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
             pub struct #factory_name;
             
             impl #factory_name {
-                /// Create a new vertex factory
-                pub fn new() -> Self {
-                    Self
-                }
-                
-                /// Create a vertex with the given attributes
-                pub fn create_vertex(&self, #(#factory_params),*) -> #vertex_name {
+                pub fn create_vertex(#(#factory_params),*) -> #vertex_name {
                     #vertex_name {
                         #(#factory_field_assignments),*
                     }
@@ -327,7 +321,7 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
         quote! {
             /// Get a vertex factory for this shader
             pub fn vertex_factory() -> #factory_name {
-                #factory_name::new()
+                #factory_name
             }
         }
     } else {
@@ -336,8 +330,9 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
 
     let uniform_def = if !uniform_fields.is_empty() {
         let fields = uniform_fields.iter().map(|(i, t, _)| quote! { pub #i: #t });
+        
         quote! {
-            #[repr(C)]
+            #[repr(C, align(16))]
             #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #uniform_name {
                 #(#fields,)* 
@@ -349,8 +344,9 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
 
     let instance_def = if !instance_fields.is_empty() {
         let fields = instance_fields.iter().map(|(i, t, _)| quote! { pub #i: #t });
+        
         quote! {
-            #[repr(C)]
+            #[repr(C, align(16))]
             #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
             pub struct #instance_name {
                 #(#fields,)* 
