@@ -1,5 +1,5 @@
 use rustica_render::RenderWindow;
-use rustica_standard_shader::{StandardShader, StandardShaderInstances};
+use rustica_standard_shader::{StandardShader, StandardShaderInstances, StandardShaderVertexFactory};
 use rustica_graphics::primitives::camera::Camera;
 use cgmath::{Matrix4, Point3, SquareMatrix, Vector3};
 use std::time::Instant;
@@ -32,19 +32,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Define the triangle vertices using the vertex factory, with proper normals
         let vertices = [
-            vertex_factory.create_vertex(
+            StandardShaderVertexFactory::create_vertex(
                 [0.0, 0.5, 0.0],             // Position
                 [0.0, 0.0, 1.0],             // Normal pointing out of screen
                 [1.0, 0.0, 0.0],             // Red
                 [0.5, 0.0],                  // UV coordinates
             ),
-            vertex_factory.create_vertex(
+            StandardShaderVertexFactory::create_vertex(
                 [-0.5, -0.5, 0.0],           // Position
                 [0.0, 0.0, 1.0],             // Normal pointing out of screen
                 [0.0, 1.0, 0.0],             // Green
                 [0.0, 1.0],                  // UV coordinates
             ),
-            vertex_factory.create_vertex(
+            StandardShaderVertexFactory::create_vertex(
                 [0.5, -0.5, 0.0],            // Position
                 [0.0, 0.0, 1.0],             // Normal pointing out of screen
                 [0.0, 0.0, 1.0],             // Blue
