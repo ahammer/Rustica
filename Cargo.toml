@@ -9,7 +9,7 @@ members = [
     "Prototypes/001-BasicWindow",
     "Prototypes/002-BasicWGPU",
     "Prototypes/003-BasicTriangle",
-    # "Prototypes/004-AnimatedTriangle",
+    "Prototypes/004-AnimatedTriangle",
     # "Prototypes/005-CustomShader",
     # "Prototypes/006-BasicMesh",
     # "Prototypes/007-UVSphere",

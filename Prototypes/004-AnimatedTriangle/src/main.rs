@@ -1,11 +1,18 @@
 use std::f32::consts::PI;
 
-use rustica_render::{RenderWindow, Vertex};
+use rustica_render::RenderWindow;
 use rustica_render_derive::ShaderProperties;
+use rustica_standard_shader::{StandardShader, StandardShaderInstances};
+use rustica_graphics::primitives::camera::Camera;
+use cgmath::{Matrix4, Point3, SquareMatrix, Vector3};
+use std::time::Instant;
+use rustica_render::Vertex;
+
+use bytemuck::{Pod, Zeroable};
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
-#[shader(file = "./src/shaders/animated_triangle.wgsl")]
+#[shader(file = "shaders/animated_triangle.wgsl")]
 struct AnimatedShader {
     // Vertex attributes
     #[vertex(location = 0)]
