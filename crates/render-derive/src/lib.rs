@@ -363,12 +363,12 @@ pub fn derive_shader_properties(input: TokenStream) -> TokenStream {
     let shader_source = if let Some(s) = shader_inline {
         quote! { String::from(#s) }
     } else if let Some(p) = shader_path {
-        quote! { std::fs::read_to_string(#p).expect("Failed to load shader file") }
+        // Use include_str! to embed the shader file at compile time
+        quote! { String::from(include_str!(#p)) }
     } else {
+        // Fallback to a default path pattern using include_str!
         quote! {
-            std::fs::read_to_string(concat!("./src/shaders/", stringify!(#name), ".wgsl"))
-                .or_else(|_| std::fs::read_to_string(concat!("./shaders/", stringify!(#name), ".wgsl")))
-                .expect("Could not locate shader file")
+            String::from(include_str!(concat!("./src/shaders/", stringify!(#name), ".wgsl")))
         }
     };
 

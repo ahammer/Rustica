@@ -10,7 +10,7 @@ use bytemuck::{Pod, Zeroable};
 
 // Define our standard shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
-#[shader(file = "./src/shaders/standard_shader.wgsl")]
+#[shader(file = "shaders/standard_shader.wgsl")]
 pub struct StandardShader {
     // Vertex attributes
     #[vertex(location = 0)]
