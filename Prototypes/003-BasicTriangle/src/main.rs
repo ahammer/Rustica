@@ -1,7 +1,4 @@
-use rustica_render::{RenderWindow, Vertex};
-use rustica_render_derive::ShaderProperties;
-use rustica_foundation::geometry::{VertexAttributeProvider, VertexAttribute};
-use rustica_foundation::VertexSemantic;
+use rustica_render::RenderWindow;
 use rustica_standard_shader::{StandardShader, StandardShaderInstances};
 use rustica_graphics::primitives::camera::Camera;
 use cgmath::{Matrix4, Point3, SquareMatrix, Vector3};
@@ -104,7 +101,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
               .uniform("view", matrices.view)
               .uniform("projection", matrices.projection)
               .uniform("time", time)
-              .uniform("_padding", [0.0, 0.0, 0.0])
               .pump_geometry(&geometry, &instances);
     })
     .run()?;
