@@ -1,0 +1,15 @@
+[package]
+name = "rustica_standard_geometry"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+glam = "0.27.0" # Using glam as it's common in Rust graphics and used elsewhere (check versions)
+rustica_standard_shader = { path = "../standard-shader" }
+rustica_foundation = { path = "../../Foundation" }
+rustica_render = { path = "../render" } # Needed for Vertex trait
+rustica_render_derive = { path = "../render-derive" } # Needed for Vertex trait derivation if not already done in standard-shader
+
+[lib]
+name = "rustica_standard_geometry"
+path = "src/lib.rs"

@@ -5,6 +5,7 @@ members = [
     "crates/window",
     "crates/render",
     "crates/render-derive",
+    "crates/standard-geometry", # Added standard-geometry crate
     "crates/rustica-ecs",
     "Prototypes/001-BasicWindow",
     "Prototypes/002-BasicWGPU",
