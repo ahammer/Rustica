@@ -5,9 +5,13 @@ edition = "2021"
 
 [dependencies]
 rustica_window = { path = "../../crates/window" }
-rustica_render = { path = "../../crates/render", features = ["derive"] }
+rustica_render = { path = "../../crates/render"}
+rustica_render_derive = { path = "../../crates/render-derive" }
 rustica_foundation = { path = "../../Foundation" }
 rustica_graphics = { path = "../../crates/graphics" }
+rustica_standard_shader = { path = "../../crates/standard-shader" }
+rustica_standard_geometry = { path = "../../crates/standard-geometry" } # Added standard-geometry
+glam = "0.27.0" # Added glam as it's used by standard-geometry
 cgmath = "0.18.0"
 wgpu = "24.0.3"
 bytemuck = { version = "1.14.0", features = ["derive"] }
