@@ -5,7 +5,7 @@
 
 use rustica_render::Vertex;
 use rustica_render_derive::ShaderProperties;
-use cgmath::{Matrix4, Vector3, Point3};
+use glam::{Mat4, Vec3};
 use bytemuck::{Pod, Zeroable};
 
 // Define our standard shader using the ShaderProperties derive macro

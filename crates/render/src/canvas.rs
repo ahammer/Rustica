@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 use std::collections::HashMap;
-use cgmath::Matrix4;
+use glam::Mat4;
 use crate::draw_commands::{DrawCommand, UniformValue};
 use crate::custom_shader::CustomShader;
 use rustica_foundation::prelude::*;
@@ -141,15 +141,10 @@ impl From<u32> for UniformValue {
     }
 }
 
-impl From<Matrix4<f32>> for UniformValue {
-    fn from(matrix: Matrix4<f32>) -> Self {
-        // Convert Matrix4 to array format for the shader
-        let array = [
-            [matrix.x.x, matrix.x.y, matrix.x.z, matrix.x.w],
-            [matrix.y.x, matrix.y.y, matrix.y.z, matrix.y.w],
-            [matrix.z.x, matrix.z.y, matrix.z.z, matrix.z.w],
-            [matrix.w.x, matrix.w.y, matrix.w.z, matrix.w.w],
-        ];
+impl From<Mat4> for UniformValue {
+    fn from(matrix: Mat4) -> Self {
+        // Convert Mat4 to array format for the shader
+        let array = matrix.to_cols_array_2d();
         UniformValue::Mat4(array)
     }
 }

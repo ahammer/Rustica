@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 use rustica_render::RenderWindow;
 use rustica_standard_shader::{StandardShader, StandardShaderInstances, StandardShaderVertexFactory};
 use rustica_graphics::primitives::camera::Camera;
-use cgmath::{Matrix4, Point3, Vector3};
+use glam::{Mat4, Vec3, Quat};
 use std::time::Instant;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -12,12 +12,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a render window and register the shader
     let mut window = RenderWindow::new("Spinning/Scaling Triangle (Instanced)", 800, 600);
     let shader_id = window.register_shader(shader_descriptor);
-    
-    // Create and position camera
+      // Create and position camera
     let mut camera = Camera::perspective(800.0 / 600.0);
     camera.look_at_from(
-        Point3::new(0.0, 0.0, 3.0),
-        Point3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.0, 0.0, 3.0),
+        Vec3::new(0.0, 0.0, 0.0),
     );
     
     let start_time = Instant::now();
@@ -48,14 +47,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Create instance data for multiple triangles
         let mut instances = Vec::new();
-        
-        // Create a central spinning triangle
+          // Create a central spinning triangle
         let angle = time * PI / 2.0;  // full rotation every 4 seconds
         let scale = 0.5 * (time * 2.0).sin() + 1.0;  // oscillates between 0.5 and 1.5
         
-        // Create transformation matrix using cgmath
-        let rotation = Matrix4::from_angle_z(cgmath::Rad(angle));
-        let scaling = Matrix4::from_scale(scale);
+        // Create transformation matrix using glam
+        let rotation = Mat4::from_rotation_z(angle);
+        let scaling = Mat4::from_scale(Vec3::splat(scale));
         let central_transform = rotation * scaling;
         
         // Add central rotating triangle with pulsing colors
@@ -64,7 +62,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let b = (time * 2.0 + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
         
         instances.push(StandardShaderInstances {
-            model_matrix: central_transform.into(),
+            model_matrix: central_transform.to_cols_array_2d(),
             instance_color: [r, g, b],
         });
         
@@ -80,11 +78,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             
             let local_angle = time * (i as f32 + 1.0) * 1.5;
             let local_scale = 0.3;
-            
-            // Create transformation matrices using cgmath
-            let rotation = Matrix4::from_angle_z(cgmath::Rad(local_angle));
-            let scaling = Matrix4::from_scale(local_scale);
-            let translation = Matrix4::from_translation(Vector3::new(orbit_x, orbit_y, 0.0));
+              // Create transformation matrices using glam
+            let rotation = Mat4::from_rotation_z(local_angle);
+            let scaling = Mat4::from_scale(Vec3::splat(local_scale));
+            let translation = Mat4::from_translation(Vec3::new(orbit_x, orbit_y, 0.0));
             let transform = translation * rotation * scaling;
             
             let phase = (i as f32 / num_orbits as f32) * 2.0 * PI;
@@ -93,7 +90,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let b = (time * 1.5 + phase + 4.0 * PI / 3.0).sin() * 0.5 + 0.5;
             
             instances.push(StandardShaderInstances {
-                model_matrix: transform.into(),
+                model_matrix: transform.to_cols_array_2d(),
                 instance_color: [r, g, b],
             });
         }

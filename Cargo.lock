@@ -72,7 +72,7 @@ name = "animated_triangle"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
+ "glam",
  "rustica_foundation",
  "rustica_graphics",
  "rustica_render",
@@ -80,15 +80,6 @@ dependencies = [
  "rustica_standard_shader",
  "wgpu",
  "winit",
-]
-
-[[package]]
-name = "approx"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f2a05fd1bd10b2527e20a2cd32d8873d115b8b39fe219ee25f42a8aca6ba278"
-dependencies = [
- "num-traits",
 ]
 
 [[package]]
@@ -135,7 +126,6 @@ name = "basic-mesh"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
  "glam",
  "rustica_foundation",
  "rustica_graphics",
@@ -152,7 +142,7 @@ name = "basic_triangle"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
+ "glam",
  "rustica_foundation",
  "rustica_graphics",
  "rustica_render",
@@ -310,16 +300,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
-name = "cgmath"
-version = "0.18.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a98d30140e3296250832bbaaff83b27dcd6fa3cc70fb6f1f3e5c9c0023b5317"
-dependencies = [
- "approx",
- "num-traits",
-]
-
-[[package]]
 name = "codespan-reporting"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -405,7 +385,7 @@ name = "custom_shader"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
+ "glam",
  "rustica_foundation",
  "rustica_render",
  "rustica_render_derive",
@@ -544,9 +524,9 @@ dependencies = [
 
 [[package]]
 name = "glam"
-version = "0.27.0"
+version = "0.30.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e05e7e6723e3455f4818c7b26e855439f7546cf617ef669d1adedb8669e5cb9"
+checksum = "bf3aa70d918d2b234126ff4f850f628f172542bf0603ded26b8ee36e5e22d5f9"
 
 [[package]]
 name = "glob"
@@ -1367,7 +1347,7 @@ name = "rustica_foundation"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
+ "glam",
  "wgpu",
 ]
 
@@ -1376,7 +1356,7 @@ name = "rustica_graphics"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
+ "glam",
  "pollster 0.3.0",
  "rustica_foundation",
  "rustica_render",
@@ -1390,7 +1370,7 @@ name = "rustica_render"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
+ "glam",
  "once_cell",
  "pollster 0.4.0",
  "raw-window-handle",
@@ -1430,7 +1410,7 @@ name = "rustica_standard_shader"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
+ "glam",
  "rustica_foundation",
  "rustica_graphics",
  "rustica_render",
@@ -1845,7 +1825,6 @@ name = "uv-sphere"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
- "cgmath",
  "glam",
  "rustica_foundation",
  "rustica_graphics",

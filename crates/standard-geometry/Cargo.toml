@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-glam = "0.27.0" # Using glam as it's common in Rust graphics and used elsewhere (check versions)
+glam = "0.30.1" # Using glam as it's common in Rust graphics and used elsewhere (check versions)
 rustica_standard_shader = { path = "../standard-shader" }
 rustica_foundation = { path = "../../Foundation" }
 rustica_render = { path = "../render" } # Needed for Vertex trait

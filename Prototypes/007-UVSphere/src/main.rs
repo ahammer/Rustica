@@ -1,24 +1,21 @@
 use rustica_graphics::Camera;
 use rustica_render::{RenderWindow, Canvas};
-use cgmath::{Matrix4, Vector3, Point3, Rad}; 
+use glam::{Mat4, Vec3}; 
 use rustica_standard_geometry::{GeometryFactory, create_improved_uv_sphere};
 use rustica_standard_shader::{StandardShader, StandardShaderInstances};
-use glam::Vec3 as GlamVec3; // Use glam for color input to factory
 use std::f32::consts::PI;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a render window and register the standard shader
     let mut window = RenderWindow::new("007 - UV Sphere (Improved Caps & Orbiting Camera)", 1024, 768);
     let shader_descriptor = StandardShader::descriptor(); // Use StandardShader
-    let shader_id = window.register_shader(shader_descriptor);
-
-    // Create improved UV sphere geometry that properly handles poles
+    let shader_id = window.register_shader(shader_descriptor);    // Create improved UV sphere geometry that properly handles poles
     // We can customize the resolution with sectors (longitude) and stacks (latitude)
     let sphere_geometry = create_improved_uv_sphere(
         1.0,           // radius
         32,            // sectors (longitude segments)
         16,            // stacks (latitude segments)
-        GlamVec3::ONE  // white color base
+        Vec3::ONE      // white color base
     );
     
     // --- Camera Setup ---
@@ -43,16 +40,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let camera_x = orbit_radius * 1.2 * (time * orbit_speed).cos();
         let camera_y = height_variation * (time * orbit_speed * 0.7).sin(); // Different frequency for Y
         let camera_z = orbit_radius * (time * orbit_speed).sin();
-        
-        // Create camera that always looks at the sun (origin)
+          // Create camera that always looks at the sun (origin)
         let camera = Camera::new(
-            Point3::new(camera_x, camera_y, camera_z), // Orbiting eye position
-            Point3::new(0.0, 0.0, 0.0),                // Always look at the sun (origin)
-            Vector3::unit_y(),                         // up vector
-            45.0,                                      // fov
+            Vec3::new(camera_x, camera_y, camera_z), // Orbiting eye position
+            Vec3::new(0.0, 0.0, 0.0),                // Always look at the sun (origin)
+            Vec3::Y,                                 // up vector
+            45.0,                                    // fov
             aspect_ratio,
-            0.1,                                       // near plane
-            100.0,                                     // far plane
+            0.1,                                     // near plane
+            100.0,                                   // far plane
         );
         
         // Get view and projection matrices from dynamic camera
@@ -63,13 +59,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut instances = Vec::new();
         
         // Create a solar system arrangement
-        
-        // Sun (central sphere)
-        let sun_model = Matrix4::from_scale(2.0); // Larger size for the sun
+          // Sun (central sphere)
+        let sun_model = Mat4::from_scale(Vec3::splat(2.0)); // Larger size for the sun
         
         // Add sun with yellow/orange color
         instances.push(StandardShaderInstances {
-            model_matrix: sun_model.into(),
+            model_matrix: sun_model.to_cols_array_2d(),
             instance_color: [1.0, 0.7, 0.2], // Sun color (yellow/orange)
         });
         
@@ -86,11 +81,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             // Calculate planet position in orbit
             let orbit_x = orbit_radius * orbit_angle.cos();
             let orbit_z = orbit_radius * orbit_angle.sin();
-            
-            // Create planet rotation and position
-            let planet_rotation = Matrix4::from_angle_y(Rad(time * (0.5 + i as f32 * 0.2)));
-            let planet_scale = Matrix4::from_scale(planet_size);
-            let planet_translation = Matrix4::from_translation(Vector3::new(orbit_x, 0.0, orbit_z));
+              // Create planet rotation and position
+            let planet_rotation = Mat4::from_rotation_y(time * (0.5 + i as f32 * 0.2));
+            let planet_scale = Mat4::from_scale(Vec3::splat(planet_size));
+            let planet_translation = Mat4::from_translation(Vec3::new(orbit_x, 0.0, orbit_z));
             
             // Combine transformations
             let planet_model = planet_translation * planet_rotation * planet_scale;
@@ -104,7 +98,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             
             // Add planet to instances
             instances.push(StandardShaderInstances {
-                model_matrix: planet_model.into(),
+                model_matrix: planet_model.to_cols_array_2d(),
                 instance_color: planet_color,
             });
             
@@ -121,10 +115,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 // Calculate moon position relative to planet
                 let moon_x = moon_radius * moon_angle.cos();
                 let moon_z = moon_radius * moon_angle.sin();
-                
-                // Moon transformations (first relative to planet)
-                let moon_scale = Matrix4::from_scale(moon_size);
-                let moon_translation_local = Matrix4::from_translation(Vector3::new(moon_x, 0.0, moon_z));
+                  // Moon transformations (first relative to planet)
+                let moon_scale = Mat4::from_scale(Vec3::splat(moon_size));
+                let moon_translation_local = Mat4::from_translation(Vec3::new(moon_x, 0.0, moon_z));
                 
                 // Combine with planet position to get world position
                 let moon_model = planet_translation * moon_translation_local * moon_scale;
@@ -134,7 +127,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 
                 // Add moon to instances
                 instances.push(StandardShaderInstances {
-                    model_matrix: moon_model.into(),
+                    model_matrix: moon_model.to_cols_array_2d(),
                     instance_color: moon_color,
                 });
             }

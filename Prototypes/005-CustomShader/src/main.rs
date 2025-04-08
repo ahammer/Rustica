@@ -1,6 +1,7 @@
 use rustica_render::{RenderWindow, Vertex};
 use rustica_render_derive::ShaderProperties;
 use rustica_foundation::{geometry::{GeometryBuilder, Triangle as GeometryTriangle}, VertexSemantic};
+use glam::Mat4;
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
@@ -67,15 +68,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ]);
         
         // Build the final geometry
-        let geometry = builder.build();
-
-        // Identity matrix for the instance (no transformation)
-        let identity = [
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ];
+        let geometry = builder.build();        // Identity matrix for the instance (no transformation)
+        let identity = Mat4::IDENTITY.to_cols_array_2d();
 
         // Create a single instance with white color
         let instance = PlasmaShaderInstances {

@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use cgmath::{Matrix4, Point3, Vector3, Rad};
+use glam::{Mat4, Vec3};
 use rustica_graphics::{Camera, primitives::shapes::teapot::create_default_teapot};
 use rustica_render::{
     RenderWindow, ShaderDescriptor, Vertex, StandardMeshAdapter, GeometryBuilder,
@@ -44,10 +44,10 @@ struct TeapotShaderDescriptor {
     // Remove model uniform since it's provided via instance data
     
     #[uniform(binding = 1)]
-    view: Matrix4<f32>,
+    view: Mat4,
     
     #[uniform(binding = 2)]
-    projection: Matrix4<f32>,
+    projection: Mat4,
     
     #[uniform(binding = 3)]
     time: f32,
@@ -75,12 +75,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             color: v.color,
         }
     });
-    
-    // Create camera
+      // Create camera
     let mut camera = Camera::perspective(800.0 / 600.0);
     camera.look_at_from(
-        Point3::new(0.0, 3.0, 10.0), 
-        Point3::new(0.0, 0.0, 0.0)
+        Vec3::new(0.0, 3.0, 10.0), 
+        Vec3::new(0.0, 0.0, 0.0)
     );
     
     // Set up frame callback
@@ -93,14 +92,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Create instances of teapots
         let mut instances = Vec::new();
-        
-        // Create a central large teapot
+          // Create a central large teapot
         let base_scale = 1.0;
-        let central_model = Matrix4::from_scale(base_scale);
-        let central_rotation = Matrix4::from_angle_y(Rad(time * 0.5));
+        let central_model = Mat4::from_scale(Vec3::splat(base_scale));
+        let central_rotation = Mat4::from_rotation_y(time * 0.5);
         
         // Convert the model matrix to array format
-        let central_model_array = matrix_to_array(central_rotation * central_model);
+        let central_model_array = (central_rotation * central_model).to_cols_array_2d();
         
         // Add central teapot
         instances.push(TeapotInstance::new(
@@ -117,26 +115,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let angle = i as f32 * 2.0 * std::f32::consts::PI / num_teapots as f32;
             let position_x = circle_radius * angle.cos();
             let position_z = circle_radius * angle.sin();
-            
-            // Create independent rotation for each teapot
+              // Create independent rotation for each teapot
             let spin_speed = 1.0 + (i as f32 * 0.2);
-            let local_rotation = Matrix4::from_angle_y(Rad(time * spin_speed));
+            let local_rotation = Mat4::from_rotation_y(time * spin_speed);
             
             // Create bobbing motion
             let bob_height = (time * 1.5 + angle).sin() * 0.5;
             
             // Create scale (smaller than central teapot)
             let scale = 0.5;
-            let scale_matrix = Matrix4::from_scale(scale);
+            let scale_matrix = Mat4::from_scale(Vec3::splat(scale));
             
             // Create translation
-            let translation = Matrix4::from_translation(Vector3::new(position_x, bob_height, position_z));
+            let translation = Mat4::from_translation(Vec3::new(position_x, bob_height, position_z));
             
             // Combine transformations
             let model = translation * local_rotation * scale_matrix;
             
             // Convert to array format
-            let model_array = matrix_to_array(model);
+            let model_array = model.to_cols_array_2d();
             
             // Create color based on position
             let color = [
@@ -161,12 +158,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-// Helper function to convert a Matrix4 to a 2D array
-fn matrix_to_array(matrix: Matrix4<f32>) -> [[f32; 4]; 4] {
-    [
-        [matrix.x.x, matrix.x.y, matrix.x.z, matrix.x.w],
-        [matrix.y.x, matrix.y.y, matrix.y.z, matrix.y.w],
-        [matrix.z.x, matrix.z.y, matrix.z.z, matrix.z.w],
-        [matrix.w.x, matrix.w.y, matrix.w.z, matrix.w.w],
-    ]
-}
+// Helper function to convert a Matrix4 to a 2D array is no longer needed
+// as we now use glam's built-in to_cols_array_2d()

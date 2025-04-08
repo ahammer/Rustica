@@ -13,7 +13,6 @@ rustica_standard_geometry = { path = "../../crates/standard-geometry" } # Added 
 
 rustica_foundation = { path = "../../Foundation" }
 # rustica_graphics = { path = "../../crates/graphics" } # Removed graphics dependency
-cgmath = "0.18.0" # Note: standard-shader uses cgmath, but glam is used in standard-geometry. Consider unifying.
-glam = "0.27.0" # Added glam as it's used by standard-geometry
+glam = "0.30.1" # Previously unified cgmath and glam
 wgpu = "24.0.3"
 bytemuck = { version = "1.14.0", features = ["derive"] }

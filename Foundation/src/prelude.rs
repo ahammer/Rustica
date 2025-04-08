@@ -13,6 +13,6 @@ pub use crate::geometry::{
 
 pub use crate::geometry::traits::VertexSemantic;
 // Re-export common external types used throughout the codebase
-pub use cgmath::{Vector2, Vector3, Point3, Matrix4, InnerSpace, EuclideanSpace};
+pub use glam::{Vec2, Vec3, Mat4};
 pub use bytemuck::{Pod, Zeroable};
 pub use wgpu;

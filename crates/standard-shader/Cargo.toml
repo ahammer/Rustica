@@ -10,6 +10,6 @@ rustica_render = { path = "../render" }
 rustica_render_derive = { path = "../render-derive" }
 rustica_foundation = { path = "../../Foundation" }
 rustica_graphics = { path = "../graphics" }
-cgmath = "0.18"
+glam = "0.30.1"
 bytemuck = { version = "1.14", features = ["derive"] }
 wgpu = "24.0.3" 

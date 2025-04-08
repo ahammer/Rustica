@@ -2,7 +2,7 @@
 
 use rustica_ecs::prelude::*;
 use rustica_conway::prelude::*;
-use cgmath::{Point3, Vector3};
+use glam::Vec3;
 
 use crate::components::{CellVisual, CameraState};
 
@@ -192,9 +192,8 @@ impl System for CameraAnimationSystem {
         } else {
             (0.0, 0.0) // Default to center if no cells
         };
-        
-        // Target the median position with smoothing
-        let target_look_at = Point3::new(median_x, 0.0, median_z);
+          // Target the median position with smoothing
+        let target_look_at = Vec3::new(median_x, 0.0, median_z);
         
         // Get camera state and update orbit
         if let Some(camera_state) = world.get_component_mut::<CameraState>(camera_entity) {
@@ -208,8 +207,7 @@ impl System for CameraAnimationSystem {
             if camera_state.orbit_angle > std::f32::consts::PI * 2.0 {
                 camera_state.orbit_angle -= std::f32::consts::PI * 2.0;
             }
-            
-            // Calculate new orbit position with smooth height variation
+              // Calculate new orbit position with smooth height variation
             // Use sine function for smooth height oscillation
             let height_variation = camera_state.orbit_height * 0.15 * 
                 (camera_state.orbit_angle * 2.0).sin();
@@ -219,33 +217,23 @@ impl System for CameraAnimationSystem {
             let orbit_z = median_z + camera_state.orbit_radius * camera_state.orbit_angle.sin();
             
             // Set target position with eased trajectory
-            let target_position = Point3::new(orbit_x, orbit_y, orbit_z);
+            let target_position = Vec3::new(orbit_x, orbit_y, orbit_z);
             
             // Advanced smoothing between current and target positions
             let dt = self.delta_time;
-            
-            // PART 1: Update camera position with spring physics
+              // PART 1: Update camera position with spring physics
             // ------------------------------------------------
             
-            // Convert Points to Vectors for calculations
-            let current_pos = Vector3::new(
-                camera_state.position.x, 
-                camera_state.position.y, 
-                camera_state.position.z
-            );
-            
-            let target_pos = Vector3::new(
-                target_position.x,
-                target_position.y,
-                target_position.z
-            );
+            // Current and target positions are already Vec3 in glam
+            let current_pos = camera_state.position;
+            let target_pos = target_position;
             
             // Calculate displacement vector
             let displacement = target_pos - current_pos;
             
             // Calculate spring force with cubic easing for smoother motion
             // This applies more force when further away and less when close
-            let distance = displacement.magnitude();
+            let distance = displacement.length();
             let easing_factor = (distance / 10.0).min(1.0); // Normalize to 0-1 range
             let cubic_easing = easing_factor * easing_factor * (3.0 - 2.0 * easing_factor); // Smooth cubic interpolation
             
@@ -271,30 +259,20 @@ impl System for CameraAnimationSystem {
             let new_pos = current_pos + avg_velocity * dt;
             
             // Update camera position 
-            camera_state.position = Point3::new(new_pos.x, new_pos.y, new_pos.z);
-            
-            // PART 2: Update camera target with separate spring physics
+            camera_state.position = new_pos;
+              // PART 2: Update camera target with separate spring physics
             // --------------------------------------------------------
             
-            // Convert target points to vectors
-            let current_target = Vector3::new(
-                camera_state.target.x,
-                camera_state.target.y,
-                camera_state.target.z
-            );
-            
-            let desired_target = Vector3::new(
-                target_look_at.x,
-                target_look_at.y,
-                target_look_at.z
-            );
+            // Current and desired targets are already Vec3 in glam
+            let current_target = camera_state.target;
+            let desired_target = target_look_at;
             
             // Calculate displacement for target
             let target_displacement = desired_target - current_target;
             
             // Calculate spring force for target with much gentler easing
             // Using a quadratic ease-out function for extra smoothness
-            let target_distance = target_displacement.magnitude();
+            let target_distance = target_displacement.length();
             let target_easing = 1.0 - (1.0 - (target_distance / 15.0).min(1.0)).powi(2);
             
             // Apply very gentle spring force to target
@@ -331,11 +309,7 @@ impl System for CameraAnimationSystem {
             let blend_factor = 0.85; // 85% new position, 15% old position
             let final_target = current_target * (1.0 - blend_factor) + new_target_pos * blend_factor;
             
-            camera_state.target = Point3::new(
-                final_target.x,
-                final_target.y,
-                final_target.z
-            );
+            camera_state.target = final_target;
         }
     }
 }

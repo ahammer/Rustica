@@ -1,7 +1,7 @@
 // Visual and camera components for Conway's Game of Life
 
 use rustica_ecs::prelude::*;
-use cgmath::{Point3, Vector3};
+use glam::Vec3;
 
 /// Visual component - Represents the visual appearance of a cell
 #[derive(Debug, Clone)]
@@ -36,12 +36,12 @@ impl Default for CellVisual {
 #[derive(Debug, Clone)]
 pub struct CameraState {
     // Current position and target
-    pub position: Point3<f32>,
-    pub target: Point3<f32>,
+    pub position: Vec3,
+    pub target: Vec3,
     
     // Target position and look target (to animate toward)
-    pub target_position: Point3<f32>,
-    pub target_look_at: Point3<f32>,
+    pub target_position: Vec3,
+    pub target_look_at: Vec3,
     
     // Animation state
     pub transition_time: f32,
@@ -54,12 +54,12 @@ pub struct CameraState {
     // Spring physics parameters for camera position
     pub spring_stiffness: f32,   // How quickly the camera responds (higher = faster)
     pub spring_damping: f32,     // Damping to prevent oscillation (higher = less oscillation)
-    pub velocity: Vector3<f32>,  // Current velocity of the camera
+    pub velocity: Vec3,          // Current velocity of the camera
     
     // Spring physics parameters for camera target (look-at point)
     pub target_spring_stiffness: f32, // How quickly the camera target responds
     pub target_spring_damping: f32,   // Damping for target movement
-    pub target_velocity: Vector3<f32>, // Velocity of the target point
+    pub target_velocity: Vec3,        // Velocity of the target point
     
     // Orbit parameters
     pub orbit_angle: f32,        // Current angle of orbit in radians
@@ -73,10 +73,10 @@ impl Component for CameraState {}
 impl Default for CameraState {
     fn default() -> Self {
         Self {
-            position: Point3::new(0.0, 10.0, 10.0),
-            target: Point3::new(0.0, 0.0, 0.0),
-            target_position: Point3::new(0.0, 10.0, 10.0),
-            target_look_at: Point3::new(0.0, 0.0, 0.0),
+            position: Vec3::new(0.0, 10.0, 10.0),
+            target: Vec3::new(0.0, 0.0, 0.0),
+            target_position: Vec3::new(0.0, 10.0, 10.0),
+            target_look_at: Vec3::new(0.0, 0.0, 0.0),
             transition_time: 0.0,
             is_transitioning: false,
             height_offset: 5.0,
@@ -85,12 +85,12 @@ impl Default for CameraState {
             // Camera position spring parameters - faster response for position
             spring_stiffness: 2.8,     // Moderate stiffness for camera position
             spring_damping: 1.2,       // Moderate damping to reduce oscillation
-            velocity: Vector3::new(0.0, 0.0, 0.0),
+            velocity: Vec3::ZERO,
             
             // Camera target spring parameters - slower, smoother for target
             target_spring_stiffness: 1.2,  // Lower stiffness for much smoother target movement
             target_spring_damping: 1.8,    // Higher damping for target to avoid overshooting
-            target_velocity: Vector3::new(0.0, 0.0, 0.0),
+            target_velocity: Vec3::ZERO,
             
             // Orbit parameters
             orbit_angle: 0.0,

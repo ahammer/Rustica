@@ -1,7 +1,7 @@
 use rustica_render::RenderWindow;
 use rustica_standard_shader::{StandardShader, StandardShaderInstances, StandardShaderVertexFactory};
 use rustica_graphics::primitives::camera::Camera;
-use cgmath::{Matrix4, Point3, SquareMatrix, Vector3};
+use glam::{Mat4, Vec3};
 use std::time::Instant;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -16,11 +16,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     // Create a camera for proper view and projection matrices
     let mut camera = Camera::perspective(800.0 / 600.0);
-    
-    // Position camera to view the scene (back from origin to see triangles)
+      // Position camera to view the scene (back from origin to see triangles)
     camera.look_at_from(
-        Point3::new(0.0, 0.0, 3.0),  // Position camera at z=3
-        Point3::new(0.0, 0.0, 0.0),  // Looking at origin
+        Vec3::new(0.0, 0.0, 3.0),  // Position camera at z=3
+        Vec3::new(0.0, 0.0, 0.0),  // Looking at origin
     );
     
     // Track time for animation effects
@@ -54,13 +53,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 
         // Create instance data for multiple triangles
         let mut instances = Vec::new();
-        
-        // Center triangle (identity matrix)
-        let identity = Matrix4::identity().into();
-        
-        // Add center triangle with full color
+          // Center triangle (identity matrix)
+        let identity = Mat4::IDENTITY;
+          // Add center triangle with full color
         instances.push(StandardShaderInstances {
-            model_matrix: identity,
+            model_matrix: identity.to_cols_array_2d(),
             instance_color: [1.0, 1.0, 1.0], // White tint
         });
         
@@ -72,15 +69,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             // Position offset
             let offset_x = angle.cos() * 0.7;
             let offset_y = angle.sin() * 0.7;
-            
-            // Create transformation matrix with cgmath
+              // Create transformation matrix with glam
             let scale = 0.5; // Half size
-            let model = Matrix4::from_scale(scale) * 
-                        Matrix4::from_translation(Vector3::new(offset_x, offset_y, 0.0));
+            let model = Mat4::from_scale(Vec3::splat(scale)) * 
+                        Mat4::from_translation(Vec3::new(offset_x, offset_y, 0.0));
             
             // Create instance with position offset and slightly dimmer color
             instances.push(StandardShaderInstances {
-                model_matrix: model.into(),
+                model_matrix: model.to_cols_array_2d(),
                 instance_color: [0.7, 0.7, 0.7], // Slightly dimmer
             });
         }

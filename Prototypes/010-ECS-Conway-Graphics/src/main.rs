@@ -7,7 +7,7 @@ use rustica_render::{
 };
 use rustica_graphics::{Camera, primitives::shapes::cube::create_cube};
 
-use cgmath::{Matrix4, Point3, Vector3, Deg};
+use glam::{Mat4, Vec3};
 
 // Import systems and components
 use crate::systems::{VisualAnimationSystem, CameraAnimationSystem, CellSpawnerSystem}; // Added CellSpawnerSystem
@@ -32,10 +32,10 @@ struct ConwayShaderDescriptor {
     // Removed model uniform since it's now provided via instance data
     
     #[uniform(binding = 1)]
-    view: Matrix4<f32>,
+    view: Mat4,
     
     #[uniform(binding = 2)]
-    projection: Matrix4<f32>,
+    projection: Mat4,
 }
 
 // Re-export modules
@@ -168,43 +168,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Query for all cells with positions and visuals
         for (_, (pos, visual)) in world.query_two::<Position, CellVisual>() {
             // Only render if scale is not too small
-            if visual.scale > 0.01 {
-                // Create scale matrix
-                let scale = Matrix4::from_scale(visual.scale);
-                
-                // Render the cell in a 3x3 grid to create the infinity board effect
-                // This repeats the board in all 8 surrounding directions
-                for offset_x in -1..=1 {
-                    for offset_z in -1..=1 {
-                        // Calculate model matrix with appropriate offset
-                        let model = calculate_infinity_cell_transform(
-                            pos.x, pos.y, grid_width, grid_height, 
-                            cube_size, spacing, offset_x, offset_z
-                        );
+            if visual.scale > 0.01 {                        // Create scale matrix
+                        let scale = Mat4::from_scale(Vec3::splat(visual.scale));
                         
-                        // Combine matrices
-                        let combined = model * scale;
-                        
-                        // Convert to shader-compatible format
-                        let model_array = [
-                            [combined.x.x, combined.x.y, combined.x.z, combined.x.w],
-                            [combined.y.x, combined.y.y, combined.y.z, combined.y.w],
-                            [combined.z.x, combined.z.y, combined.z.z, combined.z.w],
-                            [combined.w.x, combined.w.y, combined.w.z, combined.w.w],
-                        ];
-                        
-                        // Create instance data with color
-                        // Slightly fade the color for cells in the surrounding grids
-                        let color = if offset_x == 0 && offset_z == 0 {
-                            visual.color // Main grid has original color
-                        } else {
-                            // Surrounding grids have slightly dimmer color
-                            [
-                                visual.color[0] * 0.85,
-                                visual.color[1] * 0.85,
-                                visual.color[2] * 0.85,
-                            ]
-                        };
+                        // Render the cell in a 3x3 grid to create the infinity board effect
+                        // This repeats the board in all 8 surrounding directions
+                        for offset_x in -1..=1 {
+                            for offset_z in -1..=1 {
+                                // Calculate model matrix with appropriate offset
+                                let model = calculate_infinity_cell_transform(
+                                    pos.x, pos.y, grid_width, grid_height, 
+                                    cube_size, spacing, offset_x, offset_z
+                                );
+                                
+                                // Combine matrices
+                                let combined = model * scale;
+                                
+                                // Convert to shader-compatible format
+                                let model_array = combined.to_cols_array_2d();
+                                
+                                // Create instance data with color
+                                // Slightly fade the color for cells in the surrounding grids
+                                let color = if offset_x == 0 && offset_z == 0 {
+                                    visual.color // Main grid has original color
+                                } else {
+                                    // Surrounding grids have slightly dimmer color
+                                    [
+                                        visual.color[0] * 0.85,
+                                        visual.color[1] * 0.85,
+                                        visual.color[2] * 0.85,
+                                    ]
+                                };
                         
                         let instance = CellInstance::new(model_array, color);
                         instances.push(instance);
@@ -234,7 +228,7 @@ fn calculate_cell_transform(
     grid_height: usize, 
     cube_size: f32, 
     spacing: f32
-) -> Matrix4<f32> {
+) -> Mat4 {
     // Center the grid at (0,0,0)
     let grid_width_f32 = grid_width as f32;
     let grid_height_f32 = grid_height as f32;
@@ -248,7 +242,7 @@ fn calculate_cell_transform(
     let pos_z = (y as f32 - grid_height_f32 / 2.0) * cell_size;
     
     // Create translation matrix
-    Matrix4::from_translation(Vector3::new(pos_x, pos_y, pos_z))
+    Mat4::from_translation(Vec3::new(pos_x, pos_y, pos_z))
 }
 
 // Calculate transformation matrix for a cell in the infinity board (with offset)
@@ -261,7 +255,7 @@ fn calculate_infinity_cell_transform(
     spacing: f32,
     grid_offset_x: i32,
     grid_offset_z: i32
-) -> Matrix4<f32> {
+) -> Mat4 {
     // Center the grid at (0,0,0)
     let grid_width_f32 = grid_width as f32;
     let grid_height_f32 = grid_height as f32;
@@ -283,5 +277,5 @@ fn calculate_infinity_cell_transform(
     let pos_z = local_pos_z + (grid_offset_z as f32 * grid_total_height);
     
     // Create translation matrix
-    Matrix4::from_translation(Vector3::new(pos_x, local_pos_y, pos_z))
+    Mat4::from_translation(Vec3::new(pos_x, local_pos_y, pos_z))
 }
