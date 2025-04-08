@@ -1,42 +1,48 @@
 use std::f32::consts::PI;
-
 use rustica_render::RenderWindow;
-use rustica_render_derive::ShaderProperties;
-use rustica_standard_shader::{StandardShader, StandardShaderInstances};
+use rustica_standard_shader::{StandardShader, StandardShaderInstances, StandardShaderVertexFactory};
 use rustica_graphics::primitives::camera::Camera;
-use cgmath::{Matrix4, Point3, SquareMatrix, Vector3};
+use cgmath::{Matrix4, Point3, Vector3};
 use std::time::Instant;
-use rustica_render::Vertex;
-
-use bytemuck::{Pod, Zeroable};
-
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a shader descriptor
-    let shader_descriptor = AnimatedShader::descriptor();
+    let shader_descriptor = StandardShader::descriptor();
     
     // Create a render window and register the shader
     let mut window = RenderWindow::new("Spinning/Scaling Triangle (Instanced)", 800, 600);
     let shader_id = window.register_shader(shader_descriptor);
     
-    window.with_frame_callback(move |canvas| {
-        let time = canvas.time();
-        let seconds = time.as_secs_f32();
-        let vertex_factory = AnimatedShader::vertex_factory();
+    // Create and position camera
+    let mut camera = Camera::perspective(800.0 / 600.0);
+    camera.look_at_from(
+        Point3::new(0.0, 0.0, 3.0),
+        Point3::new(0.0, 0.0, 0.0),
+    );
+    
+    let start_time = Instant::now();
+    
+    window.with_frame_callback(move |canvas| {        let time = start_time.elapsed().as_secs_f32();
         
-        // Define the triangle vertices using the vertex factory
+        // Define the triangle vertices
         let vertices = [
-            vertex_factory.create_vertex(
-                [0.0, 0.5, 0.0],    // Top
-                [1.0, 0.0, 0.0]     // Red
+            StandardShaderVertexFactory::create_vertex(
+                [0.0, 0.5, 0.0],     // Top
+                [0.0, 0.0, 1.0],     // Normal
+                [1.0, 0.0, 0.0],     // Red
+                [0.5, 0.0],          // UV
             ),
-            vertex_factory.create_vertex(
-                [-0.5, -0.5, 0.0],  // Bottom left
-                [0.0, 1.0, 0.0]     // Green
+            StandardShaderVertexFactory::create_vertex(
+                [-0.5, -0.5, 0.0],   // Bottom left
+                [0.0, 0.0, 1.0],     // Normal
+                [0.0, 1.0, 0.0],     // Green
+                [0.0, 1.0],          // UV
             ),
-            vertex_factory.create_vertex(
-                [0.5, -0.5, 0.0],   // Bottom right
-                [0.0, 0.0, 1.0]     // Blue
+            StandardShaderVertexFactory::create_vertex(
+                [0.5, -0.5, 0.0],    // Bottom right
+                [0.0, 0.0, 1.0],     // Normal
+                [0.0, 0.0, 1.0],     // Blue
+                [1.0, 1.0],          // UV
             ),
         ];
         
@@ -44,77 +50,66 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut instances = Vec::new();
         
         // Create a central spinning triangle
+        let angle = time * PI / 2.0;  // full rotation every 4 seconds
+        let scale = 0.5 * (time * 2.0).sin() + 1.0;  // oscillates between 0.5 and 1.5
         
-        // Rotation: full rotation every 4 seconds
-        let angle = seconds * PI / 2.0;
-        
-        // Scaling: oscillates between 0.5 and 1.5
-        let scale = 0.5 * (seconds * 2.0).sin() + 1.0;
-        
-        // Create rotation matrix
-        let rot_matrix = [
-            [angle.cos() * scale, -angle.sin() * scale, 0.0, 0.0],
-            [angle.sin() * scale, angle.cos() * scale, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ];
+        // Create transformation matrix using cgmath
+        let rotation = Matrix4::from_angle_z(cgmath::Rad(angle));
+        let scaling = Matrix4::from_scale(scale);
+        let central_transform = rotation * scaling;
         
         // Add central rotating triangle with pulsing colors
-        let r = (seconds * 2.0).sin() * 0.5 + 0.5;
-        let g = (seconds * 2.0 + PI / 3.0).sin() * 0.5 + 0.5;
-        let b = (seconds * 2.0 + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
+        let r = (time * 2.0).sin() * 0.5 + 0.5;
+        let g = (time * 2.0 + PI / 3.0).sin() * 0.5 + 0.5;
+        let b = (time * 2.0 + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
         
-        instances.push(AnimatedShaderInstances {
-            model_matrix: rot_matrix,
+        instances.push(StandardShaderInstances {
+            model_matrix: central_transform.into(),
             instance_color: [r, g, b],
         });
         
         // Add orbiting triangles
         let num_orbits = 3;
         for i in 0..num_orbits {
-            // Different orbit radius for each triangle
             let orbit_radius = 0.6 + (i as f32 * 0.2);
-            
-            // Different rotation speeds
             let orbit_speed = 1.0 + (i as f32 * 0.5);
-            let orbit_angle = seconds * orbit_speed;
+            let orbit_angle = time * orbit_speed;
             
-            // Position on orbit
             let orbit_x = orbit_radius * orbit_angle.cos();
             let orbit_y = orbit_radius * orbit_angle.sin();
             
-            // Individual rotation
-            let local_angle = seconds * (i as f32 + 1.0) * 1.5;
-            let local_scale = 0.3; // Smaller triangles
+            let local_angle = time * (i as f32 + 1.0) * 1.5;
+            let local_scale = 0.3;
             
-            // Create transformation matrix
-            let model_matrix = [
-                [local_angle.cos() * local_scale, -local_angle.sin() * local_scale, 0.0, 0.0],
-                [local_angle.sin() * local_scale, local_angle.cos() * local_scale, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 0.0],
-                [orbit_x, orbit_y, 0.0, 1.0],
-            ];
+            // Create transformation matrices using cgmath
+            let rotation = Matrix4::from_angle_z(cgmath::Rad(local_angle));
+            let scaling = Matrix4::from_scale(local_scale);
+            let translation = Matrix4::from_translation(Vector3::new(orbit_x, orbit_y, 0.0));
+            let transform = translation * rotation * scaling;
             
-            // Create instance with unique color
             let phase = (i as f32 / num_orbits as f32) * 2.0 * PI;
-            let r = (seconds * 1.5 + phase).sin() * 0.5 + 0.5;
-            let g = (seconds * 1.5 + phase + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
-            let b = (seconds * 1.5 + phase + 4.0 * PI / 3.0).sin() * 0.5 + 0.5;
+            let r = (time * 1.5 + phase).sin() * 0.5 + 0.5;
+            let g = (time * 1.5 + phase + 2.0 * PI / 3.0).sin() * 0.5 + 0.5;
+            let b = (time * 1.5 + phase + 4.0 * PI / 3.0).sin() * 0.5 + 0.5;
             
-            instances.push(AnimatedShaderInstances {
-                model_matrix: model_matrix,
+            instances.push(StandardShaderInstances {
+                model_matrix: transform.into(),
                 instance_color: [r, g, b],
             });
         }
         
-        // Build geometry from vertices
-        let mut builder = AnimatedShader::geometry_builder();
+        // Get camera matrices
+        let matrices = camera.get_render_matrices();
+        
+        // Build and render geometry
+        let mut builder = StandardShader::geometry_builder();
         builder.triangle_strip(&vertices);
         let geometry = builder.build();
         
-        // Draw all triangles using instanced rendering
         canvas.draw_with_instances(shader_id)
-              .uniform("time", seconds)
+              .uniform("view", matrices.view)
+              .uniform("projection", matrices.projection)
+              .uniform("time", time)
               .pump_geometry(&geometry, &instances);
     })
     .run()?;
