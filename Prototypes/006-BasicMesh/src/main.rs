@@ -4,7 +4,6 @@ use rustica_render::{RenderWindow, Canvas};
 // Removed: use rustica_foundation::geometry::{GeometryBuilder, Vertex};
 use cgmath::{Matrix4, Vector3, Point3, Deg, perspective}; use rustica_standard_geometry::GeometryFactory;
 use rustica_standard_shader::{StandardShader, StandardShaderInstances};
-// Keep Matrix4, Vector3, Point3 for model/positioning, add Deg/perspective
 use glam::Vec3 as GlamVec3; // Use glam for color input to factory
 
 // Removed MeshShader definition
@@ -27,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let initial_height = 768.0;
     let aspect_ratio = initial_width / initial_height;
     // Camera setup remains the same for now, using rustica_graphics::Camera
-    let mut camera = Camera::new(
+    let camera = Camera::new(
         Point3::new(10.0, 10.0, 15.0), // eye position
         Point3::new(0.0, 0.0, 0.0),   // target
         Vector3::unit_y(),            // up vector
