@@ -3,42 +3,17 @@ use std::time::{Duration, Instant};
 
 use rustica_conway::prelude::*;
 use rustica_render::{
-    RenderWindow, ShaderDescriptor, Vertex, StandardMeshAdapter
+    RenderWindow, ShaderDescriptor, Vertex
 };
-use rustica_graphics::{Camera, primitives::shapes::cube::create_cube};
+use rustica_graphics::Camera;
 
 use glam::{Mat4, Vec3};
+use rustica_standard_shader::{StandardShader, StandardShaderInstances};
+use rustica_standard_geometry::GeometryFactory;
 
-// Import systems and components
 use crate::systems::{VisualAnimationSystem, CameraAnimationSystem, CellSpawnerSystem}; // Added CellSpawnerSystem
 use crate::components::{CellVisual, CameraState, CellInstance};
 
-// Define a custom vertex type with derive macro
-#[repr(C)]
-#[derive(Copy, Clone, Debug, Vertex)]
-struct CellVertex {
-    position: [f32; 3], // location = 0, format = Float32x3
-    color: [f32; 3],    // location = 1, format = Float32x3
-    normal: [f32; 3],   // location = 2, format = Float32x3
-}
-
-// Define a shader descriptor using the derive macro
-#[derive(ShaderDescriptor)]
-#[shader(source = "./src/shaders/conway_shader.wgsl")]
-struct ConwayShaderDescriptor {    
-    #[vertex_type]
-    vertex: CellVertex,
-    
-    // Removed model uniform since it's now provided via instance data
-    
-    #[uniform(binding = 1)]
-    view: Mat4,
-    
-    #[uniform(binding = 2)]
-    projection: Mat4,
-}
-
-// Re-export modules
 pub mod components;
 mod systems;
 
@@ -60,19 +35,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut window = RenderWindow::new("Conway's Game of Life - Infinity Board", 800, 600);
     
     // Register the shader
-    let shader_id = window.register_shader(ConwayShaderDescriptor::descriptor());
+    let shader_id = window.register_shader(StandardShader::descriptor());
+      // Create a sphere mesh to reuse for all cells
+    let sphere_mesh = GeometryFactory::uv_sphere(
+        0.5,           // radius
+        32,            // sectors (longitude segments)
+        16,            // stacks (latitude segments)
+        Vec3::ONE      // white color base (will be tinted by instance color)
+    );
     
-    // Create a cube mesh to reuse for all cells
-    let cube_mesh = Arc::new(create_cube(cube_size));
-    
-    // Create mesh adapter with vertex mapper
-    let mesh_adapter = StandardMeshAdapter::new(cube_mesh, |standard_vertex| {
-        CellVertex {
-            position: standard_vertex.position,
-            color: [0.2, 0.8, 0.3], // Green color for cells
-            normal: standard_vertex.normal,
-        }
-    });
     
     // Add the life system to the world with wraparound enabled
     world.add_system(LifeSystem {
@@ -159,8 +130,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let view = camera_matrices.view;
         let projection = camera_matrices.projection;
         
-        // Get triangles from mesh adapter (we'll reuse these for all cells)
-        let triangles = mesh_adapter.to_triangles();
         
         // Collect instance data for all cells with visuals
         let mut instances = Vec::new();
@@ -191,8 +160,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 // Slightly fade the color for cells in the surrounding grids
                                 let color = if offset_x == 0 && offset_z == 0 {
                                     visual.color // Main grid has original color
-                                } else {
-                                    // Surrounding grids have slightly dimmer color
+                                } else {                                    // Surrounding grids have slightly dimmer color
                                     [
                                         visual.color[0] * 0.85,
                                         visual.color[1] * 0.85,
@@ -200,7 +168,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     ]
                                 };
                         
-                        let instance = CellInstance::new(model_array, color);
+                        // Use StandardShaderInstances for compatibility with standard shader
+                        let instance = StandardShaderInstances {
+                            model_matrix: model_array,
+                            instance_color: color,
+                        };
                         instances.push(instance);
                     }
                 }
@@ -209,11 +181,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Draw all cells with a single instanced draw call if any cells are ready to render
         if !instances.is_empty() {
-            let geometry = GeometryBuilder::new().with_triangles(&triangles).build();
+            // Get the time value before starting the method chain
+            let time = canvas.time().as_secs_f32();
+            // Draw the geometry with instances using the standard shader pattern
             canvas.draw_with_instances(shader_id)
                   .uniform("view", view)
                   .uniform("projection", projection)
-                  .pump_geometry(&geometry, &instances);
+                  .uniform("time", time)
+                  .pump_geometry(&sphere_mesh, &instances);
         }
     }).run()?;
     

@@ -8,8 +8,10 @@ rustica_foundation = { path = "../../Foundation" }
 rustica-ecs = { path = "../../crates/rustica-ecs" }
 rustica-conway = { path = "../../crates/rustica-conway" }
 rustica_window = { path = "../../crates/window" }
-rustica_render = { path = "../../crates/render", features = ["derive"] }
+rustica_render = { path = "../../crates/render"}
 rustica_graphics = { path = "../../crates/graphics" }
+rustica_standard_geometry = { path = "../../crates/standard-geometry" } # Added standard-geometry
+rustica_standard_shader = { path = "../../crates/standard-shader" } # Added standard-shader
 wgpu = "24.0.3"
 winit = "0.30.9"
 glam = "0.30.1"
