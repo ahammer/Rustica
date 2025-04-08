@@ -2,11 +2,15 @@ use glam::{Vec2, Vec3};
 use rustica_foundation::geometry::{Geometry, GeometryBuilder};
 use rustica_standard_shader::StandardShaderVertex;
 
-// Include the improved sphere implementation
+// Include module implementations
 mod improved_sphere;
+mod bezier;
+mod teapot;
 
-// Re-export the improved sphere creation function
+// Re-export functionality
 pub use improved_sphere::create_improved_uv_sphere;
+pub use teapot::create_utah_teapot;
+pub use bezier::{BezierPatch2D, BezierPatch3D};
 
 /// Factory for creating standard primitive geometries.
 ///

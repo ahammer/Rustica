@@ -1,21 +1,26 @@
 use glam::{Mat4, Vec3};
 use rustica_graphics::Camera;
 use rustica_render::RenderWindow;
-
+use rustica_standard_geometry::create_utah_teapot;
+use rustica_standard_shader::{StandardShader, StandardShaderInstances};
+use std::f32::consts::PI;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    
     // Create window
     let mut window = RenderWindow::new("Utah Teapot Demo (Instanced)", 800, 600);
     
-    // Register shader
+    // Register standard shader
+    let shader_descriptor = StandardShader::descriptor();
     let shader_id = window.register_shader(shader_descriptor);
     
-    // Create teapot mesh
-    let teapot_mesh = // Acquire through standard geometry
-        
+    // Create teapot mesh using the Bezier patch system (from standard-geometry)
+    let teapot_geometry = create_utah_teapot(
+        16,             // resolution for patches (higher = smoother)
+        1.0,            // scale
+        Vec3::new(1.0, 1.0, 1.0)  // base color (white)
+    );
     
-      // Create camera
+    // Create camera
     let mut camera = Camera::perspective(800.0 / 600.0);
     camera.look_at_from(
         Vec3::new(0.0, 3.0, 10.0), 
@@ -32,7 +37,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         // Create instances of teapots
         let mut instances = Vec::new();
-          // Create a central large teapot
+        
+        // Create a central large teapot
         let base_scale = 1.0;
         let central_model = Mat4::from_scale(Vec3::splat(base_scale));
         let central_rotation = Mat4::from_rotation_y(time * 0.5);
@@ -40,11 +46,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Convert the model matrix to array format
         let central_model_array = (central_rotation * central_model).to_cols_array_2d();
         
-        // Add central teapot
-        instances.push(TeapotInstance::new(
-            central_model_array,
-            [0.8, 0.2, 0.2] // Reddish
-        ));
+        // Add central teapot using StandardShaderInstances (compatible with standard shader)
+        instances.push(StandardShaderInstances {
+            model_matrix: central_model_array,
+            instance_color: [0.8, 0.2, 0.2], // Reddish
+        });
         
         // Add a circle of smaller teapots
         let num_teapots = 5;
@@ -52,10 +58,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         for i in 0..num_teapots {
             // Calculate position on the circle
-            let angle = i as f32 * 2.0 * std::f32::consts::PI / num_teapots as f32;
+            let angle = i as f32 * 2.0 * PI / num_teapots as f32;
             let position_x = circle_radius * angle.cos();
             let position_z = circle_radius * angle.sin();
-              // Create independent rotation for each teapot
+            
+            // Create independent rotation for each teapot
             let spin_speed = 1.0 + (i as f32 * 0.2);
             let local_rotation = Mat4::from_rotation_y(time * spin_speed);
             
@@ -83,14 +90,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ];
             
             // Add the teapot instance
-            instances.push(TeapotInstance::new(model_array, color));
+            instances.push(StandardShaderInstances {
+                model_matrix: model_array,
+                instance_color: color,
+            });
         }
         
         // Draw all teapots with a single instanced draw call
+        canvas.draw_with_instances(shader_id)
+              .uniform("view", view)
+              .uniform("projection", projection)
+              .uniform("time", time)
+              .pump_geometry(&teapot_geometry, &instances);
     }).run()?;
     
     Ok(())
 }
-
-// Helper function to convert a Matrix4 to a 2D array is no longer needed
-// as we now use glam's built-in to_cols_array_2d()
