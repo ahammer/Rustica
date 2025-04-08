@@ -1,0 +1,22 @@
+error: Duplicate location assignment: 0. Each vertex/instance attribute must have a unique location.
+  --> tests/ui/duplicate_location_error.rs:15:5
+   |
+15 |     texcoord: [f32; 2],
+   |     ^^^^^^^^
+
+warning: unused import: `wgpu`
+ --> tests/ui/duplicate_location_error.rs:5:5
+  |
+5 | use wgpu;
+  |     ^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+error[E0599]: no function or associated item named `descriptor` found for struct `DuplicateLocationShader` in the current scope
+  --> tests/ui/duplicate_location_error.rs:23:47
+   |
+9  | struct DuplicateLocationShader {
+   | ------------------------------ function or associated item `descriptor` not found for this struct
+...
+23 |     let descriptor = DuplicateLocationShader::descriptor();
+   |                                               ^^^^^^^^^^ function or associated item not found in `DuplicateLocationShader`
