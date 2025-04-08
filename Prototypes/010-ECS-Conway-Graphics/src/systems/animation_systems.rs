@@ -6,6 +6,49 @@ use glam::Vec3;
 
 use crate::components::{CellVisual, CameraState};
 
+// Helper function to calculate color based on life duration
+fn calculate_life_color(life_duration: f32) -> [f32; 3] {
+    // Maximum duration for full color transition (10 seconds)
+    const MAX_DURATION: f32 = 30.0;
+    
+    // Normalize life duration to range 0-1
+    let t = (life_duration / MAX_DURATION).clamp(0.0, 1.0);
+    
+    if t < 0.25 {
+        // Dark brown to red: [0.3, 0.2, 0.1] to [0.9, 0.1, 0.1]
+        let local_t = t * 4.0; // Rescale to 0-1 for this range
+        [
+            0.1 + local_t * 0.3, // 0.3 to 0.9
+            0.05 - local_t * 0.1, // 0.2 to 0.1
+            0.02,                  // 0.1 to 0.1
+        ]
+    } else if t < 0.5 {
+        // Red to orange: [0.9, 0.1, 0.1] to [1.0, 0.5, 0.0]
+        let local_t = (t - 0.25) * 4.0; // Rescale to 0-1 for this range
+        [
+            0.9 + local_t * 0.1, // 0.9 to 1.0
+            0.1 + local_t * 0.4, // 0.1 to 0.5
+            0.1 - local_t * 0.1, // 0.1 to 0.0
+        ]
+    } else if t < 0.75 {
+        // Orange to yellow: [1.0, 0.5, 0.0] to [1.0, 1.0, 0.0]
+        let local_t = (t - 0.5) * 4.0; // Rescale to 0-1 for this range
+        [
+            1.0,                 // 1.0 to 1.0
+            0.5 + local_t * 0.5, // 0.5 to 1.0
+            0.0,                 // 0.0 to 0.0
+        ]
+    } else {
+        // Yellow to white: [1.0, 1.0, 0.0] to [1.0, 1.0, 1.0]
+        let local_t = (t - 0.75) * 4.0; // Rescale to 0-1 for this range
+        [
+            1.0,                 // 1.0 to 1.0
+            1.0,                 // 1.0 to 1.0
+            0.0 + local_t * 1.0, // 0.0 to 1.0
+        ]
+    }
+}
+
 /// System for animating cell visuals
 pub struct VisualAnimationSystem {
     pub transition_duration: f32, // How long transitions take in seconds
@@ -51,21 +94,34 @@ impl System for VisualAnimationSystem {
         // Now apply the updates
         for update in &updates {
             if let Some(visual) = world.get_component_mut::<CellVisual>(update.entity) {
+                // Update life state tracking
+                let was_alive = visual.is_alive;
+                visual.is_alive = update.is_alive;
+                
                 if update.is_alive {
-                    // Cell is alive - should be full scale and green
-                    if visual.target_scale != 1.0 || visual.target_color != [0.2, 0.8, 0.3] {
+                    // Cell is alive
+                    if !was_alive {
+                        // Cell just became alive - start transition to full scale
                         visual.target_scale = 1.0;
-                        visual.target_color = [0.2, 0.8, 0.3]; // Green
                         visual.is_transitioning = true;
                         visual.transition_time = 0.0;
+                        visual.life_duration = 0.0; // Reset life duration for newly alive cells
+                    } else {
+                        // Cell continues to be alive - increment life duration
+                        visual.life_duration += self.delta_time;
                     }
+                    
+                    // Update color based on life duration
+                    visual.target_color = calculate_life_color(visual.life_duration);
                 } else {
-                    // Cell is dead - should be small scale and grey
-                    if visual.target_scale != 0.2 || visual.target_color != [0.5, 0.5, 0.5] {
+                    // Cell is dead - should be small scale and dark brown
+                    if was_alive {
+                        // Cell just died - start transition to small scale and dead color
                         visual.target_scale = 0.2;
-                        visual.target_color = [0.5, 0.5, 0.5]; // Grey
+                        visual.target_color = [0.3, 0.2, 0.1]; // Dark brown for dead cells
                         visual.is_transitioning = true;
                         visual.transition_time = 0.0;
+                        visual.life_duration = 0.0; // Reset life duration when cell dies
                     }
                 }
             }

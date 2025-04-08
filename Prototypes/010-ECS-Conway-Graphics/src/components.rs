@@ -15,6 +15,10 @@ pub struct CellVisual {
     pub target_color: [f32; 3], // Target color to animate toward
     pub transition_time: f32, // How long the transition has been running (in seconds)
     pub is_transitioning: bool, // Whether this cell is currently animating
+    
+    // Life duration tracking
+    pub life_duration: f32,   // How long this cell has been alive (in seconds)
+    pub is_alive: bool,       // Whether this cell is currently alive
 }
 
 impl Component for CellVisual {}
@@ -22,12 +26,14 @@ impl Component for CellVisual {}
 impl Default for CellVisual {
     fn default() -> Self {
         Self {
-            scale: 0.2,          // Start small
-            color: [0.5, 0.5, 0.5], // Start grey
+            scale: 0.2,            // Start small
+            color: [0.3, 0.2, 0.1], // Start dark brown (dead color)
             target_scale: 0.2,    
-            target_color: [0.5, 0.5, 0.5],
+            target_color: [0.3, 0.2, 0.1], // Dark brown for dead cells
             transition_time: 0.0,
             is_transitioning: false,
+            life_duration: 0.0,    // No life duration initially
+            is_alive: false,       // Start dead
         }
     }
 }
