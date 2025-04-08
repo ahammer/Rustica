@@ -9,4 +9,6 @@ bytemuck = { version = "1.14.0", features = ["derive"] }
 wgpu = "24.0.3"
 rustica_foundation = { path = "../../Foundation" }
 rustica_graphics = { path = "../../crates/graphics" }
-rustica_render = { path = "../../crates/render", features = ["derive"] }
+rustica_render = { path = "../../crates/render" }
+rustica_standard_geometry = { path = "../../crates/standard-geometry" }
+rustica_standard_shader = { path = "../../crates/standard-shader" }

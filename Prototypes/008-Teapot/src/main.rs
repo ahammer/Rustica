@@ -1,61 +1,9 @@
-use std::sync::Arc;
 use glam::{Mat4, Vec3};
-use rustica_graphics::{Camera, primitives::shapes::teapot::create_default_teapot};
-use rustica_render::{
-    RenderWindow, ShaderDescriptor, Vertex, StandardMeshAdapter, GeometryBuilder,
-};
+use rustica_graphics::Camera;
+use rustica_render::RenderWindow;
 
-// Vertex type for the teapot
-#[repr(C)]
-#[derive(Copy, Clone, Debug, Vertex)]
-struct TeapotVertex {
-    position: [f32; 3],
-    normal: [f32; 3],
-    tex_coords: [f32; 2],
-    color: [f32; 3],
-}
-
-// Define an instance struct for instanced rendering
-#[repr(C)]
-#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
-struct TeapotInstance {
-    model_matrix: [[f32; 4]; 4], // locations 4,5,6,7 (4 rows)
-    color: [f32; 3],             // location 8
-    _padding: u32,               // For memory alignment
-}
-
-impl TeapotInstance {
-    pub fn new(model_matrix: [[f32; 4]; 4], color: [f32; 3]) -> Self {
-        Self {
-            model_matrix,
-            color,
-            _padding: 0,
-        }
-    }
-}
-
-// Shader descriptor for the teapot
-#[derive(ShaderDescriptor)]
-#[shader(source = "./src/shaders/teapot_shader.wgsl")]
-struct TeapotShaderDescriptor {
-    #[vertex_type]
-    vertex: TeapotVertex,
-    
-    // Remove model uniform since it's provided via instance data
-    
-    #[uniform(binding = 1)]
-    view: Mat4,
-    
-    #[uniform(binding = 2)]
-    projection: Mat4,
-    
-    #[uniform(binding = 3)]
-    time: f32,
-}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Create shader descriptor
-    let shader_descriptor = TeapotShaderDescriptor::descriptor();
     
     // Create window
     let mut window = RenderWindow::new("Utah Teapot Demo (Instanced)", 800, 600);
@@ -64,17 +12,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let shader_id = window.register_shader(shader_descriptor);
     
     // Create teapot mesh
-    let teapot_mesh = Arc::new(create_default_teapot());
+    let teapot_mesh = // Acquire through standard geometry
+        
     
-    // Create mesh adapter
-    let mesh_adapter = StandardMeshAdapter::new(teapot_mesh, |v| {
-        TeapotVertex {
-            position: v.position,
-            normal: v.normal,
-            tex_coords: v.tex_coords,
-            color: v.color,
-        }
-    });
       // Create camera
     let mut camera = Camera::perspective(800.0 / 600.0);
     camera.look_at_from(
@@ -147,12 +87,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         
         // Draw all teapots with a single instanced draw call
-        let geometry = GeometryBuilder::new().with_triangles(&mesh_adapter.to_triangles()).build();
-        canvas.draw_with_instances(shader_id)
-              .uniform("view", view)
-              .uniform("projection", projection)
-              .uniform("time", time)
-              .pump_geometry(&geometry, &instances);
     }).run()?;
     
     Ok(())

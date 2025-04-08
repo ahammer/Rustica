@@ -1652,6 +1652,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ac9aa371f599d22256307c24a9d748c041e548cbf599f35d890f9d365361790"
 
 [[package]]
+name = "teapot-prototype"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "glam",
+ "rustica_foundation",
+ "rustica_graphics",
+ "rustica_render",
+ "rustica_standard_geometry",
+ "rustica_standard_shader",
+ "wgpu",
+]
+
+[[package]]
 name = "termcolor"
 version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
