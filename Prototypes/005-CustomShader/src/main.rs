@@ -4,7 +4,7 @@ use rustica_foundation::{geometry::{GeometryBuilder, Triangle as GeometryTriangl
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
-#[shader(file = "./src/shaders/custom_shader.wgsl")]
+#[shader(file = "shaders/custom_shader.wgsl")]
 struct PlasmaShader {
     // Vertex attributes
     #[vertex(location = 0)]
