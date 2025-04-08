@@ -11,7 +11,7 @@ members = [
     "Prototypes/003-BasicTriangle",
     "Prototypes/004-AnimatedTriangle",
     "Prototypes/005-CustomShader",
-    # "Prototypes/006-BasicMesh",
+    "Prototypes/006-BasicMesh",
     # "Prototypes/007-UVSphere",
     # "Prototypes/008-Teapot",
     # "Prototypes/009-ECS-Conway",
