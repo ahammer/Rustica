@@ -2,6 +2,12 @@ use glam::{Vec2, Vec3};
 use rustica_foundation::geometry::{Geometry, GeometryBuilder};
 use rustica_standard_shader::StandardShaderVertex;
 
+// Include the improved sphere implementation
+mod improved_sphere;
+
+// Re-export the improved sphere creation function
+pub use improved_sphere::create_improved_uv_sphere;
+
 /// Factory for creating standard primitive geometries.
 ///
 /// Uses `GeometryBuilder` internally to construct geometry data
