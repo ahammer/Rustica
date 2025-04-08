@@ -13,7 +13,7 @@ members = [
     "Prototypes/004-AnimatedTriangle",
     "Prototypes/005-CustomShader",
     "Prototypes/006-BasicMesh",
-    # "Prototypes/007-UVSphere",
+    "Prototypes/007-UVSphere",
     # "Prototypes/008-Teapot",
     # "Prototypes/009-ECS-Conway",
     # "Prototypes/010-ECS-Conway-Graphics",

@@ -1,14 +1,10 @@
 use rustica_graphics::Camera;
 use rustica_render::{RenderWindow, Canvas};
-// Removed: use rustica_render_derive::ShaderProperties;
-// Removed: use rustica_foundation::geometry::{GeometryBuilder, Vertex};
-use cgmath::{Matrix4, Vector3, Point3, Deg, perspective}; use rustica_standard_geometry::GeometryFactory;
+use cgmath::{Matrix4, Vector3, Point3}; 
+use rustica_standard_geometry::GeometryFactory;
 use rustica_standard_shader::{StandardShader, StandardShaderInstances};
 use glam::Vec3 as GlamVec3; // Use glam for color input to factory
 
-// Removed MeshShader definition
-
-// Removed create_cube_geometry function
 
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
