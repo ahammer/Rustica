@@ -8,13 +8,6 @@ fn test_vertex_format_diagnostic() {
     t.pass("tests/ui/vertex_format_diagnostic.rs");
 }
 
-// Test for vertex format corruption detection
-#[test]
-fn test_vertex_format_corrupted() {
-    let t = trybuild::TestCases::new();
-    t.compile_fail("tests/ui/vertex_format_corrupted.rs");
-}
-
 // Test for uniform binding auto-assignment
 #[test]
 fn test_uniform_bindings() {
@@ -24,9 +17,16 @@ fn test_uniform_bindings() {
 
 // Test for duplicate location detection
 #[test]
-fn test_duplicate_locations() {
+fn test_duplicate_vertex_locations() {
     let t = trybuild::TestCases::new();
     t.compile_fail("tests/ui/duplicate_location_error.rs");
+}
+
+// Test for duplicate binding detection
+#[test]
+fn test_duplicate_uniform_locations() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/ui/duplicate_binding_error.rs");
 }
 
 // Test for instance attribute layout

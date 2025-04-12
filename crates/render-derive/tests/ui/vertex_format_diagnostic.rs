@@ -42,7 +42,5 @@ fn main() {
     println!("Attribute[0] offset - Expected: 0 bytes,  Actual: {} bytes", layout.attributes[0].offset);
     println!("Attribute[1] offset - Expected: 8 bytes,  Actual: {} bytes", layout.attributes[1].offset);
     println!("Attribute[2] offset - Expected: 20 bytes, Actual: {} bytes", layout.attributes[2].offset);
-    
-    println!("\nThis diagnostic explains why vertex positions in GeometryWithInstances may be corrupted!");
     println!("=== END DIAGNOSTIC ===\n");
 }
