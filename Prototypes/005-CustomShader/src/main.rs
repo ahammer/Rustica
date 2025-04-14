@@ -1,12 +1,12 @@
 use rustica_render::{RenderWindow, Vertex};
-use rustica_render_derive::ShaderProperties;
+
 use rustica_foundation::{geometry::{GeometryBuilder, Triangle as GeometryTriangle}, VertexSemantic};
 use glam::Mat4;
 
 // Define our shader using the ShaderProperties derive macro
 #[derive(ShaderProperties)]
-#[shader(file = "shaders/custom_shader.wgsl")]
-struct PlasmaShader {
+#[shader(file = "shaders/standard_shader.wgsl")]
+struct StandardShader {
     // Vertex attributes
     #[vertex(location = 0)]
     position: [f32; 3],
@@ -31,7 +31,7 @@ struct PlasmaShader {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a shader descriptor
-    let shader_descriptor = PlasmaShader::descriptor();
+    let shader_descriptor = StandardShader::descriptor();
     
     // Create a render window and register the shader
     let mut window = RenderWindow::new("Full-Screen Plasma Effect", 800, 600);
@@ -41,26 +41,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let time_value = canvas.time().as_secs_f32();
         
         // Create a full-screen quad using triangle strip (more efficient)
-        let mut builder = PlasmaShader::geometry_builder();
+        let mut builder = StandardShader::geometry_builder();
         
         // Add vertices for a triangle strip (quad)
         builder.triangle_strip(&[
-            PlasmaShaderVertex {
+            StandardShaderVertex {
                 position: [-1.0, 1.0, 0.0],    // Top-left
                 color: [1.0, 1.0, 1.0],        // White
                 uv: [0.0, 0.0],                // Top-left UV
             },
-            PlasmaShaderVertex {
+            StandardShaderVertex {
                 position: [-1.0, -1.0, 0.0],   // Bottom-left
                 color: [1.0, 1.0, 1.0],        // White
                 uv: [0.0, 1.0],                // Bottom-left UV
             },
-            PlasmaShaderVertex {
+            StandardShaderVertex {
                 position: [1.0, 1.0, 0.0],     // Top-right
                 color: [1.0, 1.0, 1.0],        // White
                 uv: [1.0, 0.0],                // Top-right UV
             },
-            PlasmaShaderVertex {
+            StandardShaderVertex {
                 position: [1.0, -1.0, 0.0],    // Bottom-right
                 color: [1.0, 1.0, 1.0],        // White
                 uv: [1.0, 1.0],                // Bottom-right UV
@@ -72,7 +72,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let identity = Mat4::IDENTITY.to_cols_array_2d();
 
         // Create a single instance with white color
-        let instance = PlasmaShaderInstances {
+        let instance = StandardShaderInstances {
             model_matrix: identity,
             instance_color: [1.0, 1.0, 1.0],  // White (allows plasma colors to shine through)
         };
