@@ -1,0 +1,15 @@
+[package]
+name = "rustica_build"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wgsl_to_wgpu = "0.5.0" # Using a recent version, adjust if needed
+anyhow = "1.0" # For error handling
+
+[lib]
+name = "rustica_build"
+path = "src/lib.rs"
+
+[dev-dependencies]
+tempfile = "3.19.1"
