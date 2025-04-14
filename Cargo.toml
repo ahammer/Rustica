@@ -10,6 +10,9 @@ members = [
     "Prototypes/001-BasicWindow",
     "Prototypes/002-BasicWGPU",
     "Prototypes/003-BasicTriangle",
+]
+
+disabled = [
     "Prototypes/004-AnimatedTriangle",
     "Prototypes/005-CustomShader",
     "Prototypes/006-BasicMesh",
@@ -19,5 +22,4 @@ members = [
     "Prototypes/010-ECS-Conway-Graphics",
     "Examples/001-Integration",
 ]
-
 resolver = "2"

@@ -28,7 +28,7 @@ dependencies = [
  "getrandom 0.2.15",
  "once_cell",
  "version_check",
- "zerocopy 0.7.35",
+ "zerocopy",
 ]
 
 [[package]]
@@ -65,21 +65,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "819e7219dbd41043ac279b19830f2efc897156490d7fd6ea916720117ee66311"
 dependencies = [
  "libc",
-]
-
-[[package]]
-name = "animated_triangle"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam",
- "rustica_foundation",
- "rustica_graphics",
- "rustica_render",
- "rustica_render_derive",
- "rustica_standard_shader",
- "wgpu",
- "winit",
 ]
 
 [[package]]
@@ -120,22 +105,6 @@ name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
-
-[[package]]
-name = "basic-mesh"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam",
- "rustica_foundation",
- "rustica_graphics",
- "rustica_render",
- "rustica_render_derive",
- "rustica_standard_geometry",
- "rustica_standard_shader",
- "rustica_window",
- "wgpu",
-]
 
 [[package]]
 name = "basic_triangle"
@@ -379,19 +348,6 @@ name = "cursor-icon"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "96a6ac251f4a2aca6b3f91340350eab87ae57c3f127ffeb585e92bd336717991"
-
-[[package]]
-name = "custom_shader"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam",
- "rustica_foundation",
- "rustica_render",
- "rustica_render_derive",
- "wgpu",
- "winit",
-]
 
 [[package]]
 name = "dispatch"
@@ -641,13 +597,6 @@ checksum = "cea70ddb795996207ad57735b50c5982d8844f38ba9ee5f1aedcfb708a2aa11e"
 dependencies = [
  "equivalent",
  "hashbrown",
-]
-
-[[package]]
-name = "integration_example"
-version = "0.1.0"
-dependencies = [
- "rustica_window",
 ]
 
 [[package]]
@@ -1240,15 +1189,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f3a9f18d041e6d0e102a0a46750538147e5e8992d3b4873aaafee2520b00ce3"
 
 [[package]]
-name = "ppv-lite86"
-version = "0.2.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85eae3c4ed2f50dcfe72643da4befc30deadb458a9b590d720cde2f2b1e97da9"
-dependencies = [
- "zerocopy 0.8.24",
-]
-
-[[package]]
 name = "presser"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1303,36 +1243,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "74765f6d916ee2faa39bc8e68e4f3ed8949b48cccdac59983d287a7cb71ce9c5"
 
 [[package]]
-name = "rand"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3779b94aeb87e8bd4e834cee3650289ee9e0d5677f976ecdb6d219e5f4f6cd94"
-dependencies = [
- "rand_chacha",
- "rand_core",
- "zerocopy 0.8.24",
-]
-
-[[package]]
-name = "rand_chacha"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3022b5f1df60f26e1ffddd6c66e8aa15de382ae63b3a0c1bfc0e4d3e3f325cb"
-dependencies = [
- "ppv-lite86",
- "rand_core",
-]
-
-[[package]]
-name = "rand_core"
-version = "0.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99d9a13982dcf210057a8a78572b2217b667c3beacbf3a0d8b454f6f82837d38"
-dependencies = [
- "getrandom 0.3.2",
-]
-
-[[package]]
 name = "range-alloc"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1375,45 +1285,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 
 [[package]]
-name = "rustica-conway"
-version = "0.1.0"
-dependencies = [
- "rustica-ecs",
- "rustica_foundation",
-]
-
-[[package]]
 name = "rustica-ecs"
 version = "0.1.0"
 dependencies = [
- "rustica_foundation",
-]
-
-[[package]]
-name = "rustica-ecs-conway-graphics"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam",
- "pollster 0.4.0",
- "rand",
- "rustica-conway",
- "rustica-ecs",
- "rustica_foundation",
- "rustica_graphics",
- "rustica_render",
- "rustica_standard_geometry",
- "rustica_standard_shader",
- "rustica_window",
- "wgpu",
- "winit",
-]
-
-[[package]]
-name = "rustica-ecs-prototype"
-version = "0.1.0"
-dependencies = [
- "rustica-ecs",
  "rustica_foundation",
 ]
 
@@ -1727,20 +1601,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ac9aa371f599d22256307c24a9d748c041e548cbf599f35d890f9d365361790"
 
 [[package]]
-name = "teapot-prototype"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam",
- "rustica_foundation",
- "rustica_graphics",
- "rustica_render",
- "rustica_standard_geometry",
- "rustica_standard_shader",
- "wgpu",
-]
-
-[[package]]
 name = "termcolor"
 version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1908,22 +1768,6 @@ name = "unicode-xid"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
-
-[[package]]
-name = "uv-sphere"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam",
- "rustica_foundation",
- "rustica_graphics",
- "rustica_render",
- "rustica_render_derive",
- "rustica_standard_geometry",
- "rustica_standard_shader",
- "rustica_window",
- "wgpu",
-]
 
 [[package]]
 name = "version_check"
@@ -2682,16 +2526,7 @@ version = "0.7.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1b9b4fd18abc82b8136838da5d50bae7bdea537c574d8dc1a34ed098d6c166f0"
 dependencies = [
- "zerocopy-derive 0.7.35",
-]
-
-[[package]]
-name = "zerocopy"
-version = "0.8.24"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2586fea28e186957ef732a5f8b3be2da217d65c5969d4b1e17f973ebbe876879"
-dependencies = [
- "zerocopy-derive 0.8.24",
+ "zerocopy-derive",
 ]
 
 [[package]]
@@ -2699,17 +2534,6 @@ name = "zerocopy-derive"
 version = "0.7.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "zerocopy-derive"
-version = "0.8.24"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a996a8f63c5c4448cd959ac1bab0aaa3306ccfd060472f85943ee0750f0169be"
 dependencies = [
  "proc-macro2",
  "quote",
