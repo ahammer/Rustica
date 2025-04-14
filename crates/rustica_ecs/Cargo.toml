@@ -1,8 +1,8 @@
 [package]
-name = "rustica-ecs"
+name = "rustica_ecs"
 version = "0.1.0"
 edition = "2021"
 description = "Entity Component System implementation for the Rustica engine"
 
 [dependencies]
-rustica_foundation = { path = "../../Foundation" }
+rustica_foundation = { path = "../rustica_foundation" }

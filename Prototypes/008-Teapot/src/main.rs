@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let shader_descriptor = StandardShader::descriptor();
     let shader_id = window.register_shader(shader_descriptor);
     
-    // Create teapot mesh using the Bezier patch system (from standard-geometry)
+    // Create teapot mesh using the Bezier patch system (from rustica_geometry) // Renamed from standard-geometry
     let teapot_geometry = create_utah_teapot(
         16,             // resolution for patches (higher = smoother)
         1.0,            // scale

@@ -1,14 +1,14 @@
 [package]
-name = "rustica_standard_shader"
+name = "rustica_shaders"
 version = "0.1.0"
 edition = "2021"
 description = "Standard shader implementations for the Rustica engine"
 license = "MIT"
 
 [dependencies]
-rustica_render = { path = "../render" }
-rustica_foundation = { path = "../../Foundation" }
-rustica_graphics = { path = "../graphics" }
+rustica_render = { path = "../rustica_render" }
+rustica_foundation = { path = "../rustica_foundation" }
+rustica_graphics = { path = "../rustica_graphics" }
 glam = "0.30.1"
 bytemuck = { version = "1.14", features = ["derive"] }
 wgpu = "24.0.3"
@@ -16,5 +16,5 @@ encase = "0.7.0" # For uniform buffer handling with generated bindings
 
 # Build dependencies for shader generation
 [build-dependencies]
-rustica_build = { path = "../rustica-build" }
+rustica_build = { path = "../rustica_build" }
 anyhow = "1.0" # For error handling in build script

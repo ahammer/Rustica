@@ -1,9 +1,9 @@
 [package]
-name = "rustica-conway"
+name = "rustica_conway"
 version = "0.1.0"
 edition = "2021"
 description = "Conway's Game of Life implementation for the Rustica engine"
 
 [dependencies]
-rustica_foundation = { path = "../../Foundation" }
-rustica-ecs = { path = "../../crates/rustica-ecs" }
+rustica_foundation = { path = "../rustica_foundation" }
+rustica_ecs = { path = "../rustica_ecs" }

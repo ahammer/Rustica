@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-rustica_render = { path = "../../crates/render" }
-rustica_foundation = { path = "../../Foundation" }
-rustica_standard_shader = { path = "../../crates/standard-shader" }
-rustica_graphics = { path = "../../crates/graphics" }
+rustica_render = { path = "../../crates/rustica_render" }
+rustica_foundation = { path = "../../crates/rustica_foundation" }
+rustica_shaders = { path = "../../crates/rustica_shaders" }
+rustica_graphics = { path = "../../crates/rustica_graphics" }
 wgpu = "24.0.3"
 bytemuck = { version = "1.14", features = ["derive"] }
 glam = "0.30.1"

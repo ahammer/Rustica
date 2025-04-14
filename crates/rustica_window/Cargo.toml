@@ -5,7 +5,7 @@ edition = "2024"
 description = "Window management crate for Rustica engine"
 
 [dependencies]
-rustica_foundation = { path = "../../Foundation" }
+rustica_foundation = { path = "../rustica_foundation" } # Corrected path
 winit = "0.30.9"
 raw-window-handle = "0.6.0"
 

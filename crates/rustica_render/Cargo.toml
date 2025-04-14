@@ -5,8 +5,8 @@ edition = "2024"
 description = "Rendering module for Rustica engine"
 
 [dependencies]
-rustica_window = { path = "../window" }
-rustica_foundation = { path = "../../Foundation" }
+rustica_window = { path = "../rustica_window" } # Corrected path
+rustica_foundation = { path = "../rustica_foundation" } # Corrected path
 wgpu = "24.0.3"
 pollster = "0.4.0"
 raw-window-handle = "0.6.0"

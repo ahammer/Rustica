@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "Foundation",   
     "crates/rustica_build", 
     "crates/rustica_conway",
     "crates/rustica_foundation",
@@ -9,19 +8,19 @@ members = [
     "crates/rustica_render",
     "crates/rustica_shaders",
     "crates/rustica_window",
-    "Prototypes/001-BasicWindow",
-    "Prototypes/002-BasicWGPU",
-    "Prototypes/003-BasicTriangle",
+    "prototypes/001_basic_window",
+    "prototypes/002_basic_wgpu",
+    "prototypes/003_basic_triangle",  
 ]
 
 disabled = [
-    "Prototypes/004-AnimatedTriangle",
-    "Prototypes/005-CustomShader",
-    "Prototypes/006-BasicMesh",
-    "Prototypes/007-UVSphere",
-    "Prototypes/008-Teapot",
-    "Prototypes/009-ECS-Conway",
-    "Prototypes/010-ECS-Conway-Graphics",
-    "Examples/001-Integration",
+    "prototypes/004_animated_triangle", 
+    "prototypes/005_custom_shader",     
+    "prototypes/006_basic_mesh",        
+    "prototypes/007_uv_sphere",         
+    "prototypes/008_teapot",            
+    "prototypes/009_ecs_conway",        
+    "prototypes/010_ecs_conway_graphics",
+    "examples/001_integration",         
 ]
 resolver = "2"

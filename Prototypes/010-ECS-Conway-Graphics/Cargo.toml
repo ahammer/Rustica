@@ -1,17 +1,17 @@
 [package]
-name = "rustica-ecs-conway-graphics"
+name = "rustica_ecs_conway_graphics"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rustica_foundation = { path = "../../Foundation" }
-rustica-ecs = { path = "../../crates/rustica-ecs" }
-rustica-conway = { path = "../../crates/rustica-conway" }
-rustica_window = { path = "../../crates/window" }
-rustica_render = { path = "../../crates/render"}
-rustica_graphics = { path = "../../crates/graphics" }
-rustica_standard_geometry = { path = "../../crates/standard-geometry" } # Added standard-geometry
-rustica_standard_shader = { path = "../../crates/standard-shader" } # Added standard-shader
+rustica_foundation = { path = "../../crates/rustica_foundation" }
+rustica_ecs = { path = "../../crates/rustica_ecs" }
+rustica_conway = { path = "../../crates/rustica_conway" }
+rustica_window = { path = "../../crates/rustica_window" }
+rustica_render = { path = "../../crates/rustica_render"}
+rustica_graphics = { path = "../../crates/rustica_graphics" }
+rustica_geometry = { path = "../../crates/rustica_geometry" }
+rustica_shaders = { path = "../../crates/rustica_shaders" }
 wgpu = "24.0.3"
 winit = "0.30.9"
 glam = "0.30.1"

@@ -1,5 +1,5 @@
 [package]
-name = "teapot-prototype"
+name = "teapot_prototype"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,8 +7,8 @@ edition = "2021"
 glam = "0.30.1"
 bytemuck = { version = "1.14.0", features = ["derive"] }
 wgpu = "24.0.3"
-rustica_foundation = { path = "../../Foundation" }
-rustica_graphics = { path = "../../crates/graphics" }
-rustica_render = { path = "../../crates/render" }
-rustica_standard_geometry = { path = "../../crates/standard-geometry" }
-rustica_standard_shader = { path = "../../crates/standard-shader" }
+rustica_foundation = { path = "../../crates/rustica_foundation" }
+rustica_graphics = { path = "../../crates/rustica_graphics" }
+rustica_render = { path = "../../crates/rustica_render" }
+rustica_geometry = { path = "../../crates/rustica_geometry" }
+rustica_shaders = { path = "../../crates/rustica_shaders" }

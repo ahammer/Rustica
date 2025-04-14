@@ -121,7 +121,7 @@ dependencies = [
  "rustica_foundation",
  "rustica_graphics",
  "rustica_render",
- "rustica_standard_shader",
+ "rustica_shaders",
  "wgpu",
  "winit",
 ]
@@ -1371,13 +1371,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 
 [[package]]
-name = "rustica-ecs"
-version = "0.1.0"
-dependencies = [
- "rustica_foundation",
-]
-
-[[package]]
 name = "rustica_build"
 version = "0.1.0"
 dependencies = [
@@ -1387,12 +1380,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustica_conway"
+version = "0.1.0"
+dependencies = [
+ "rustica_ecs",
+ "rustica_foundation",
+]
+
+[[package]]
+name = "rustica_ecs"
+version = "0.1.0"
+dependencies = [
+ "rustica_foundation",
+]
+
+[[package]]
 name = "rustica_foundation"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
  "glam",
  "wgpu",
+]
+
+[[package]]
+name = "rustica_geometry"
+version = "0.1.0"
+dependencies = [
+ "glam",
+ "rustica_foundation",
+ "rustica_render",
+ "rustica_shaders",
 ]
 
 [[package]]
@@ -1424,17 +1442,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustica_standard_geometry"
-version = "0.1.0"
-dependencies = [
- "glam",
- "rustica_foundation",
- "rustica_render",
- "rustica_standard_shader",
-]
-
-[[package]]
-name = "rustica_standard_shader"
+name = "rustica_shaders"
 version = "0.1.0"
 dependencies = [
  "anyhow",

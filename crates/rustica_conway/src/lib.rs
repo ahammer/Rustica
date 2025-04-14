@@ -1,7 +1,7 @@
 // Rustica Conway - Conway's Game of Life implementation for the Rustica engine
 //
 // This crate provides components and systems for Conway's Game of Life
-// built on top of the rustica-ecs Entity Component System.
+// built on top of the rustica_ecs Entity Component System.
 
 // Export modules
 pub mod components;

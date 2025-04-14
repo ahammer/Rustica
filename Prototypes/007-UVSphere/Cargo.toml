@@ -1,15 +1,15 @@
 [package]
-name = "uv-sphere"
+name = "uv_sphere"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rustica_window = { path = "../../crates/window" }
-rustica_render = { path = "../../crates/render"}
-rustica_foundation = { path = "../../Foundation" }
-rustica_graphics = { path = "../../crates/graphics" }
-rustica_standard_shader = { path = "../../crates/standard-shader" }
-rustica_standard_geometry = { path = "../../crates/standard-geometry" } # Added standard-geometry
+rustica_window = { path = "../../crates/rustica_window" }
+rustica_render = { path = "../../crates/rustica_render"}
+rustica_foundation = { path = "../../crates/rustica_foundation" }
+rustica_graphics = { path = "../../crates/rustica_graphics" }
+rustica_shaders = { path = "../../crates/rustica_shaders" }
+rustica_geometry = { path = "../../crates/rustica_geometry" }
 glam = "0.30.1"
 wgpu = "24.0.3"
 bytemuck = { version = "1.14.0", features = ["derive"] }
