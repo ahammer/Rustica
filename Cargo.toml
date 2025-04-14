@@ -1,12 +1,14 @@
 [workspace]
 members = [
     "Foundation",   
-    "crates/standard-shader", 
-    "crates/window",
-    "crates/render",
-    "crates/render-derive",
-    "crates/standard-geometry", # Added standard-geometry crate
-    "crates/rustica-ecs",
+    "crates/rustica_build", 
+    "crates/rustica_conway",
+    "crates/rustica_foundation",
+    "crates/rustica_geometry",
+    "crates/rustica_graphics",
+    "crates/rustica_render",
+    "crates/rustica_shaders",
+    "crates/rustica_window",
     "Prototypes/001-BasicWindow",
     "Prototypes/002-BasicWGPU",
     "Prototypes/003-BasicTriangle",

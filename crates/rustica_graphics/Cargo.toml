@@ -6,7 +6,6 @@ edition = "2021"
 [dependencies]
 rustica_window = { path = "../window" }
 rustica_render = { path = "../render" }
-# rustica_render_derive = { path = "../render-derive" } # Removed
 rustica_foundation = { path = "../../Foundation" }
 glam = "0.30.1"
 wgpu = "24.0.3"

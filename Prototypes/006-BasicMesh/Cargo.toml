@@ -7,7 +7,6 @@ edition = "2021"
 rustica_graphics = { path = "../../crates/graphics" } 
 rustica_window = { path = "../../crates/window" }
 rustica_render = { path = "../../crates/render" }
-rustica_render_derive = { path = "../../crates/render-derive" }
 rustica_standard_shader = { path = "../../crates/standard-shader" } # Added standard-shader
 rustica_standard_geometry = { path = "../../crates/standard-geometry" } # Added standard-geometry
 

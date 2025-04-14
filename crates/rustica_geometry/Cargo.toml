@@ -8,7 +8,6 @@ glam = "0.30.1" # Using glam as it's common in Rust graphics and used elsewhere 
 rustica_standard_shader = { path = "../standard-shader" }
 rustica_foundation = { path = "../../Foundation" }
 rustica_render = { path = "../render" } # Needed for Vertex trait
-# rustica_render_derive = { path = "../render-derive" } # Removed
 
 [lib]
 name = "rustica_standard_geometry"
