@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wgsl_to_wgpu = "0.5.0" # Using a recent version, adjust if needed
+wgsl_to_wgpu = "0.13.1" # Using a recent version, adjust if needed
 anyhow = "1.0" # For error handling
 
 [lib]
