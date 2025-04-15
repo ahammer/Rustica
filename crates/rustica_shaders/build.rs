@@ -15,7 +15,6 @@ fn main() -> Result<()> {
     rustica_build::generate_shader_bindings(
         &wgsl_path,
         &output_path,
-        "StandardShader" // Module name for generated types
     )
     .context("Failed to generate standard shader bindings")?;
 

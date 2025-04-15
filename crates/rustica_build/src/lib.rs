@@ -16,7 +16,6 @@ use std::path::Path;
 pub fn generate_shader_bindings(
     wgsl_path: impl AsRef<Path>,
     output_path: impl AsRef<Path>,
-    shader_name: &str,
 ) -> Result<()> {
     let wgsl_path = wgsl_path.as_ref();
     let output_path = output_path.as_ref();
@@ -79,7 +78,7 @@ mod tests {
         "#;
         std::fs::write(&wgsl_path, wgsl_content)?;
 
-        generate_shader_bindings(&wgsl_path, &output_path, "TestShader")?;
+        generate_shader_bindings(&wgsl_path, &output_path)?;
 
         assert!(output_path.exists(), "Output file was not created");
         let generated_code = std::fs::read_to_string(&output_path)?;
