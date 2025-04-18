@@ -1,0 +1,26 @@
+[package]
+name = "rustica_render"
+version = "0.1.0"
+edition = "2024"
+description = "Rendering module for Rustica engine"
+
+[dependencies]
+rustica_window = { path = "../rustica_window" }
+rustica_foundation = { path = "../rustica_foundation" }
+wgpu = { workspace = true }
+pollster = { workspace = true }
+raw-window-handle = { workspace = true }
+winit = { workspace = true }
+bytemuck = { workspace = true }
+glam = { workspace = true }
+once_cell = { workspace = true }
+
+[dev-dependencies]
+# Add any test-specific dependencies here
+
+[features]
+# Feature for tests that require a GPU
+test-gpu = []
+# Re-export the window crate's test-display feature
+test-display = ["rustica_window/test-display"]
+

@@ -1,0 +1,20 @@
+[package]
+name = "rustica_ecs_conway_graphics"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rustica_foundation = { path = "../../crates/rustica_foundation" }
+rustica_ecs = { path = "../../crates/rustica_ecs" }
+rustica_conway = { path = "../../crates/rustica_conway" }
+rustica_window = { path = "../../crates/rustica_window" }
+rustica_render = { path = "../../crates/rustica_render" }
+rustica_graphics = { path = "../../crates/rustica_graphics" }
+rustica_standard_geometry = { path = "../../crates/rustica_standard_geometry" }
+rustica_standard_shader = { path = "../../crates/rustica_standard_shader" }
+wgpu = { workspace = true }
+winit = { workspace = true }
+glam = { workspace = true }
+pollster = { workspace = true }
+rand = { workspace = true }
+bytemuck = { workspace = true, features = ["derive"] }

@@ -1,0 +1,8 @@
+[package]
+name = "integration_example"
+version = "0.1.0"
+edition = "2024"
+description = "Integration example for Rustica engine"
+
+[dependencies]
+rustica_window = { path = "../../crates/rustica_window" }

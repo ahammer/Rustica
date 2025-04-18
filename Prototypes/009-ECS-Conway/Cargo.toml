@@ -1,8 +1,0 @@
-[package]
-name = "rustica-ecs-prototype"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-rustica_foundation = { path = "../../Foundation" }
-rustica-ecs = { path = "../../crates/rustica-ecs" }

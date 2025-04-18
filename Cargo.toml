@@ -1,23 +1,39 @@
 [workspace]
 members = [
-    "Foundation",   
-    "crates/standard-shader", 
-    "crates/window",
-    "crates/render",
-    "crates/render-derive",
-    "crates/standard-geometry", # Added standard-geometry crate
-    "crates/rustica-ecs",
-    "Prototypes/001-BasicWindow",
-    "Prototypes/002-BasicWGPU",
-    "Prototypes/003-BasicTriangle",
-    "Prototypes/004-AnimatedTriangle",
-    "Prototypes/005-CustomShader",
-    "Prototypes/006-BasicMesh",
-    "Prototypes/007-UVSphere",
-    "Prototypes/008-Teapot",
-    "Prototypes/009-ECS-Conway",
-    "Prototypes/010-ECS-Conway-Graphics",
-    "Examples/001-Integration",
+    "crates/rustica_foundation",
+    "crates/rustica_standard_shader",
+    "crates/rustica_window",
+    "crates/rustica_render",
+    "crates/rustica_render_derive",
+    "crates/rustica_standard_geometry",
+    "crates/rustica_ecs",
+    "crates/rustica_graphics",
+    "crates/rustica_conway",
+    "Prototypes/001-basic_window",
+    "Prototypes/002-basic_wgpu",
+    "Prototypes/003-basic_triangle",
+    "Prototypes/004-animated_triangle",
+    "Prototypes/005-custom_shader",
+    "Prototypes/006-basic_mesh",
+    "Prototypes/007-uv_sphere",
+    "Prototypes/008-teapot_prototype",
+    "Prototypes/009-rustica_ecs_prototype",
+    "Prototypes/010-rustica_ecs_conway_graphics",
+    "Examples/001-integration_example"
 ]
 
 resolver = "2"
+
+[workspace.dependencies]
+glam = "0.30.1"
+bytemuck = "1.14.0"
+wgpu = "24.0.3"
+winit = "0.30.9"
+raw-window-handle = "0.6.0"
+pollster = "0.4.0"
+once_cell = "1.19.0"
+syn = "2.0"
+quote = "1.0"
+proc-macro2 = "1.0"
+trybuild = "1.0"
+rand = "0.9.0"

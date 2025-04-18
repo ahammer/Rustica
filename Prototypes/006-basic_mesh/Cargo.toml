@@ -1,0 +1,16 @@
+[package]
+name = "basic_mesh"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rustica_graphics = { path = "../../crates/rustica_graphics" }
+rustica_window = { path = "../../crates/rustica_window" }
+rustica_render = { path = "../../crates/rustica_render" }
+rustica_render_derive = { path = "../../crates/rustica_render_derive" }
+rustica_standard_shader = { path = "../../crates/rustica_standard_shader" }
+rustica_standard_geometry = { path = "../../crates/rustica_standard_geometry" }
+rustica_foundation = { path = "../../crates/rustica_foundation" }
+glam = { workspace = true }
+wgpu = { workspace = true }
+bytemuck = { workspace = true, features = ["derive"] }

@@ -1,0 +1,7 @@
+[package]
+name = "basic_window"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rustica_window = { path = "../../crates/rustica_window" }

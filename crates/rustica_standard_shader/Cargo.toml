@@ -1,0 +1,15 @@
+[package]
+name = "rustica_standard_shader"
+version = "0.1.0"
+edition = "2021"
+description = "Standard shader implementations for the Rustica engine"
+license = "MIT"
+
+[dependencies]
+rustica_render = { path = "../rustica_render" }
+rustica_render_derive = { path = "../rustica_render_derive" }
+rustica_foundation = { path = "../rustica_foundation" }
+rustica_graphics = { path = "../rustica_graphics" }
+glam = { workspace = true }
+bytemuck = { workspace = true, features = ["derive"] }
+wgpu = { workspace = true }

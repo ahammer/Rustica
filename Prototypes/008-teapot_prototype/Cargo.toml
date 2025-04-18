@@ -1,0 +1,14 @@
+[package]
+name = "teapot_prototype"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+glam = { workspace = true }
+bytemuck = { workspace = true, features = ["derive"] }
+wgpu = { workspace = true }
+rustica_foundation = { path = "../../crates/rustica_foundation" }
+rustica_graphics = { path = "../../crates/rustica_graphics" }
+rustica_render = { path = "../../crates/rustica_render" }
+rustica_standard_geometry = { path = "../../crates/rustica_standard_geometry" }
+rustica_standard_shader = { path = "../../crates/rustica_standard_shader" }

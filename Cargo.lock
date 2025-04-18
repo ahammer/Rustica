@@ -122,7 +122,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
-name = "basic-mesh"
+name = "basic_mesh"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
@@ -1229,12 +1229,6 @@ dependencies = [
 
 [[package]]
 name = "pollster"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22686f4785f02a4fcc856d3b3bb19bf6c8160d103f7a99cc258bddd0251dc7f2"
-
-[[package]]
-name = "pollster"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f3a9f18d041e6d0e102a0a46750538147e5e8992d3b4873aaafee2520b00ce3"
@@ -1375,30 +1369,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 
 [[package]]
-name = "rustica-conway"
+name = "rustica_conway"
 version = "0.1.0"
 dependencies = [
- "rustica-ecs",
+ "rustica_ecs",
  "rustica_foundation",
 ]
 
 [[package]]
-name = "rustica-ecs"
+name = "rustica_ecs"
 version = "0.1.0"
 dependencies = [
  "rustica_foundation",
 ]
 
 [[package]]
-name = "rustica-ecs-conway-graphics"
+name = "rustica_ecs_conway_graphics"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
  "glam",
- "pollster 0.4.0",
+ "pollster",
  "rand",
- "rustica-conway",
- "rustica-ecs",
+ "rustica_conway",
+ "rustica_ecs",
  "rustica_foundation",
  "rustica_graphics",
  "rustica_render",
@@ -1410,10 +1404,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustica-ecs-prototype"
+name = "rustica_ecs_prototype"
 version = "0.1.0"
 dependencies = [
- "rustica-ecs",
+ "rustica_ecs",
  "rustica_foundation",
 ]
 
@@ -1432,7 +1426,7 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "glam",
- "pollster 0.3.0",
+ "pollster",
  "rustica_foundation",
  "rustica_render",
  "rustica_render_derive",
@@ -1447,7 +1441,7 @@ dependencies = [
  "bytemuck",
  "glam",
  "once_cell",
- "pollster 0.4.0",
+ "pollster",
  "raw-window-handle",
  "rustica_foundation",
  "rustica_window",
@@ -1727,7 +1721,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ac9aa371f599d22256307c24a9d748c041e548cbf599f35d890f9d365361790"
 
 [[package]]
-name = "teapot-prototype"
+name = "teapot_prototype"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
@@ -1910,7 +1904,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
 
 [[package]]
-name = "uv-sphere"
+name = "uv_sphere"
 version = "0.1.0"
 dependencies = [
  "bytemuck",

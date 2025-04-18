@@ -1,0 +1,17 @@
+[package]
+name = "rustica_window"
+version = "0.1.0"
+edition = "2024"
+description = "Window management crate for Rustica engine"
+
+[dependencies]
+rustica_foundation = { path = "../rustica_foundation" }
+winit = { workspace = true }
+raw-window-handle = { workspace = true }
+
+[dev-dependencies]
+# Add any test-specific dependencies here
+
+[features]
+# Feature for tests that require a display
+test-display = []
