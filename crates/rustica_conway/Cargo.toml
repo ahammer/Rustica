@@ -5,5 +5,5 @@ edition = "2021"
 description = "Conway's Game of Life implementation for the Rustica engine"
 
 [dependencies]
-rustica_foundation = { path = "../rustica_foundation" }
-rustica_ecs = { path = "../../crates/rustica_ecs" }
+rustica_foundation = { workspace = true }
+rustica_ecs = { workspace = true }

@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rustica_window = { path = "../rustica_window" }
-rustica_render = { path = "../rustica_render" }
-rustica_render_derive = { path = "../rustica_render_derive" }
-rustica_foundation = { path = "../rustica_foundation" }
+rustica_window = { workspace = true }
+rustica_render = { workspace = true }
+rustica_render_derive = { workspace = true }
+rustica_foundation = { workspace = true }
 glam = { workspace = true }
 wgpu = { workspace = true }
 bytemuck = { workspace = true, features = ["derive"] }

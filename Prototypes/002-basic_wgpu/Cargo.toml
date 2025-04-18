@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-rustica_window = { path = "../../crates/rustica_window" }
-rustica_render = { path = "../../crates/rustica_render" }
+rustica_window = { workspace = true }
+rustica_render = { workspace = true }

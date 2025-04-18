@@ -5,10 +5,10 @@ edition = "2021"
 
 [dependencies]
 glam = { workspace = true } # Using glam as it's common in Rust graphics and used elsewhere
-rustica_standard_shader = { path = "../rustica_standard_shader" }
-rustica_foundation = { path = "../rustica_foundation" }
-rustica_render = { path = "../rustica_render" } # Needed for Vertex trait
-rustica_render_derive = { path = "../rustica_render_derive" } # Needed for Vertex trait derivation if not already done in standard-shader
+rustica_standard_shader = { workspace = true }
+rustica_foundation = { workspace = true }
+rustica_render = { workspace = true } # Needed for Vertex trait
+rustica_render_derive = { workspace = true } # Needed for Vertex trait derivation if not already done in standard-shader
 
 [lib]
 name = "rustica_standard_geometry"

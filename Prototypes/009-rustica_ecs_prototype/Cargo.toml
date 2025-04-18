@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rustica_foundation = { path = "../../crates/rustica_foundation" }
-rustica_ecs = { path = "../../crates/rustica_ecs" }
+rustica_foundation = { workspace = true }
+rustica_ecs = { workspace = true }

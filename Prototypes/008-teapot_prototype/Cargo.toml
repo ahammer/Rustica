@@ -7,8 +7,8 @@ edition = "2021"
 glam = { workspace = true }
 bytemuck = { workspace = true, features = ["derive"] }
 wgpu = { workspace = true }
-rustica_foundation = { path = "../../crates/rustica_foundation" }
-rustica_graphics = { path = "../../crates/rustica_graphics" }
-rustica_render = { path = "../../crates/rustica_render" }
-rustica_standard_geometry = { path = "../../crates/rustica_standard_geometry" }
-rustica_standard_shader = { path = "../../crates/rustica_standard_shader" }
+rustica_foundation = { workspace = true }
+rustica_graphics = { workspace = true }
+rustica_render = { workspace = true }
+rustica_standard_geometry = { workspace = true }
+rustica_standard_shader = { workspace = true }

@@ -6,10 +6,10 @@ description = "Standard shader implementations for the Rustica engine"
 license = "MIT"
 
 [dependencies]
-rustica_render = { path = "../rustica_render" }
-rustica_render_derive = { path = "../rustica_render_derive" }
-rustica_foundation = { path = "../rustica_foundation" }
-rustica_graphics = { path = "../rustica_graphics" }
+rustica_render = { workspace = true }
+rustica_render_derive = { workspace = true }
+rustica_foundation = { workspace = true }
+rustica_graphics = { workspace = true }
 glam = { workspace = true }
 bytemuck = { workspace = true, features = ["derive"] }
 wgpu = { workspace = true }

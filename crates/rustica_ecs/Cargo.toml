@@ -5,4 +5,4 @@ edition = "2021"
 description = "Entity Component System implementation for the Rustica engine"
 
 [dependencies]
-rustica_foundation = { path = "../rustica_foundation" }
+rustica_foundation = { workspace = true }

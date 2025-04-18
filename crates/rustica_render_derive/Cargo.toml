@@ -16,5 +16,5 @@ bytemuck = { workspace = true }
 [dev-dependencies]
 trybuild = { workspace = true }
 wgpu = { workspace = true }
-rustica_render = { path = "../rustica_render" }
-rustica_foundation = { path = "../rustica_foundation" }
+rustica_render = { workspace = true }
+rustica_foundation = { workspace = true }
