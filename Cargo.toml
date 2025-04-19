@@ -27,7 +27,7 @@ resolver = "2"
 [workspace.dependencies]
 glam = "0.30.1"
 bytemuck = "1.14.0"
-wgpu = "25.0.0"
+wgpu = "24.0.3"
 winit = "0.30.9"
 raw-window-handle = "0.6.0"
 pollster = "0.4.0"
