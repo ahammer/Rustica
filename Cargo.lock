@@ -78,7 +78,7 @@ dependencies = [
  "rustica_render",
  "rustica_render_derive",
  "rustica_standard_shader",
- "wgpu",
+ "wgpu 25.0.0",
  "winit",
 ]
 
@@ -134,7 +134,7 @@ dependencies = [
  "rustica_standard_geometry",
  "rustica_standard_shader",
  "rustica_window",
- "wgpu",
+ "wgpu 25.0.0",
 ]
 
 [[package]]
@@ -148,7 +148,7 @@ dependencies = [
  "rustica_render",
  "rustica_render_derive",
  "rustica_standard_shader",
- "wgpu",
+ "wgpu 25.0.0",
  "winit",
 ]
 
@@ -412,7 +412,7 @@ dependencies = [
  "rustica_foundation",
  "rustica_render",
  "rustica_render_derive",
- "wgpu",
+ "wgpu 25.0.0",
  "winit",
 ]
 
@@ -864,6 +864,7 @@ dependencies = [
  "indexmap",
  "log",
  "rustc-hash",
+ "spirv",
  "strum",
  "termcolor",
  "thiserror 2.0.12",
@@ -1453,8 +1454,9 @@ checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 name = "rustica_base_wgsl_bindings"
 version = "0.1.0"
 dependencies = [
+ "bytemuck",
  "glam",
- "wgpu",
+ "wgpu 24.0.3",
  "wgsl_to_wgpu",
 ]
 
@@ -1489,7 +1491,7 @@ dependencies = [
  "rustica_standard_geometry",
  "rustica_standard_shader",
  "rustica_window",
- "wgpu",
+ "wgpu 25.0.0",
  "winit",
 ]
 
@@ -1507,7 +1509,7 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "glam",
- "wgpu",
+ "wgpu 25.0.0",
 ]
 
 [[package]]
@@ -1521,7 +1523,7 @@ dependencies = [
  "rustica_render",
  "rustica_render_derive",
  "rustica_window",
- "wgpu",
+ "wgpu 25.0.0",
 ]
 
 [[package]]
@@ -1535,7 +1537,7 @@ dependencies = [
  "raw-window-handle",
  "rustica_foundation",
  "rustica_window",
- "wgpu",
+ "wgpu 25.0.0",
  "winit",
 ]
 
@@ -1550,7 +1552,7 @@ dependencies = [
  "rustica_render",
  "syn",
  "trybuild",
- "wgpu",
+ "wgpu 25.0.0",
 ]
 
 [[package]]
@@ -1574,7 +1576,7 @@ dependencies = [
  "rustica_graphics",
  "rustica_render",
  "rustica_render_derive",
- "wgpu",
+ "wgpu 25.0.0",
 ]
 
 [[package]]
@@ -1821,7 +1823,7 @@ dependencies = [
  "rustica_render",
  "rustica_standard_geometry",
  "rustica_standard_shader",
- "wgpu",
+ "wgpu 25.0.0",
 ]
 
 [[package]]
@@ -2006,7 +2008,7 @@ dependencies = [
  "rustica_standard_geometry",
  "rustica_standard_shader",
  "rustica_window",
- "wgpu",
+ "wgpu 25.0.0",
 ]
 
 [[package]]
@@ -2242,6 +2244,32 @@ dependencies = [
 
 [[package]]
 name = "wgpu"
+version = "24.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "35904fb00ba2d2e0a4d002fcbbb6e1b89b574d272a50e5fc95f6e81cf281c245"
+dependencies = [
+ "arrayvec",
+ "bitflags 2.9.0",
+ "cfg_aliases",
+ "document-features",
+ "js-sys",
+ "log",
+ "naga 24.0.0",
+ "parking_lot",
+ "profiling",
+ "raw-window-handle",
+ "smallvec",
+ "static_assertions",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "wgpu-core 24.0.2",
+ "wgpu-hal 24.0.4",
+ "wgpu-types 24.0.0",
+]
+
+[[package]]
+name = "wgpu"
 version = "25.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca6049eb2014a0e0d8689f9b787605dd71d5bbfdc74095ead499f3cff705c229"
@@ -2263,9 +2291,34 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "wgpu-core",
- "wgpu-hal",
+ "wgpu-core 25.0.1",
+ "wgpu-hal 25.0.1",
  "wgpu-types 25.0.0",
+]
+
+[[package]]
+name = "wgpu-core"
+version = "24.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "671c25545d479b47d3f0a8e373aceb2060b67c6eb841b24ac8c32348151c7a0c"
+dependencies = [
+ "arrayvec",
+ "bit-vec",
+ "bitflags 2.9.0",
+ "cfg_aliases",
+ "document-features",
+ "indexmap",
+ "log",
+ "naga 24.0.0",
+ "once_cell",
+ "parking_lot",
+ "profiling",
+ "raw-window-handle",
+ "rustc-hash",
+ "smallvec",
+ "thiserror 2.0.12",
+ "wgpu-hal 24.0.4",
+ "wgpu-types 24.0.0",
 ]
 
 [[package]]
@@ -2295,7 +2348,7 @@ dependencies = [
  "wgpu-core-deps-apple",
  "wgpu-core-deps-emscripten",
  "wgpu-core-deps-windows-linux-android",
- "wgpu-hal",
+ "wgpu-hal 25.0.1",
  "wgpu-types 25.0.0",
 ]
 
@@ -2305,7 +2358,7 @@ version = "25.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cfd488b3239b6b7b185c3b045c39ca6bf8af34467a4c5de4e0b1a564135d093d"
 dependencies = [
- "wgpu-hal",
+ "wgpu-hal 25.0.1",
 ]
 
 [[package]]
@@ -2314,7 +2367,7 @@ version = "25.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f09ad7aceb3818e52539acc679f049d3475775586f3f4e311c30165cf2c00445"
 dependencies = [
- "wgpu-hal",
+ "wgpu-hal 25.0.1",
 ]
 
 [[package]]
@@ -2323,7 +2376,53 @@ version = "25.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cba5fb5f7f9c98baa7c889d444f63ace25574833df56f5b817985f641af58e46"
 dependencies = [
- "wgpu-hal",
+ "wgpu-hal 25.0.1",
+]
+
+[[package]]
+name = "wgpu-hal"
+version = "24.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f112f464674ca69f3533248508ee30cb84c67cf06c25ff6800685f5e0294e259"
+dependencies = [
+ "android_system_properties",
+ "arrayvec",
+ "ash",
+ "bit-set",
+ "bitflags 2.9.0",
+ "block",
+ "bytemuck",
+ "cfg_aliases",
+ "core-graphics-types",
+ "glow",
+ "glutin_wgl_sys",
+ "gpu-alloc",
+ "gpu-allocator",
+ "gpu-descriptor",
+ "js-sys",
+ "khronos-egl",
+ "libc",
+ "libloading",
+ "log",
+ "metal",
+ "naga 24.0.0",
+ "ndk-sys 0.5.0+25.2.9519653",
+ "objc",
+ "once_cell",
+ "ordered-float",
+ "parking_lot",
+ "profiling",
+ "range-alloc",
+ "raw-window-handle",
+ "renderdoc-sys",
+ "rustc-hash",
+ "smallvec",
+ "thiserror 2.0.12",
+ "wasm-bindgen",
+ "web-sys",
+ "wgpu-types 24.0.0",
+ "windows",
+ "windows-core",
 ]
 
 [[package]]
