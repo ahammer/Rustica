@@ -9,14 +9,15 @@ fn main()  {
 
     // Configure the output based on the dependencies for the project.
     let options = WriteOptions {
-        derive_bytemuck_vertex: true,
-        derive_encase_host_shareable: true,
-        matrix_vector_types: MatrixVectorTypes::Glam,
+        derive_bytemuck_vertex: false,        
+        derive_encase_host_shareable: false,
+        derive_bytemuck_host_shareable: false,
+        matrix_vector_types: MatrixVectorTypes::Glam,        
         ..Default::default()
     };
 
     // Generate the bindings.
-    let text = create_shader_module(&wgsl_source, "phong.wgsl", options).unwrap();
+    let text = create_shader_module(&wgsl_source, "shaders/phong.wgsl", options).unwrap();
     std::fs::write("src/phong.rs", text.as_bytes()).unwrap();
 
 }

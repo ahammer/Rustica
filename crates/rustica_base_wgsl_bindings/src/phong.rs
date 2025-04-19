@@ -1,29 +1,29 @@
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq, bytemuck::Pod, bytemuck::Zeroable)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct VertexInput {
     pub position: glam::Vec3,
     pub normal: glam::Vec3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq, encase::ShaderType)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct CameraUniform {
     pub view_proj: glam::Mat4,
     pub position: glam::Vec3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq, encase::ShaderType)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct ModelUniform {
     pub model: glam::Mat4,
     pub normal_transform: glam::Mat3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq, encase::ShaderType)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct LightUniform {
     pub position: glam::Vec3,
     pub color: glam::Vec3,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq, encase::ShaderType)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct MaterialUniform {
     pub ambient: glam::Vec3,
     pub diffuse: glam::Vec3,
@@ -325,7 +325,7 @@ pub fn fs_main_entry(targets: [Option<wgpu::ColorTargetState>; 1]) -> FragmentEn
         constants: Default::default(),
     }
 }
-pub const SOURCE: &str = include_str!("phong.wgsl");
+pub const SOURCE: &str = include_str!("shaders/phong.wgsl");
 pub fn create_shader_module(device: &wgpu::Device) -> wgpu::ShaderModule {
     let source = std::borrow::Cow::Borrowed(SOURCE);
     device

@@ -4,8 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-wgpu = { workspace = true }
+wgpu = "24.0.3"
 glam = { workspace = true }
+bytemuck = { workspace = true }
 
 [build-dependencies]
 wgsl_to_wgpu = "0.13.1"
