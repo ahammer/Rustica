@@ -1,5 +1,5 @@
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct VertexInput {
     pub position: glam::Vec3,
     pub normal: glam::Vec3,
