@@ -74,19 +74,19 @@ impl RenderContext {
             power_preference: PowerPreference::default(),
             compatible_surface: Some(&surface),
             force_fallback_adapter: false,
-        }))?;
+        }))
+        .ok_or("Failed to find an appropriate adapter")?;
 
-        
-        let (device, queue) = pollster::block_on(adapter.request_device( // Now 'adapter' is guaranteed to be an Adapter
+        let (device, queue) = pollster::block_on(adapter.request_device(
             &wgpu::DeviceDescriptor {
                 label: None,
                 memory_hints: MemoryHints::default(),
                 required_features: Features::empty(),
                 required_limits: Limits::default(),
-                trace: wgpu::Trace::Off,
             },
+            None,
         ))?;
-        
+
         let surface_caps = surface.get_capabilities(&adapter);
         let surface_format = surface_caps
             .formats
