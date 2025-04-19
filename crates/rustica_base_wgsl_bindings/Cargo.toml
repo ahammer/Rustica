@@ -1,0 +1,11 @@
+[package]
+name = "rustica_base_wgsl_bindings"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wgpu = { workspace = true }
+glam = { workspace = true }
+
+[build-dependencies]
+wgsl_to_wgpu = "0.13.1"

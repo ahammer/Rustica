@@ -20,7 +20,7 @@ members = [
     "Prototypes/009-rustica_ecs_prototype",
     "Prototypes/010-rustica_ecs_conway_graphics",
     "Examples/001-integration_example"
-]
+, "crates/rustica_base_wgsl_bindings"]
 
 resolver = "2"
 
