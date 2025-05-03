@@ -1,33 +1,13 @@
 [workspace]
 members = [
-    "crates/rustica_foundation",
-    "crates/rustica_standard_shader",
-    "crates/rustica_window",
-    "crates/rustica_render",
-    "crates/rustica_render_derive",
-    "crates/rustica_standard_geometry",
-    "crates/rustica_ecs",
-    "crates/rustica_graphics",
-    "crates/rustica_conway",
-    "Prototypes/001-basic_window",
-    "Prototypes/002-basic_wgpu",
-    "Prototypes/003-basic_triangle",
-    "Prototypes/004-animated_triangle",
-    "Prototypes/005-custom_shader",
-    "Prototypes/006-basic_mesh",
-    "Prototypes/007-uv_sphere",
-    "Prototypes/008-teapot_prototype",
-    "Prototypes/009-rustica_ecs_prototype",
-    "Prototypes/010-rustica_ecs_conway_graphics",
-    "Examples/001-integration_example"
-, "crates/rustica_base_wgsl_bindings"]
-
+    "rustica-shader-bindings",
+]
 resolver = "2"
 
 [workspace.dependencies]
 glam      = { version = "0.30", features = ["bytemuck"] }
 bytemuck  = { version = "1.22.0", features = ["derive"] }
-wgpu = "24.0.3"
+wgpu = "25.0.0"
 winit = "0.30.9"
 raw-window-handle = "0.6.0"
 pollster = "0.4.0"
@@ -39,12 +19,3 @@ trybuild = "1.0"
 rand = "0.9.0"
 
 # Local crates
-rustica_foundation = { path = "crates/rustica_foundation" }
-rustica_standard_shader = { path = "crates/rustica_standard_shader" }
-rustica_window = { path = "crates/rustica_window" }
-rustica_render = { path = "crates/rustica_render" }
-rustica_render_derive = { path = "crates/rustica_render_derive" }
-rustica_standard_geometry = { path = "crates/rustica_standard_geometry" }
-rustica_ecs = { path = "crates/rustica_ecs" }
-rustica_graphics = { path = "crates/rustica_graphics" }
-rustica_conway = { path = "crates/rustica_conway" }

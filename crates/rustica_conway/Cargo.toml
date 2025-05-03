@@ -1,9 +1,0 @@
-[package]
-name = "rustica_conway"
-version = "0.1.0"
-edition = "2021"
-description = "Conway's Game of Life implementation for the Rustica engine"
-
-[dependencies]
-rustica_foundation = { workspace = true }
-rustica_ecs = { workspace = true }

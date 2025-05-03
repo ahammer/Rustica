@@ -1,8 +1,0 @@
-[package]
-name = "rustica_ecs_prototype"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-rustica_foundation = { workspace = true }
-rustica_ecs = { workspace = true }

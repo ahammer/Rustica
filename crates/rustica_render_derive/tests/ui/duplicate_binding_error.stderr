@@ -1,5 +1,0 @@
-error: Duplicate binding assignment: 1. Each uniform must have a unique binding.
-  --> tests/ui/duplicate_binding_error.rs:10:5
-   |
-10 |     uniform_b: [f32; 4],
-   |     ^^^^^^^^^

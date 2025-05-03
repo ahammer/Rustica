@@ -1,0 +1,10 @@
+[package]
+name = "rustica-shader-bindings"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wgsl_bindgen = "0.18.1"
+glam = { workspace = true }
+bytemuck = { workspace = true }
+wgpu = { workspace = true }
