@@ -12,7 +12,7 @@ fn main() -> Result<()> {
     .skip_hash_check(true)
     .serialization_strategy(WgslTypeSerializeStrategy::Bytemuck)
     .type_map(GlamWgslTypeMap)
-    .ir_capabilities(WgslShaderIrCapabilities::PUSH_CONSTANT)
+    .ir_capabilities(WgslShaderIrCapabilities::PUSH_CONSTANT)    
     .override_struct_field_type(
       [("utils::types::VectorsU32", "a", quote!(crate::MyTwoU32))].map(Into::into),
     )

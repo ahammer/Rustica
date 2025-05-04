@@ -1,7 +1,5 @@
 //! Foundational types and generation logic for Rustica shaders.
-use shader_bindings;
-
-
+mod shader_bindings;
 
 // Re-export the shader module for easier access
 pub use shader_bindings::pbr;
@@ -11,7 +9,7 @@ pub use shader_bindings::pbr;
 /// This module provides a cleaner interface to the generated shader bindings
 /// with documentation and examples.
 pub mod pbr_shader {
-    use super::pbr_bindings::pbr;
+    use crate::shader_bindings::pbr;
     
     /// Camera uniform containing view-projection matrix and camera position
     pub use pbr::CameraUniform;
@@ -42,45 +40,24 @@ pub mod pbr_shader {
     pub use pbr::{vs_main_entry, fs_main_entry, vertex_state, fragment_state};
     
     /// Creates a shader module from the embedded WGSL shader source.
-    ///
-    /// This is a convenience function that creates a shader module from
-    /// the embedded PBR shader source.
-    ///
-    /// # Examples
-    ///
-    /// ```ignore
-    /// let shader_module = create_shader_module(&device);
-    /// ```
     pub fn create_shader_module(device: &wgpu::Device) -> wgpu::ShaderModule {
         pbr::create_shader_module_embed_source(device)
     }
     
     /// Creates a pipeline layout for the PBR shader.
-    ///
-    /// This is a convenience function that creates a pipeline layout
-    /// with all the necessary bind group layouts.
-    ///
-    /// # Examples
-    ///
-    /// ```ignore
-    /// let pipeline_layout = create_pipeline_layout(&device);
-    /// ```
     pub fn create_pipeline_layout(device: &wgpu::Device) -> wgpu::PipelineLayout {
         pbr::create_pipeline_layout(device)
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+mod tests {    
     use glam::{Mat3A, Mat4, Vec3A, Vec4};
-    // Import the nested types
-    use pbr_bindings::pbr::*;    /// Verifies memory layout assertions for WGSL-compatible data structures.
+    use crate::shader_bindings::pbr::*;
 
-    // Basic test to ensure generated structs exist and have expected fields/types
     #[test]
     fn check_generated_structs() {
-        // Use the correct field types from the generated code
+        // Create test instances of generated structs
         let camera = CameraUniform {
             view_proj: Mat4::IDENTITY,
             position: Vec3A::ZERO,
@@ -91,40 +68,38 @@ mod tests {
             normal_transform: Mat3A::IDENTITY,
         };
 
-        // Use MaterialUniformInit for easier initialization
         let material_init = MaterialUniformInit {
             base_color_factor: Vec4::ONE,
             metallic_factor: 0.5,
             roughness_factor: 0.5,
         };
         
-        // Convert to the actual struct which handles padding
         let material: MaterialUniform = material_init.into();
 
-        // Create a vertex input with correct types
         let vertex = VertexInput {
             position: Vec3A::ZERO,
             normal: Vec3A::ZERO,
             uv: [0.0, 0.0],
-        };        // Check size and alignment (basic sanity check)
+        };
+        
+        // Verify struct sizes
         assert!(std::mem::size_of::<VertexInput>() > 0);
         assert!(std::mem::size_of::<CameraUniform>() > 0);
         assert!(std::mem::size_of::<ModelUniform>() > 0);
         assert!(std::mem::size_of::<MaterialUniform>() > 0);        
         
-        // Check if Bytemuck derives worked by verifying that we can cast to byte slices
-        // This requires the Pod trait to be implemented
+        // Verify bytemuck Pod trait implementation
         let _camera_bytes: &[u8] = bytemuck::bytes_of(&camera);
         let _model_bytes: &[u8] = bytemuck::bytes_of(&model);
         let _material_bytes: &[u8] = bytemuck::bytes_of(&material);
         let _vertex_bytes: &[u8] = bytemuck::bytes_of(&vertex);
         
-        // Check the layout entries are accessible
+        // Verify bind group layout descriptors
         assert!(WgpuBindGroup0::LAYOUT_DESCRIPTOR.entries.len() > 0);
         assert!(WgpuBindGroup1::LAYOUT_DESCRIPTOR.entries.len() > 0);
         assert!(WgpuBindGroup2::LAYOUT_DESCRIPTOR.entries.len() > 0);
         
-        // Check vertex buffer layouts
+        // Verify vertex buffer layout
         let vertex_layout = VertexInput::vertex_buffer_layout(wgpu::VertexStepMode::Vertex);
         assert_eq!(vertex_layout.attributes.len(), 3); // position, normal, uv
     }

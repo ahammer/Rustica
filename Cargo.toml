@@ -7,6 +7,7 @@ resolver = "2"
 [workspace.dependencies]
 glam      = { version = "0.30", features = ["bytemuck"] }
 bytemuck  = { version = "1.22.0", features = ["derive"] }
+
 wgpu = { version = "24.0.3" }
 winit = "0.30.9"
 raw-window-handle = "0.6.0"
@@ -18,5 +19,8 @@ proc-macro2 = "1.0"
 trybuild = "1.0"
 rand = "0.9.0"
 wgsl_bindgen = "0.18.1"
+miette = "7.6.0"
+naga_oil = "0.17.0"
+include_absolute_path = "0.1.2"
 
 # Local crates
