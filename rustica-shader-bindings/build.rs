@@ -85,5 +85,4 @@ fn main() {
         .expect("Failed to create output file");
     output_file.write_all(fixed_content.as_bytes())
         .expect("Failed to write fixed content");// Success message
-    println!("cargo:warning=Successfully generated bindings for {}", pbr_shader_path.display());
 }
