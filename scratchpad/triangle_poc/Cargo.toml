@@ -1,0 +1,17 @@
+[package]
+name = "triangle_poc"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# Need core mainly to bring in shader-bindings transitively for now
+rustica-core = { path = "../../crates/core" }
+# Direct dependencies for windowing and rendering in the scratchpad
+winit = { workspace = true}
+wgpu = { workspace = true}
+env_logger = { workspace = true}
+log = { workspace = true}
+pollster = { workspace = true}
+bytemuck = { version = "1.15", features = ["derive"] } # For vertex data

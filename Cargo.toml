@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "crates/core",
-    "crates/core/crates/shader-bindings",
+    "crates/core/crates/shader-bindings", "scratchpad/triangle_poc",
 ]
 resolver = "2"
 
@@ -23,5 +23,7 @@ wgsl_bindgen = "0.18.1"
 miette = "7.6.0"
 naga_oil = "0.17.0"
 include_absolute_path = "0.1.2"
+env_logger = "0.11.1"
+log = "0.4.17"
 
 # Local crates
