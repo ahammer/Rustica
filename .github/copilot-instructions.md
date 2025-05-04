@@ -1,16 +1,10 @@
-### Rustica Engineering Charter (TL;DR)
-1. **Bold fixes first** – prefer clear, breaking improvements over timid patches.
-2. **Definition of Done**  
-   - all `cargo test` suites pass  
-   - no `clippy --all-targets -- -D warnings` violations  
-   - public items have rust-doc examples  
-   - CHANGELOG entry created if API surface changes
-3. **Testing discipline** – every public fn gets at least one positive & one negative test.
-4. **Dependency discipline** - Also use workspace dependencies for versioning
-5. **Public Api** - Only Glam, Rustica are allowed public API. WGPU is implementation detail.
-6. **Deprecations** - Delete old code, don't deprecate it. This includes comments, tests, and examples. DO NOT COMMENT, DELETE
-7. **Documentation** - Write for LLM Guidance, not for humans. Update pro-actively, use source as truth
+### Rustica Engineering Charter (LLM Guidance)
 
-
-Current Target (Use as a high level direction, but not a strict task).
-- Prove the bindings visually through a POC (Proof of Concept) crate/demo that ingests the bindings
+1.  **API Tiers**: Adhere to the 4-tier structure (`core` -> `canvas` -> `scene` -> `flow`). Higher tiers depend *only* on the immediate lower tier. See `project-structure.md`.
+2.  **Public API**: Use only `glam` and `rustica_*` types in public function signatures and struct fields. `wgpu` is an implementation detail.
+3.  **Dependencies**: Use `workspace = true` for all dependencies listed in the root `Cargo.toml`. Minimize external crates.
+4.  **Code Style**: Pass `clippy --all-targets -- -D warnings`. Format with `rustfmt`.
+5.  **Testing**: Every `pub fn` requires one success test (`#[test]`) and one failure/edge-case test (`#[test]`). Visual tests go in `examples/`.
+6.  **Documentation**: Add rust-doc examples (`/// # Example`) for all `pub` items. Docs explain *intent* and *invariants* for LLM understanding. Update docs atomically with code.
+7.  **Evolution**: Delete unused code/tests/docs. Do not comment out. Prefer breaking changes for clarity over backward compatibility. Update CHANGELOG for public API changes.
+8.  **File Structure**: Library crates live in `crates/`. Sub-modules are nested crates (e.g., `crates/core/crates/shader-bindings`). Examples live in `examples/` categorized by tier. See `project-structure.md`.
