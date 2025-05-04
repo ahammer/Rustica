@@ -9,3 +9,4 @@
 4. **Dependency discipline** - Also use workspace dependencies for versioning
 5. **Public Api** - Only Glam, Rustica are allowed public API. WGPU is implementation detail.
 6. **Deprecations** - Delete old code, don't deprecate it. This includes comments, tests, and examples. DO NOT COMMENT, DELETE
+7. **Documentation** - Write for LLM Guidance, not for humans. Update pro-actively, use source as truth
