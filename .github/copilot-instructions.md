@@ -10,3 +10,7 @@
 5. **Public Api** - Only Glam, Rustica are allowed public API. WGPU is implementation detail.
 6. **Deprecations** - Delete old code, don't deprecate it. This includes comments, tests, and examples. DO NOT COMMENT, DELETE
 7. **Documentation** - Write for LLM Guidance, not for humans. Update pro-actively, use source as truth
+
+
+Current Target (Use as a high level direction, but not a strict task).
+- Prove the bindings visually through a POC (Proof of Concept) crate/demo that ingests the bindings

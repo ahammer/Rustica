@@ -40,46 +40,6 @@ fn main() {
         .expect("Failed to read generated file");    // Fix inner attribute issue by converting #![] to #[]
     let mut fixed_content = content.replace("#![allow", "#[allow");
 
-    // Make layout assert constants public so tests can reference them
-    fixed_content = fixed_content.replace(
-        "const WGSL_BASE_TYPE_ASSERTS: () = {",
-        "#[allow(dead_code)] pub const WGSL_BASE_TYPE_ASSERTS: () = {"
-    );
-    fixed_content = fixed_content.replace(
-        "const PBR_CAMERA_UNIFORM_ASSERTS: () = {",
-        "#[allow(dead_code)] pub const PBR_CAMERA_UNIFORM_ASSERTS: () = {"
-    );
-    fixed_content = fixed_content.replace(
-        "const PBR_MODEL_UNIFORM_ASSERTS: () = {",
-        "#[allow(dead_code)] pub const PBR_MODEL_UNIFORM_ASSERTS: () = {"
-    );
-    fixed_content = fixed_content.replace(
-        "const PBR_MATERIAL_UNIFORM_ASSERTS: () = {",
-        "#[allow(dead_code)] pub const PBR_MATERIAL_UNIFORM_ASSERTS: () = {"
-    );
-    
-    // Add #[allow(dead_code)] to ShaderEntry implementation methods
-    fixed_content = fixed_content.replace(
-        "impl ShaderEntry {",
-        "impl ShaderEntry {\n    #[allow(dead_code)]"
-    );
-    fixed_content = fixed_content.replace(
-        "    pub fn create_shader_module_embed_source(",
-        "    #[allow(dead_code)]\n    pub fn create_shader_module_embed_source("
-    );
-    
-    // Fix other warnings in the generated code
-    fixed_content = fixed_content.replace(
-        "use super::{_root, _root::*};",
-        "use super::_root::*;"
-    );
-    
-    // Convert doc comments to regular comments in wgpu bind group entries
-    fixed_content = fixed_content.replace(
-        "/// @binding(",
-        "// @binding("
-    );
-
     // Write the fixed content to the final output file
     let mut output_file = File::create(&final_output_path)
         .expect("Failed to create output file");
