@@ -38,7 +38,7 @@ fn main() {
         .expect("Failed to open generated file")
         .read_to_string(&mut content)
         .expect("Failed to read generated file");    // Fix inner attribute issue by converting #![] to #[]
-    let mut fixed_content = content.replace("#![allow", "#[allow");
+    let fixed_content = content.replace("#![allow", "#[allow");
 
     // Write the fixed content to the final output file
     let mut output_file = File::create(&final_output_path)

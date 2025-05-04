@@ -1,14 +1,10 @@
 //! Foundational types and generation logic for Rustica shaders.
 
 // Include the generated bindings module
-#[allow(clippy::all)] // More specific allow for clippy warnings in generated code
-mod pbr_bindings {
+ #[allow(dead_code, unused_imports, unused_variables, unused_doc_comments, unused_mut, clippy::all)] // Add relevant lints here
+ mod pbr_bindings {
     include!(concat!(env!("OUT_DIR"), "/pbr_bindings.rs"));
 }
-
-// Re-export layout assertions for memory layout verification tests
-#[cfg(test)]
-pub(crate) use pbr_bindings::layout_asserts;
 
 // Re-export the shader module for easier access
 pub use pbr_bindings::pbr;
