@@ -8,7 +8,6 @@ edition = "2021"
 glam = { workspace = true }
 bytemuck = { workspace = true, features = ["derive"] } # Ensure derive feature is enabled if needed by generated code
 wgpu = { workspace = true }
-# wgsl_bindgen = { workspace = true } # Runtime dependency only if using wgsl_bindgen library functions directly
 
 # Add build dependency
 [build-dependencies]

@@ -7,7 +7,7 @@ resolver = "2"
 [workspace.dependencies]
 glam      = { version = "0.30", features = ["bytemuck"] }
 bytemuck  = { version = "1.22.0", features = ["derive"] }
-wgpu = { version = "25.0.0" }
+wgpu = { version = "24.0.3" }
 winit = "0.30.9"
 raw-window-handle = "0.6.0"
 pollster = "0.4.0"
