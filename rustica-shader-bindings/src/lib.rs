@@ -1,13 +1,10 @@
 //! Foundational types and generation logic for Rustica shaders.
+use shader_bindings;
 
-// Include the generated bindings module
- #[allow(dead_code, unused_imports, unused_variables, unused_doc_comments, unused_mut, clippy::all)] // Add relevant lints here
- mod pbr_bindings {
-    include!(concat!(env!("OUT_DIR"), "/pbr_bindings.rs"));
-}
+
 
 // Re-export the shader module for easier access
-pub use pbr_bindings::pbr;
+pub use shader_bindings::pbr;
 
 /// Public API for using the PBR shader bindings.
 ///

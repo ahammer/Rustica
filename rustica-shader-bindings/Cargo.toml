@@ -8,7 +8,7 @@ edition = "2021"
 glam = { workspace = true }
 bytemuck = { workspace = true, features = ["derive"] } # Ensure derive feature is enabled if needed by generated code
 wgpu = { workspace = true }
-
 # Add build dependency
 [build-dependencies]
 wgsl_bindgen = { workspace = true } # Use workspace version
+miette = { workspace = true } # Optional: for error handling and reporting
