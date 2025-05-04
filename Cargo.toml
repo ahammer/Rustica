@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "rustica-shader-bindings",
+    "crates/core",
+    "crates/core/crates/shader-bindings",
 ]
 resolver = "2"
 
