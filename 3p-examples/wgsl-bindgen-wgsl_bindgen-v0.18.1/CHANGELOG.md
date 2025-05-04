@@ -1,0 +1,1 @@
+wgsl_bindgen/CHANGELOG.md

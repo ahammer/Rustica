@@ -1,0 +1,45 @@
+[package]
+name = "wgsl_bindgen"
+authors.workspace = true
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+documentation.workspace = true
+license.workspace = true
+publish = true
+description = "Type safe Rust bindings workflow for wgsl shaders in wgpu"
+readme = "../README.md"
+
+[dependencies]
+naga = { workspace = true, features = ["wgsl-in"] }
+wgpu-types.workspace = true
+syn.workspace = true
+quote.workspace = true
+proc-macro2.workspace = true
+prettyplease.workspace = true
+thiserror.workspace = true
+case.workspace = true
+naga_oil.workspace = true
+regex.workspace = true
+data-encoding.workspace = true
+indexmap.workspace = true
+smallvec.workspace = true
+derive_more.workspace = true
+fxhash.workspace = true
+derivative.workspace = true
+smol_str.workspace = true
+colored.workspace = true
+derive_builder.workspace = true
+miette.workspace = true
+blake3.workspace = true
+regex-syntax.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
+pathdiff.workspace = true
+enumflags2.workspace = true
+heck.workspace = true
+
+[dev-dependencies]
+indoc.workspace = true
+pretty_assertions.workspace = true
+miette = { workspace = true, features = ["fancy"] }

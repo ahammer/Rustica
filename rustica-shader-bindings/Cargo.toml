@@ -4,7 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wgsl_bindgen = "0.18.1"
+# Runtime dependencies needed by generated code or library logic
 glam = { workspace = true }
-bytemuck = { workspace = true }
+bytemuck = { workspace = true, features = ["derive"] } # Ensure derive feature is enabled if needed by generated code
 wgpu = { workspace = true }
+# wgsl_bindgen = { workspace = true } # Runtime dependency only if using wgsl_bindgen library functions directly
+
+# Add build dependency
+[build-dependencies]
+wgsl_bindgen = { workspace = true } # Use workspace version
