@@ -6,12 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# Need core mainly to bring in shader-bindings transitively for now
-rustica-core = { path = "../../crates/core" }
-# Direct dependencies for windowing and rendering in the scratchpad
-winit = { workspace = true}
-wgpu = { workspace = true}
-env_logger = { workspace = true}
-log = { workspace = true}
-pollster = { workspace = true}
-bytemuck = { version = "1.15", features = ["derive"] } # For vertex data
+winit = { workspace = true }
+wgpu = { workspace = true }
+log = { workspace = true }
+env_logger = { workspace = true }
+pollster = { workspace = true }
+bytemuck = { workspace = true, features = ["derive"] }
+glam = { workspace = true }
+# Correct path relative to the workspace root (c:\Users\Adam\git\Rustica)
+# Corrected dependency name to use hyphen
+rustica-shader-bindings = { path = "../../crates/core/crates/shader-bindings" }
