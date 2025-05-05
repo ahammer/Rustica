@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 rustica-shader-bindings = { path = "crates/shader-bindings"}
 rustica-render-utils = { path = "crates/rustica-render-utils"}
+rustica-window = { path = "crates/rustica-window"}

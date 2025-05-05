@@ -17,4 +17,5 @@ glam = { workspace = true }
 # Corrected dependency name to use hyphen
 rustica-shader-bindings = { path = "../../crates/core/crates/shader-bindings" }
 rustica-render-utils = { path = "../../crates/core/crates/rustica-render-utils" }
+rustica-window = { path = "../../crates/core/crates/rustica-window" }
 raw-window-handle = { workspace = true }

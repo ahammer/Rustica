@@ -1,0 +1,11 @@
+[package]
+name = "rustica-window"
+version = "0.1.0"
+edition = "2021"
+description = "Window management abstraction for Rustica"
+
+[dependencies]
+winit = { workspace = true }
+raw-window-handle = { workspace = true }
+log = { workspace = true }
+thiserror = { version = "1.0" }

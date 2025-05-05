@@ -1743,6 +1743,7 @@ version = "0.1.0"
 dependencies = [
  "rustica-render-utils",
  "rustica-shader-bindings",
+ "rustica-window",
 ]
 
 [[package]]
@@ -1766,6 +1767,16 @@ dependencies = [
  "naga_oil",
  "wgpu",
  "wgsl_bindgen",
+]
+
+[[package]]
+name = "rustica-window"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "raw-window-handle",
+ "thiserror 1.0.69",
+ "winit",
 ]
 
 [[package]]
@@ -2148,6 +2159,7 @@ dependencies = [
  "raw-window-handle",
  "rustica-render-utils",
  "rustica-shader-bindings",
+ "rustica-window",
  "wgpu",
  "winit",
 ]
