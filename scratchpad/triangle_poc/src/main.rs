@@ -1,13 +1,5 @@
 use glam::{Mat3A, Mat4, Vec3A};
-use rustica_shader_bindings::pbr::{ // Use generated module directly
-    CameraUniform, MaterialUniform, MaterialUniformInit, ModelUniform,
-    VertexInput, WgpuBindGroup0, WgpuBindGroup0Entries,
-    WgpuBindGroup1, WgpuBindGroup1Entries,
-    WgpuBindGroup2, WgpuBindGroup2Entries,
-    create_pipeline_layout, create_shader_module_embed_source as create_shader_module, // Use specific creation fn
-    vertex_state as pbr_vertex_state, vs_main_entry, // Import vertex helper
-    fragment_state as pbr_fragment_state, fs_main_entry, // Import fragment helper
-};
+use rustica_shader_bindings::pbr_shader::*;
 use std::time::Instant;
 use winit::{ // Removed EventLoop
     application::ApplicationHandler, // Added ApplicationHandler
@@ -149,8 +141,8 @@ impl State {
         })]);
 
         // Pass the results of the entry point helpers to the state helpers
-        let vertex_state = pbr_vertex_state(&shader_module, &vs_entry);
-        let fragment_state = pbr_fragment_state(&shader_module, &fs_entry);
+        let vertex_state = vertex_state(&shader_module, &vs_entry);
+        let fragment_state = fragment_state(&shader_module, &fs_entry);
 
 
         // Create the render pipeline

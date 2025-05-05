@@ -1,5 +1,6 @@
 ### Rustica Engineering Charter (LLM Guidance)
 
+!!! DO NOT ATTEMPT DEAD ENDS OR INCOMPLETE TASKS, BE BRUTALLY HONEST IS SCOPE IS IRRESPONSIBLE !!!
 1.  **API Tiers**: Adhere to the 4-tier structure (`core` -> `canvas` -> `scene` -> `flow`). Higher tiers depend *only* on the immediate lower tier. See `project-structure.md`.
 2.  **Public API**: Use only `glam` and `rustica_*` types in public function signatures and struct fields. `wgpu` is an implementation detail.
 3.  **Dependencies**: Use `workspace = true` for all dependencies listed in the root `Cargo.toml`. Minimize external crates.

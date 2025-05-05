@@ -1,8 +1,6 @@
 //! Foundational types and generation logic for Rustica shaders.
 mod shader_bindings;
 
-// Re-export the shader module for easier access
-pub use shader_bindings::pbr;
 
 /// Public API for using the PBR shader bindings.
 ///
