@@ -2134,6 +2134,7 @@ dependencies = [
  "glam",
  "log",
  "pollster",
+ "raw-window-handle",
  "rustica-shader-bindings",
  "wgpu",
  "winit",

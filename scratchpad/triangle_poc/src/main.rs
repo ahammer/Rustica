@@ -1,4 +1,4 @@
-use glam::{Mat3A, Mat4, Vec3A}; // Removed Vec4
+use glam::{Mat3A, Mat4, Vec3A};
 use rustica_shader_bindings::pbr::{ // Use generated module directly
     CameraUniform, MaterialUniform, MaterialUniformInit, ModelUniform,
     VertexInput, WgpuBindGroup0, WgpuBindGroup0Entries,
@@ -8,7 +8,7 @@ use rustica_shader_bindings::pbr::{ // Use generated module directly
     vertex_state as pbr_vertex_state, vs_main_entry, // Import vertex helper
     fragment_state as pbr_fragment_state, fs_main_entry, // Import fragment helper
 };
-use std::time::Instant; // Removed Cow
+use std::time::Instant;
 use winit::{ // Removed EventLoop
     application::ApplicationHandler, // Added ApplicationHandler
     event::WindowEvent,
@@ -17,6 +17,8 @@ use winit::{ // Removed EventLoop
 };
 use wgpu::util::DeviceExt;
 use winit::platform::windows::EventLoopBuilderExtWindows; // Import for with_any_thread
+// Import the necessary traits and types for raw window handle
+use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 
 // State structure to manage rendering resources
 struct State {
@@ -65,22 +67,33 @@ impl State {
         let window = event_loop.create_window(window_attributes).unwrap();
         let size = window.inner_size();
 
-        // Initialize wgpu instance, adapter, device, and queue
-        // Reverting to the structure with backend_options as indicated by compiler errors for wgpu 0.20 (24.x)
-        let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
-            backends: wgpu::Backends::PRIMARY,
-            flags: wgpu::InstanceFlags::default(),
-            // dx12_shader_compiler and gles_minor_version belong in backend_options
-            backend_options: wgpu::InstanceBackendOptions {
-                dx12_shader_compiler: wgpu::Dx12Compiler::default(),
-                gles_minor_version: wgpu::Gles3MinorVersion::default(),
-                ..Default::default() // Ensure other fields have defaults
-            },
-            // name: None, // name field is not present in 0.20 InstanceDescriptor
-        });
+        // Initialize wgpu instance - Trying explicit descriptor with default backend_options again
+        let instance_descriptor = wgpu::InstanceDescriptor {
+             backends: wgpu::Backends::PRIMARY,
+             flags: wgpu::InstanceFlags::default(),
+             backend_options: Default::default(), // Use default for backend options
+        };
+        let instance = wgpu::Instance::new(&instance_descriptor);
 
-        // Create surface using an owned window handle
-        let surface = instance.create_surface(&window).unwrap();
+        // Create surface using unsafe block and raw handles
+        let surface = unsafe {
+            // Get the handles using the trait methods and map to raw handles
+            let window_handle = window.window_handle()
+                .map(|handle| handle.as_raw())
+                .expect("Window handle unavailable");
+            let display_handle = window.display_handle()
+                .map(|handle| handle.as_raw())
+                .expect("Display handle unavailable");
+
+            // Construct the target using the raw handles
+            let target = wgpu::SurfaceTargetUnsafe::RawHandle {
+                raw_display_handle: display_handle,
+                raw_window_handle: window_handle,
+            };
+            instance.create_surface_unsafe(target)
+                .expect("Failed to create surface unsafely")
+        };
+
 
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
@@ -237,7 +250,7 @@ impl State {
         );
 
         (window, Self { // Return owned window and self
-            surface,
+            surface, // Surface is now 'static due to unsafe creation
             device,
             queue,
             config,
