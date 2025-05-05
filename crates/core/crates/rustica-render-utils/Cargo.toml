@@ -1,0 +1,10 @@
+[package]
+name = "rustica-render-utils"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+glam = { workspace = true }
+wgpu = { workspace = true }
+bytemuck = { workspace = true }
+rustica-shader-bindings = { path = "../shader-bindings" }

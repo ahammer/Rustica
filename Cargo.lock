@@ -1741,7 +1741,18 @@ checksum = "08d43f7aa6b08d49f382cde6a7982047c3426db949b1424bc4b7ec9ae12c6ce2"
 name = "rustica-core"
 version = "0.1.0"
 dependencies = [
+ "rustica-render-utils",
  "rustica-shader-bindings",
+]
+
+[[package]]
+name = "rustica-render-utils"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "glam",
+ "rustica-shader-bindings",
+ "wgpu",
 ]
 
 [[package]]
@@ -2135,6 +2146,7 @@ dependencies = [
  "log",
  "pollster",
  "raw-window-handle",
+ "rustica-render-utils",
  "rustica-shader-bindings",
  "wgpu",
  "winit",

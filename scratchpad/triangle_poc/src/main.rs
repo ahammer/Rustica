@@ -1,5 +1,13 @@
-use glam::{Mat3A, Mat4, Vec3A};
+use glam::{Mat4, Vec3A, Vec4};
 use rustica_shader_bindings::pbr_shader::*;
+use rustica_render_utils::{
+    create_camera_resources, update_camera,
+    create_model_resources, update_model_transform,
+    create_material_resources,
+    create_vertex_buffer,
+    create_pipeline,
+    create_orthographic_projection,
+};
 use std::time::Instant;
 use winit::{ 
     application::ApplicationHandler, 
@@ -7,7 +15,7 @@ use winit::{
     event_loop::ActiveEventLoop,
     window::{Window, WindowAttributes, WindowId}, 
 };
-use wgpu::util::DeviceExt;
+// No longer needed with render utils
 use winit::platform::windows::EventLoopBuilderExtWindows; 
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 
@@ -121,121 +129,18 @@ impl State {
             alpha_mode: surface_caps.alpha_modes[0],
             view_formats: vec![],
             desired_maximum_frame_latency: 2,
-        };
-        surface.configure(&device, &config);
+        };        surface.configure(&device, &config);
 
-        
-        let shader_module = create_shader_module(&device); 
-        let pipeline_layout = create_pipeline_layout(&device); 
-
-        
-        
-        let vs_entry = vs_main_entry(wgpu::VertexStepMode::Vertex);
-        let fs_entry = fs_main_entry([Some(wgpu::ColorTargetState { 
-            format: config.format,
-            blend: Some(wgpu::BlendState::REPLACE),
-            write_mask: wgpu::ColorWrites::ALL,
-        })]);
-
-        
-        let vertex_state = vertex_state(&shader_module, &vs_entry);
-        let fragment_state = fragment_state(&shader_module, &fs_entry);
-
-
-        
-        let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-            label: Some("Render Pipeline"),
-            layout: Some(&pipeline_layout),
-            vertex: vertex_state, 
-            fragment: Some(fragment_state), 
-            primitive: wgpu::PrimitiveState {
-                topology: wgpu::PrimitiveTopology::TriangleList,
-                strip_index_format: None,
-                front_face: wgpu::FrontFace::Ccw,
-                cull_mode: Some(wgpu::Face::Back),
-                polygon_mode: wgpu::PolygonMode::Fill,
-                unclipped_depth: false,
-                conservative: false,
-            },
-            depth_stencil: None, 
-            multisample: wgpu::MultisampleState {
-                count: 1,
-                mask: !0,
-                alpha_to_coverage_enabled: false,
-            },
-            multiview: None,
-            cache: None,
-        });
-
-        
-        let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("Vertex Buffer"),
-            contents: bytemuck::cast_slice(VERTICES),
-            usage: wgpu::BufferUsages::VERTEX,
-        });
-        let num_vertices = VERTICES.len() as u32;
-
-        
-        let camera_uniform = CameraUniform {
-            view_proj: Mat4::IDENTITY, 
-            position: Vec3A::ZERO, 
-        };
-        let camera_uniform_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("Camera Uniform Buffer"),
-            contents: bytemuck::cast_slice(&[camera_uniform]),
-            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-        });
-        let camera_bind_group = WgpuBindGroup0::from_bindings(
+        // Create pipeline using utility function
+        let render_pipeline = create_pipeline(&device, config.format, None);        // Create vertex buffer using utility function
+        let (vertex_buffer, num_vertices) = create_vertex_buffer(&device, VERTICES);        // Create camera resources using utility function
+        let (camera_uniform_buffer, camera_bind_group) = create_camera_resources(&device);        // Create model resources using utility function
+        let (model_uniform_buffer, model_bind_group) = create_model_resources(&device);        // Create material resources using utility function
+        let (material_uniform_buffer, material_bind_group) = create_material_resources(
             &device,
-            WgpuBindGroup0Entries {
-                camera: wgpu::BindGroupEntry { 
-                    binding: 0, 
-                    resource: camera_uniform_buffer.as_entire_binding(), 
-                },
-            },
-        );
-
-        let model_uniform = ModelUniform {
-            model: Mat4::IDENTITY, 
-            normal_transform: Mat3A::IDENTITY, 
-        };
-        let model_uniform_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("Model Uniform Buffer"),
-            contents: bytemuck::cast_slice(&[model_uniform]),
-            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-        });
-        let model_bind_group = WgpuBindGroup1::from_bindings(
-            &device,
-            WgpuBindGroup1Entries {
-                model: wgpu::BindGroupEntry { 
-                    binding: 0, 
-                    resource: model_uniform_buffer.as_entire_binding(), 
-                },
-            },
-        );
-
-        
-        let material_uniform_init = MaterialUniformInit {
-            base_color_factor: [1.0, 0.0, 0.0, 1.0].into(), 
-            metallic_factor: 0.0,
-            roughness_factor: 1.0,
-            
-        };
-        let material_uniform: MaterialUniform = material_uniform_init.into(); 
-
-        let material_uniform_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-            label: Some("Material Uniform Buffer"),
-            contents: bytemuck::cast_slice(&[material_uniform]), 
-            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-        });
-        let material_bind_group = WgpuBindGroup2::from_bindings(
-            &device,
-            WgpuBindGroup2Entries {
-                material: wgpu::BindGroupEntry { 
-                    binding: 0, 
-                    resource: material_uniform_buffer.as_entire_binding(), 
-                },
-            },
+            Vec4::new(1.0, 0.0, 0.0, 1.0), // red color
+            0.0,  // non-metallic
+            1.0   // rough
         );
 
         (window, Self { 
@@ -264,38 +169,25 @@ impl State {
             self.config.height = new_size.height;
             self.surface.configure(&self.device, &self.config);
         }
-    }
-
-    #[allow(unused_variables)] 
-    fn update(&mut self) {
-        
+    }    fn update(&mut self) {
+        // Calculate rotation based on elapsed time
         let elapsed = self.start_time.elapsed().as_secs_f32();
-
-        
         let angle = elapsed * std::f32::consts::PI / 4.0; 
         let rotation = Mat4::from_rotation_z(angle);
         
-        
-        let normal_transform = Mat3A::from_mat4(rotation).inverse().transpose();
-        let model_uniform = ModelUniform {
-            model: rotation, 
-            normal_transform, 
-        };
-        self.queue.write_buffer(&self.model_uniform_buffer, 0, bytemuck::cast_slice(&[model_uniform]));
+        // Update model transform using utility function
+        update_model_transform(&self.queue, &self.model_uniform_buffer, rotation);
 
+        // Create orthographic projection using utility function
+        let view_proj = create_orthographic_projection(self.size.width, self.size.height);
         
-        let aspect_ratio = self.size.width as f32 / self.size.height as f32;
-        let (left, right, bottom, top) = if aspect_ratio > 1.0 {
-            (-1.0 * aspect_ratio, 1.0 * aspect_ratio, -1.0, 1.0)
-        } else {
-            (-1.0, 1.0, -1.0 / aspect_ratio, 1.0 / aspect_ratio)
-        };
-        let view_proj = Mat4::orthographic_rh(left, right, bottom, top, -1.0, 1.0);
-        let camera_uniform = CameraUniform {
+        // Update camera using utility function
+        update_camera(
+            &self.queue,
+            &self.camera_uniform_buffer,
             view_proj, 
-            position: Vec3A::new(0.0, 0.0, 1.0), 
-        };
-        self.queue.write_buffer(&self.camera_uniform_buffer, 0, bytemuck::cast_slice(&[camera_uniform]));
+            Vec3A::new(0.0, 0.0, 1.0)
+        );
     }
 
     fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
